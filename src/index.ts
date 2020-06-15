@@ -6,3 +6,15 @@
  * the BSD 3 Clause license.  The full license can be found in the LICENSE file.
  */
 
+import "regular-table";
+
+await customElements.whenDefined('regular-table');
+const RegularTable = customElements.get('regular-table') as CustomElementConstructor;
+
+export class RegularTree extends RegularTable {
+    constructor() {
+        super();
+    }
+}
+
+customElements.define('regular-tree', RegularTree);
