@@ -7,9 +7,10 @@
  */
 
 import "regular-table";
+import {RegularTableElement} from "regular-table";
 
 await customElements.whenDefined('regular-table');
-const RegularTable = customElements.get('regular-table') as CustomElementConstructor;
+const RegularTable = customElements.get('regular-table') as typeof RegularTableElement;
 
 export class RegularTree extends RegularTable {
     constructor() {
