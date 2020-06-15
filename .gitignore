@@ -1,0 +1,40 @@
+# javascript/typescript
+lib
+node_modules
+
+*.tsbuildinfo
+lerna-debug.log
+yarn-error.log
+storybook-static
+
+# python
+.cache
+*.py[co]
+.pytest_cache
+__pycache__
+*.egg-info
+.ipynb_checkpoints
+
+build
+dist
+
+MANIFEST
+
+# misc
+*~
+*.bak
+*.map
+*.swp
+.DS_Store
+.log/
+\#*#
+.#*
+
+# jetbrains IDE stuff
+*.iml
+.idea/
+
+# ms IDE stuff
+*.code-workspace
+.history
+.vscode
