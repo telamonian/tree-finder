@@ -1,4 +1,7 @@
 declare module 'regular-table' {
+  // only need the @types/react pkg for this, not the runtime react pkg
+  // import React from "react";
+
   /**
    * The `<regular-table>` custom element.
    *
@@ -14,20 +17,72 @@ declare module 'regular-table' {
    * @extends HTMLElement
    */
   export class RegularTableElement extends HTMLElement {
-    connectedCallback(): void;
-    get_tds(): HTMLTableCellElement[];
-    get_ths(): HTMLTableCellElement[];
+    /**
+     * Get the array of table cell elements in the inner <table>'s body.
+     *
+     * @memberof RegularTableElement
+     * @returns {Array<HTMLTableCellElement>}
+     */
+    get_tds(): Array<HTMLTableCellElement>;
+
+    /**
+     * Get the array of table cell elements in the inner <table>'s header.
+     *
+     * @memberof RegularTableElement
+     * @returns {Array<HTMLTableCellElement>}
+     */
+    get_ths(): Array<HTMLTableCellElement>;
+
+    /**
+     * Remove all contents of the inner <table> element.
+     *
+     * @memberof RegularTableElement
+     */
     clear(): void;
+
+    /**
+     * Reset the viewport of this regular table.
+     *
+     * @memberof RegularTableElement
+     */
     reset_viewport(): void;
+
+    /**
+     * Reset the scroll position of this regular table back to the origin.
+     *
+     * @memberof RegularTableElement
+     */
     reset_scroll(): void;
-    addStyleListener(styleListener: () => void): number;
+
+    /**
+     * Adds a style listener callback. The style listeners are called
+     * whenever the <table> is re-rendered, such as through API invocations
+     * of draw() and user-initiated events such as scrolling. Within this
+     * optionally async callback, you can select <td>, <th>, etc. elements
+     * via regular DOM API methods like querySelectorAll().
+     *
+     * @memberof RegularTableElement
+     * @param {function({detail: RegularTableElement}): void} styleListener - A
+     * (possibly async) function that styles the inner <table>.
+     * @returns {number} The index of the added listener.
+     * @example
+     * table.addStyleListener(() => {
+     *     for (const td of table.querySelectorAll("td")) {
+     *         td.setAttribute("contenteditable", true);
+     *     }
+     * });
+     */
+    addStyleListener(styleListener: (arg0: {
+        detail: RegularTableElement;
+    }) => void): number;
 
     /**
      * Returns the `MetaData` object associated with a `<td>` or `<th>`.  When
      * your `StyleListener` is invoked, use this method to look up additional
      * `MetaData` about any `HTMLTableCellElement` in the rendered `<table>`.
      *
-     * @param {HTMLTableCellElement|MetaData} element - The child element
+     * @memberof RegularTableElement
+     * @param {HTMLTableCellElement|Partial<MetaData>} element - The child element
      * of this `<regular-table>` for which to look up metadata, or a
      * coordinates-like object to refer to metadata by logical position.
      * @returns {MetaData} The metadata associated with the element.
@@ -36,7 +91,7 @@ declare module 'regular-table' {
      * const metadata = table.getMeta(elems);
      * console.log(`Viewport corner is ${metadata.x}, ${metadata.y}`);
      * @example
-     * const header = table.getMeta({row_header_x: 1, dy: 3}).row_header;
+     * const header = table.getMeta({row_header_x: 1, y: 3}).row_header;
      */
     getMeta(element: HTMLTableCellElement | Partial<MetaData>): MetaData;
 
@@ -56,22 +111,6 @@ declare module 'regular-table' {
      * });
      */
     getDrawFPS(): Performance;
-
-    // /**
-    //  * Call this method to set the `scrollLeft` and `scrollTop` for this
-    //  * `<regular-table>` by calculating the position of this `scrollLeft`
-    //  * and `scrollTop` relative to the underlying widths of its columns
-    //  * and heights of its rows.
-    //  *
-    //  * @memberof RegularTableElement
-    //  * @param {number} x - The left most `x` index column to scroll into view.
-    //  * @param {number} y - The top most `y` index row to scroll into view.
-    //  * @param {number} ncols - Total number of columns in the data model.
-    //  * @param {number} nrows - Total number of rows in the data model.
-    //  * @example
-    //  * table.scrollTo(1, 3, 10, 30);
-    //  */
-    // scrollTo(x: number, y: number, ncols: number, nrows: number): void;
 
     /**
      * Call this method to set `DataListener` for this `<regular-table>`,
@@ -93,15 +132,6 @@ declare module 'regular-table' {
      * })
      */
     setDataListener(dataListener: DataListener): void;
-    _invalid_schema: boolean;
-    _view_cache: {
-        view: Function;
-        config: {
-            row_pivots: any[];
-            column_pivots: any[];
-        };
-        schema: {};
-    };
   }
 
   /**
@@ -132,6 +162,7 @@ declare module 'regular-table' {
      */
     elapsed: number;
   };
+
   /**
   * An object describing virtual rendering metadata about an
   * `HTMLTableCellElement`, use this object to map rendered `<th>` or `<td>`
@@ -242,10 +273,26 @@ declare module 'regular-table' {
   };
 
   /**
-   * The `DataListener` is similar to a normal event listener function.
-   * Unlike a normal event listener, it takes regular arguments (not an
-   * `Event`); and returns a `Promise` for a `DataResponse` object for this
-   * region (as opposed to returning `void` as a standard event listener).
-   */
+  * The `DataListener` is similar to a normal event listener function.
+  * Unlike a normal event listener, it takes regular arguments (not an
+  * `Event`); and returns a `Promise` for a `DataResponse` object for this
+  * region (as opposed to returning `void` as a standard event listener).
+  */
   export type DataListener = Function;
+
+  global {
+    // namespace JSX {
+    //   interface IntrinsicElements {
+    //       "regular-table": React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    //   }
+    // }
+
+    interface Document {
+      createElement(tagName: "regular-table", options?: ElementCreationOptions): RegularTableElement;
+    }
+
+    interface CustomElementRegistry {
+      get(name: 'regular-table'): typeof RegularTableElement;
+    }
+  }
 }

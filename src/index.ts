@@ -7,15 +7,24 @@
  */
 
 import "regular-table";
-import {RegularTableElement} from "regular-table";
 
 await customElements.whenDefined('regular-table');
-const RegularTable = customElements.get('regular-table') as typeof RegularTableElement;
+const RegularTableElement = customElements.get('regular-table');
 
-export class RegularTree extends RegularTable {
-    constructor() {
-        super();
-    }
+export class RegularTreeElement extends RegularTableElement {
+  constructor() {
+    super();
+  }
 }
 
-customElements.define('regular-tree', RegularTree);
+declare global {
+  interface Document {
+    createElement(tagName: "regular-tree", options?: ElementCreationOptions): RegularTreeElement;
+  }
+
+  interface CustomElementRegistry {
+    get(name: 'regular-tree'): typeof RegularTreeElement;
+  }
+}
+
+customElements.define('regular-tree', RegularTreeElement);
