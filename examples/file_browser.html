@@ -344,8 +344,8 @@
         function file_browser_on_sort_click() {
             const metadata = treeFinder.getMeta(event.target);
 
-            if (metadata?.is_column_header) {
-                const column_name = metadata.column_name || "path";
+            if (metadata?.hasOwnProperty('column_header')) {
+                const column_name = metadata.value || "path";
                 const multi = event.shiftKey;
 
                 [VIEW_STATE, SORT] = window.getSortedContents(ROOT, SORT, false, column_name, multi);
@@ -354,8 +354,13 @@
         }
 
         function file_browser_on_tree_click() {
-            if (event.target.tagName === "SPAN" && event.target.className === "pd-row-header-icon") {
-                const metadata = treeFinder.getMeta(event.target);
+            let target = event.target;
+            if (target.tagName === "SPAN" && target.className === "pd-row-header-icon") {
+                let metadata = treeFinder.getMeta(target);
+                while (!metadata && target.parentElement) {
+                    target = target.parentElement;
+                    metadata = treeFinder.getMeta(target);
+                }
 
                 if (VIEW_STATE[metadata.y].is_open) {
                     collapse(metadata.y);
@@ -368,10 +373,8 @@
 
         window.addEventListener("DOMContentLoaded", async function () {
             treeFinder.setDataListener(file_browser_model);
-            treeFinder.addEventListener("mousedown", file_browser_on_sort_click)
-            treeFinder.addEventListener("mousedown", file_browser_on_tree_click)
-            // treeFinder.addClickListener(file_browser_on_sort_click);
-            // treeFinder.addClickListener(file_browser_on_tree_click);
+            treeFinder.addEventListener("mousedown", file_browser_on_sort_click);
+            treeFinder.addEventListener("mousedown", file_browser_on_tree_click);
             treeFinder.addStyleListener(file_browser_style);
             await treeFinder.draw();
         });
