@@ -11,7 +11,7 @@ const depSrcMapRules = [
   {test: /\.js.map$/, use: 'file-loader'},
 ]
 
-module.exports = {
+let config = {
   mode: process.env.NODE_ENV || 'development',
   entry: './src/index.ts',
   devtool: 'source-map',
@@ -66,4 +66,14 @@ module.exports = {
   //     chunks: 'all'
   //   }
   // },
+};
+
+module.exports = (env, argv) => {
+
+  if (argv.mode === 'development') {
+    config.devtool = 'source-map';
+    config.optimization.minimize = false;
+  }
+
+  return config;
 };
