@@ -46,7 +46,7 @@ let config = {
     // filename: '[name].[chunkhash].js',
   },
   devServer: {
-    contentBase: [path.join(__dirname, '.')],
+    contentBase: [path.join(__dirname, "examples"), path.join(__dirname, ".")],
     inline: false,
     publicPath: '/dist/',
 

@@ -9,7 +9,7 @@
 import "regular-table";
 
 await customElements.whenDefined('regular-table');
-const RegularTableElement = customElements.get('regular-table') as typeof HTMLElement;
+const RegularTableElement = customElements.get('regular-table');
 
 export class RegularTreeElement extends RegularTableElement {
   constructor() {

@@ -49,20 +49,21 @@
             background-image: var(--rt-text-icon);
         }
 
-        thead th span:first-child {
+        thead th span:first-child:before {
             background-position: right;
             background-repeat: no-repeat;
             background-size: 16px;
             min-width: 16px;
             min-height: 16px;
             padding-right: 16px;
+            content: '';
         }
 
-        thead th.rt-sort-asc span:first-child {
+        thead th.rt-sort-asc span:first-child:before {
             background-image: var(--rt-caret-up);
         }
 
-        thead th.rt-sort-desc span:first-child {
+        thead th.rt-sort-desc span:first-child:before {
             background-image: var(--rt-caret-down);
         }
 
@@ -317,14 +318,18 @@
             // style the column header sort carets
             const sort_obj = Object.fromEntries(SORT);
             // for (const th of treeFinder.get_ths()) {
-            const ths = treeFinder.querySelectorAll("th");
+
+            const ths = treeFinder.querySelectorAll("thead th");
             for (const th of ths) {
-                const sort_dir = sort_obj[th.firstElementChild.textContent || "path"];
-                th.className = sort_dir ? `rt-sort-${sort_dir}` : "";
+                const column_header = treeFinder.getMeta(th)?.column_header?.[0];
+                if (column_header) {
+                    const sort_dir = sort_obj[column_header === "0" ? "path" : column_header];
+                    th.className = sort_dir ? `rt-sort-${sort_dir}` : "";
+                }
             }
 
             // style the browser's filetype icons
-            const trs = treeFinder.querySelectorAll("tr");
+            const trs = treeFinder.querySelectorAll("tbody tr");
             for (const tr of trs) {
                 const {children} = tr;
                 const row_name_node = children[0].querySelector(".pd-group-name");
