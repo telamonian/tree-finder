@@ -64,23 +64,23 @@ function updateSort<T extends IContentRow>(sortStates: ISortStates<T>, col: keyo
     return sortStates;
 }
 
-function _flattenContents<T extends IContentRow>(contents: IContent<T>, sorter: (l: IContent<T>, r: IContent<T>) => number, contents_list: IContent<T>[]) {
-    if (!contents) {
+function _flattenContents<T extends IContentRow>(content: IContent<T>, sorter: (l: IContent<T>, r: IContent<T>) => number, contentsFlat: IContent<T>[]) {
+    if (!content) {
         // bail
-        return contents_list;
+        return contentsFlat;
     }
 
-    for (const child of sorter ? contents.children.sort(sorter) : contents.children) {
-        contents_list.push(child);
-        if (child._is_open) {
-            _flattenContents(child, sorter, contents_list);
+    for (const child of sorter ? content.children.sort(sorter) : content.children) {
+        contentsFlat.push(child);
+        if (child.expanded) {
+            _flattenContents(child, sorter, contentsFlat);
         }
     }
 
-    return contents_list;
+    return contentsFlat;
 }
 
-export function getSortedContents<T extends IContentRow>(root: Path, sortStates: ISortStates<T>, col: keyof T, expand?: boolean, multisort?: boolean) {
+export function sortContentRoot<T extends IContentRow>({root, sortStates, col, expand, multisort}: {root: IContent<T>, sortStates: ISortStates<T>, col: keyof T, expand?: boolean, multisort?: boolean}) {
     // update sort orders, if requested
     if (col) {
         sortStates = updateSort(sortStates, col, multisort);
@@ -89,9 +89,9 @@ export function getSortedContents<T extends IContentRow>(root: Path, sortStates:
         sortStates = sortStates.length > 0 ? sortStates : [{col: "path", order: "asc"}];
     }
 
-    const sorter = contentsSorterClosure(sortStates);
+    // mark as expanded/not expanded, if requested
+    root.expanded = expand ?? root.expanded;
 
-    // get contents, then sort/flatten and return them
-    const contents = window.getFileSystemContents(root, expand);
-    return [_flattenContents(contents, sorter, []), sortStates];
+    // get sorter then sort/flatten any expanded children of root
+    return [_flattenContents(root, contentsSorterClosure(sortStates), []), sortStates];
 }

@@ -6,7 +6,6 @@ export interface IContentRow {
 
 export interface IContent<T extends IContentRow> {
     children: IContent<T>[];
+    expanded?: boolean;
     row: T;
-
-    _is_open: boolean;
 }
