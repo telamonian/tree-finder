@@ -9,7 +9,7 @@
 
 <!--
 
-    A simple file browser example built with [`tree-finder`](https://github.com/telamonian/tree-finder).
+   A simple file browser example built with [`tree-finder`](https://github.com/telamonian/tree-finder).
 
 -->
 
@@ -17,379 +17,379 @@
 <html>
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
-    <script src="../dist/regular-tree.js"></script>
-    <link rel='stylesheet' href="../dist/css/material.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <script src="../dist/regular-tree.js"></script>
+  <link rel='stylesheet' href="../dist/css/material.css">
 
-    <style>
-        :root {
-            --rt-dir-icon: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBjbGFzcz0ianAtaWNvbjMganAtaWNvbi1zZWxlY3RhYmxlIiBmaWxsPSIjNjE2MTYxIiBkPSJNMTAgNEg0Yy0xLjEgMC0xLjk5LjktMS45OSAyTDIgMThjMCAxLjEuOSAyIDIgMmgxNmMxLjEgMCAyLS45IDItMlY4YzAtMS4xLS45LTItMi0yaC04bC0yLTJ6Ii8+PC9zdmc+");
-            --rt-text-icon: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBjbGFzcz0ianAtaWNvbjMganAtaWNvbi1zZWxlY3RhYmxlIiBmaWxsPSIjNjE2MTYxIiBkPSJNMTUgMTVIM3YyaDEydi0yem0wLThIM3YyaDEyVjd6TTMgMTNoMTh2LTJIM3Yyem0wIDhoMTh2LTJIM3Yyek0zIDN2MmgxOFYzSDN6Ii8+PC9zdmc+");
+  <style>
+    :root {
+      --rt-dir-icon: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBjbGFzcz0ianAtaWNvbjMganAtaWNvbi1zZWxlY3RhYmxlIiBmaWxsPSIjNjE2MTYxIiBkPSJNMTAgNEg0Yy0xLjEgMC0xLjk5LjktMS45OSAyTDIgMThjMCAxLjEuOSAyIDIgMmgxNmMxLjEgMCAyLS45IDItMlY4YzAtMS4xLS45LTItMi0yaC04bC0yLTJ6Ii8+PC9zdmc+");
+      --rt-text-icon: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBjbGFzcz0ianAtaWNvbjMganAtaWNvbi1zZWxlY3RhYmxlIiBmaWxsPSIjNjE2MTYxIiBkPSJNMTUgMTVIM3YyaDEydi0yem0wLThIM3YyaDEyVjd6TTMgMTNoMTh2LTJIM3Yyem0wIDhoMTh2LTJIM3Yyek0zIDN2MmgxOFYzSDN6Ii8+PC9zdmc+");
 
-            --rt-caret-left: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgdmlld0JveD0iMCAwIDE4IDE4Ij48cGF0aCBkPSJNMTAuOCAxMi44TDcuMSA5bDMuOC0zLjh2Ny42aC0uMXoiIGZpbGw9IiM2MTYxNjEiIHNoYXBlLXJlbmRlcmluZz0iZ2VvbWV0cmljUHJlY2lzaW9uIi8+PC9zdmc+");
-            --rt-caret-up: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgdmlld0JveD0iMCAwIDE4IDE4Ij48cGF0aCBkPSJNNS4yIDEwLjVMOSA2LjhsMy44IDMuOEg1LjJ6IiBmaWxsPSIjNjE2MTYxIiBzaGFwZS1yZW5kZXJpbmc9Imdlb21ldHJpY1ByZWNpc2lvbiIvPjwvc3ZnPg==");
-            --rt-caret-right: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgdmlld0JveD0iMCAwIDE4IDE4Ij48cGF0aCBkPSJNNy4yIDUuMkwxMC45IDlsLTMuOCAzLjhWNS4yaC4xeiIgZmlsbD0iIzYxNjE2MSIgc2hhcGUtcmVuZGVyaW5nPSJnZW9tZXRyaWNQcmVjaXNpb24iLz48L3N2Zz4=");
-            --rt-caret-down: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgdmlld0JveD0iMCAwIDE4IDE4Ij48cGF0aCBkPSJNNS4yIDcuNUw5IDExLjJsMy44LTMuOEg1LjJ6IiBmaWxsPSIjNjE2MTYxIiBzaGFwZS1yZW5kZXJpbmc9Imdlb21ldHJpY1ByZWNpc2lvbiIvPjwvc3ZnPg==");
-        }
+      --rt-caret-left: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgdmlld0JveD0iMCAwIDE4IDE4Ij48cGF0aCBkPSJNMTAuOCAxMi44TDcuMSA5bDMuOC0zLjh2Ny42aC0uMXoiIGZpbGw9IiM2MTYxNjEiIHNoYXBlLXJlbmRlcmluZz0iZ2VvbWV0cmljUHJlY2lzaW9uIi8+PC9zdmc+");
+      --rt-caret-up: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgdmlld0JveD0iMCAwIDE4IDE4Ij48cGF0aCBkPSJNNS4yIDEwLjVMOSA2LjhsMy44IDMuOEg1LjJ6IiBmaWxsPSIjNjE2MTYxIiBzaGFwZS1yZW5kZXJpbmc9Imdlb21ldHJpY1ByZWNpc2lvbiIvPjwvc3ZnPg==");
+      --rt-caret-right: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgdmlld0JveD0iMCAwIDE4IDE4Ij48cGF0aCBkPSJNNy4yIDUuMkwxMC45IDlsLTMuOCAzLjhWNS4yaC4xeiIgZmlsbD0iIzYxNjE2MSIgc2hhcGUtcmVuZGVyaW5nPSJnZW9tZXRyaWNQcmVjaXNpb24iLz48L3N2Zz4=");
+      --rt-caret-down: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgdmlld0JveD0iMCAwIDE4IDE4Ij48cGF0aCBkPSJNNS4yIDcuNUw5IDExLjJsMy44LTMuOEg1LjJ6IiBmaWxsPSIjNjE2MTYxIiBzaGFwZS1yZW5kZXJpbmc9Imdlb21ldHJpY1ByZWNpc2lvbiIvPjwvc3ZnPg==");
+    }
 
-        .rt-browser-filetype-icon:before {
-            content: "";
-            float: left;
-            margin-right: 5px;
-            margin-left: -10px;
-            min-width: 16px;
-            min-height: 16px;
-        }
+    .rt-browser-filetype-icon:before {
+      content: "";
+      float: left;
+      margin-right: 5px;
+      margin-left: -10px;
+      min-width: 16px;
+      min-height: 16px;
+    }
 
-        .rt-browser-dir-icon:before {
-            background-image: var(--rt-dir-icon);
-        }
+    .rt-browser-dir-icon:before {
+      background-image: var(--rt-dir-icon);
+    }
 
-        .rt-browser-text-icon:before {
-            background-image: var(--rt-text-icon);
-        }
+    .rt-browser-text-icon:before {
+      background-image: var(--rt-text-icon);
+    }
 
-        thead th span:first-child:before {
-            background-position: right;
-            background-repeat: no-repeat;
-            background-size: 16px;
-            min-width: 16px;
-            min-height: 16px;
-            padding-right: 16px;
-            content: '';
-        }
+    thead th span:first-child:before {
+      background-position: right;
+      background-repeat: no-repeat;
+      background-size: 16px;
+      min-width: 16px;
+      min-height: 16px;
+      padding-right: 16px;
+      content: '';
+    }
 
-        thead th.rt-sort-asc span:first-child:before {
-            background-image: var(--rt-caret-up);
-        }
+    thead th.rt-sort-asc span:first-child:before {
+      background-image: var(--rt-caret-up);
+    }
 
-        thead th.rt-sort-desc span:first-child:before {
-            background-image: var(--rt-caret-down);
-        }
+    thead th.rt-sort-desc span:first-child:before {
+      background-image: var(--rt-caret-down);
+    }
 
-        table {
-            cursor: default;
-        }
-    </style>
+    table {
+      cursor: default;
+    }
+  </style>
 </head>
 
 <body>
 
-    <tree-finder></tree-finder>
+  <tree-finder></tree-finder>
 
-    <script>
-        const NUM_ROWS = 100;
-        const NUM_DIR = 10;
+  <script>
+    const NUM_ROWS = 100;
+    const NUM_DIR = 10;
 
-        const DIR_NAMES = [
-            "able",
-            "baker",
-            "charlie",
-            "dog",
-            "easy",
-            "fox",
-            "george",
-            "how",
-            "item",
-            "jig",
-            "king",
-            "love",
-            "mike",
-            "nan",
-            "oboe",
-            "peter",
-            "queen",
-            "roger",
-            "sugar",
-            "tare",
-            "uncle",
-            "victor",
-            "william",
-            "xray",
-            "yoke",
-            "zebra",
-        ];
+    const DIR_NAMES = [
+      "able",
+      "baker",
+      "charlie",
+      "dog",
+      "easy",
+      "fox",
+      "george",
+      "how",
+      "item",
+      "jig",
+      "king",
+      "love",
+      "mike",
+      "nan",
+      "oboe",
+      "peter",
+      "queen",
+      "roger",
+      "sugar",
+      "tare",
+      "uncle",
+      "victor",
+      "william",
+      "xray",
+      "yoke",
+      "zebra",
+    ];
 
-        const CONTENTS_CACHE = new Map();
+    const CONTENTS_CACHE = new Map();
 
-        function getFileSystemContents(path, expand) {
-            // infinite recursive mock contents
-            const key = path.join("");
+    function getFileSystemContents(path, expand) {
+      // infinite recursive mock contents
+      const key = path.join("");
 
-            let contents;
-            if (CONTENTS_CACHE.has(key)) {
-                contents = CONTENTS_CACHE.get(key);
-            } else {
-                contents = {
-                    path,
-                    is_open: false,
-                    modified: new Date(12 * 60 * 60 * 1000),
-                    kind: "dir",
-                    writable: false,
-                };
-                CONTENTS_CACHE.set(key, contents);
-            }
+      let contents;
+      if (CONTENTS_CACHE.has(key)) {
+        contents = CONTENTS_CACHE.get(key);
+      } else {
+        contents = {
+          path,
+          is_open: false,
+          modified: new Date(12 * 60 * 60 * 1000),
+          kind: "dir",
+          writable: false,
+        };
+        CONTENTS_CACHE.set(key, contents);
+      }
 
-            if (!expand || "contents" in contents) {
-                return contents;
-            }
+      if (!expand || "contents" in contents) {
+        return contents;
+      }
 
-            contents.contents = [];
-            for (let i = 0; i < NUM_ROWS; i++) {
-                const subcontents = {
-                    path: [...path, i < NUM_DIR ? `${DIR_NAMES[i]}/` : `file_${i - NUM_DIR}.txt`],
-                    modified: new Date(contents.modified.getTime() + 24 * 60 * 60 * 1000 * (365 + i)),
-                    kind: i < NUM_DIR ? "dir" : "text",
-                    writable: false,
-                };
+      contents.contents = [];
+      for (let i = 0; i < NUM_ROWS; i++) {
+        const subcontents = {
+          path: [...path, i < NUM_DIR ? `${DIR_NAMES[i]}/` : `file_${i - NUM_DIR}.txt`],
+          modified: new Date(contents.modified.getTime() + 24 * 60 * 60 * 1000 * (365 + i)),
+          kind: i < NUM_DIR ? "dir" : "text",
+          writable: false,
+        };
 
-                CONTENTS_CACHE.set(subcontents.path.join(""), subcontents);
-                contents.contents.push(subcontents);
-            }
+        CONTENTS_CACHE.set(subcontents.path.join(""), subcontents);
+        contents.contents.push(subcontents);
+      }
 
-            return contents;
+      return contents;
+    }
+
+    window.getFileSystemContents = getFileSystemContents;
+  </script>
+
+  <script>
+    const SORT_DIRS = ["asc", "desc", null];
+
+    function contentsSorterClosure(sort) {
+      // map sort direction string onto sort direction sign
+      const signs = sort.map(([col, dir]) => [col, dir.startsWith("desc") ? -1 : 1]);
+
+      return function contentsSorter(lrow, rrow) {
+        for (const [col, sign] of signs) {
+          let cmp;
+          let lval = lrow[col];
+          let rval = rrow[col];
+
+          if (Array.isArray(lval)) {
+            lval = lval[lval.length - 1];
+            rval = rval[rval.length - 1];
+          }
+
+          if (typeof lval === "string") {
+            cmp = lval.localeCompare(rval);
+          } else {
+            cmp = lval - rval;
+          }
+
+          if (cmp) {
+            return sign * cmp;
+          }
+        }
+        return 0;
+      };
+    }
+
+    function updateSort(sort, column_name, multi) {
+      const current_idx = sort.findIndex((x) => x[0] === column_name);
+      if (current_idx > -1) {
+        const old_dir = sort[current_idx][1];
+        const sort_dir = SORT_DIRS[(SORT_DIRS.indexOf(old_dir) + 1) % SORT_DIRS.length];
+        if (sort_dir) {
+          // update the sort_dir
+          sort[current_idx] = [column_name, sort_dir];
+        } else {
+          // remove this column from the sort
+          sort.splice(current_idx, 1);
+        }
+      } else {
+        const new_sort = [column_name, SORT_DIRS[0]];
+        if (multi) {
+          sort.push(new_sort);
+        } else {
+          sort = [new_sort];
+        }
+      }
+
+      return sort;
+    }
+
+    function _flattenContents(contents, sorter, contents_list) {
+      if (!contents) {
+        // bail
+        return contents_list;
+      }
+
+      for (const subcontents of sorter ? contents.contents?.sort(sorter) : contents.contents) {
+        contents_list.push(subcontents);
+        if (subcontents.is_open) {
+          _flattenContents(subcontents, sorter, contents_list);
+        }
+      }
+
+      return contents_list;
+    }
+
+    function getSortedContents(root, sort, expand, column_name, multi) {
+      // update sort orders, if requested
+      if (column_name) {
+        sort = updateSort(sort, column_name, multi);
+
+        // if sort is empty, use a default sort
+        sort = sort.length > 0 ? sort : [["path", "asc"]];
+      }
+
+      const sorter = contentsSorterClosure(sort);
+
+      // get contents, then sort/flatten and return them
+      const contents = window.getFileSystemContents(root, expand);
+      return [_flattenContents(contents, sorter, []), sort];
+    }
+
+    window.getSortedContents = getSortedContents;
+  </script>
+
+  <script>
+    const COLUMN_HEADERS = ["modified", "kind", "writable"];
+    const DATE_FORMATTER = new Intl.DateTimeFormat("en-us");
+    let ROOT = [];
+    const treeFinder = document.getElementsByTagName("tree-finder")[0];
+    const TEMPLATE = document.createElement("template");
+
+    // set initial sort while also creating the root contents
+    let [VIEW_STATE, SORT] = window.getSortedContents(ROOT, [["path", "asc"]], true);
+
+    // splice out the contents of the collapsed node and any expanded subnodes
+    async function collapse(rix) {
+      VIEW_STATE[rix].is_open = false;
+      const contents = window.getFileSystemContents(VIEW_STATE[rix].path);
+
+      // we need to find the count of all children and subchildren. Start
+      // by getting the length of the immediate children...
+      let npop = contents.contents.length;
+
+      // ...then count the grandchildren etc by iterating through the
+      // subsequent items until we find one at the same tree level
+      let check_ix = rix + 1 + npop;
+      while (VIEW_STATE[check_ix++].path.length > contents.path.length) {
+        npop++;
+      }
+
+      VIEW_STATE.splice(rix + 1, npop);
+    }
+
+    async function expand(rix) {
+      VIEW_STATE[rix].is_open = true;
+
+      const [contents_list] = window.getSortedContents(VIEW_STATE[rix].path, SORT, true);
+      VIEW_STATE.splice(rix + 1, 0, ...contents_list);
+    }
+
+    function tree_header_levels(path, is_open, is_leaf) {
+      const tree_levels = path.slice(1).map(() => '<span class="pd-tree-group"></span>');
+      if (!is_leaf) {
+        const group_icon = is_open ? "remove" : "add";
+        const tree_button = `<span class="pd-row-header-icon">${group_icon} </span>`;
+        tree_levels.push(tree_button);
+      }
+
+      return tree_levels.join("");
+    }
+
+    function tree_header({path, is_open, kind}) {
+      const name = path.length === 0 ? "TOTAL" : path[path.length - 1];
+      const header_classes = kind === "text" ? "pd-group-name pd-group-leaf" : "pd-group-name";
+      const tree_levels = tree_header_levels(path, is_open, kind === "text");
+      const header_text = name;
+      TEMPLATE.innerHTML = `<span class="pd-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
+      return TEMPLATE.content.firstChild;
+    }
+
+    async function file_browser_model(start_col, start_row, end_col, end_row) {
+      const data = [];
+      for (let cix = start_col; cix < end_col; cix++) {
+        const name = COLUMN_HEADERS[cix];
+        data.push(
+          VIEW_STATE.slice(start_row, end_row).map((c) => {
+            return name === "modified" ? DATE_FORMATTER.format(c[name]) : c[name];
+          })
+        );
+      }
+
+      return {
+        num_rows: VIEW_STATE.length,
+        num_columns: COLUMN_HEADERS.length,
+        column_headers: COLUMN_HEADERS.map((col) => [col]),
+        row_headers: VIEW_STATE.slice(start_row, end_row).map((x) => [tree_header(x)]),
+        data,
+      };
+    }
+
+    function file_browser_style() {
+      // style the column header sort carets
+      const sort_obj = Object.fromEntries(SORT);
+      // for (const th of treeFinder.get_ths()) {
+
+      const ths = treeFinder.querySelectorAll("thead th");
+      for (const th of ths) {
+        const column_header = treeFinder.getMeta(th)?.column_header?.[0];
+        if (column_header) {
+          const sort_dir = sort_obj[column_header === "0" ? "path" : column_header];
+          th.className = sort_dir ? `rt-sort-${sort_dir}` : "";
+        }
+      }
+
+      // style the browser's filetype icons
+      const trs = treeFinder.querySelectorAll("tbody tr");
+      for (const tr of trs) {
+        const {children} = tr;
+        const row_name_node = children[0].querySelector(".pd-group-name");
+        for (let i = 1; i < children.length; i++) {
+          const text = children[i].textContent;
+          if (text === "dir") {
+            row_name_node.classList.add("rt-browser-filetype-icon", "rt-browser-dir-icon");
+            break;
+          } else if (text === "text") {
+            row_name_node.classList.add("rt-browser-filetype-icon", "rt-browser-text-icon");
+            break;
+          }
+        }
+      }
+    }
+
+    function file_browser_on_sort_click() {
+      const metadata = treeFinder.getMeta(event.target);
+
+      if (metadata?.hasOwnProperty('column_header')) {
+        const column_name = metadata.value || "path";
+        const multi = event.shiftKey;
+
+        [VIEW_STATE, SORT] = window.getSortedContents(ROOT, SORT, false, column_name, multi);
+        treeFinder.draw({invalid_viewport: true});
+      }
+    }
+
+    function file_browser_on_tree_click() {
+      let target = event.target;
+      if (target.tagName === "SPAN" && target.className === "pd-row-header-icon") {
+        let metadata = treeFinder.getMeta(target);
+        while (!metadata && target.parentElement) {
+          target = target.parentElement;
+          metadata = treeFinder.getMeta(target);
         }
 
-        window.getFileSystemContents = getFileSystemContents;
-    </script>
-
-    <script>
-        const SORT_DIRS = ["asc", "desc", null];
-
-        function contentsSorterClosure(sort) {
-            // map sort direction string onto sort direction sign
-            const signs = sort.map(([col, dir]) => [col, dir.startsWith("desc") ? -1 : 1]);
-
-            return function contentsSorter(lrow, rrow) {
-                for (const [col, sign] of signs) {
-                    let cmp;
-                    let lval = lrow[col];
-                    let rval = rrow[col];
-
-                    if (Array.isArray(lval)) {
-                        lval = lval[lval.length - 1];
-                        rval = rval[rval.length - 1];
-                    }
-
-                    if (typeof lval === "string") {
-                        cmp = lval.localeCompare(rval);
-                    } else {
-                        cmp = lval - rval;
-                    }
-
-                    if (cmp) {
-                        return sign * cmp;
-                    }
-                }
-                return 0;
-            };
+        if (VIEW_STATE[metadata.y].is_open) {
+          collapse(metadata.y);
+        } else {
+          expand(metadata.y);
         }
+        treeFinder.draw({invalid_viewport: true});
+      }
+    }
 
-        function updateSort(sort, column_name, multi) {
-            const current_idx = sort.findIndex((x) => x[0] === column_name);
-            if (current_idx > -1) {
-                const old_dir = sort[current_idx][1];
-                const sort_dir = SORT_DIRS[(SORT_DIRS.indexOf(old_dir) + 1) % SORT_DIRS.length];
-                if (sort_dir) {
-                    // update the sort_dir
-                    sort[current_idx] = [column_name, sort_dir];
-                } else {
-                    // remove this column from the sort
-                    sort.splice(current_idx, 1);
-                }
-            } else {
-                const new_sort = [column_name, SORT_DIRS[0]];
-                if (multi) {
-                    sort.push(new_sort);
-                } else {
-                    sort = [new_sort];
-                }
-            }
-
-            return sort;
-        }
-
-        function _flattenContents(contents, sorter, contents_list) {
-            if (!contents) {
-                // bail
-                return contents_list;
-            }
-
-            for (const subcontents of sorter ? contents.contents?.sort(sorter) : contents.contents) {
-                contents_list.push(subcontents);
-                if (subcontents.is_open) {
-                    _flattenContents(subcontents, sorter, contents_list);
-                }
-            }
-
-            return contents_list;
-        }
-
-        function getSortedContents(root, sort, expand, column_name, multi) {
-            // update sort orders, if requested
-            if (column_name) {
-                sort = updateSort(sort, column_name, multi);
-
-                // if sort is empty, use a default sort
-                sort = sort.length > 0 ? sort : [["path", "asc"]];
-            }
-
-            const sorter = contentsSorterClosure(sort);
-
-            // get contents, then sort/flatten and return them
-            const contents = window.getFileSystemContents(root, expand);
-            return [_flattenContents(contents, sorter, []), sort];
-        }
-
-        window.getSortedContents = getSortedContents;
-    </script>
-
-    <script>
-        const COLUMN_HEADERS = ["modified", "kind", "writable"];
-        const DATE_FORMATTER = new Intl.DateTimeFormat("en-us");
-        let ROOT = [];
-        const treeFinder = document.getElementsByTagName("tree-finder")[0];
-        const TEMPLATE = document.createElement("template");
-
-        // set initial sort while also creating the root contents
-        let [VIEW_STATE, SORT] = window.getSortedContents(ROOT, [["path", "asc"]], true);
-
-        // splice out the contents of the collapsed node and any expanded subnodes
-        async function collapse(rix) {
-            VIEW_STATE[rix].is_open = false;
-            const contents = window.getFileSystemContents(VIEW_STATE[rix].path);
-
-            // we need to find the count of all children and subchildren. Start
-            // by getting the length of the immediate children...
-            let npop = contents.contents.length;
-
-            // ...then count the grandchildren etc by iterating through the
-            // subsequent items until we find one at the same tree level
-            let check_ix = rix + 1 + npop;
-            while (VIEW_STATE[check_ix++].path.length > contents.path.length) {
-                npop++;
-            }
-
-            VIEW_STATE.splice(rix + 1, npop);
-        }
-
-        async function expand(rix) {
-            VIEW_STATE[rix].is_open = true;
-
-            const [contents_list] = window.getSortedContents(VIEW_STATE[rix].path, SORT, true);
-            VIEW_STATE.splice(rix + 1, 0, ...contents_list);
-        }
-
-        function tree_header_levels(path, is_open, is_leaf) {
-            const tree_levels = path.slice(1).map(() => '<span class="pd-tree-group"></span>');
-            if (!is_leaf) {
-                const group_icon = is_open ? "remove" : "add";
-                const tree_button = `<span class="pd-row-header-icon">${group_icon} </span>`;
-                tree_levels.push(tree_button);
-            }
-
-            return tree_levels.join("");
-        }
-
-        function tree_header({path, is_open, kind}) {
-            const name = path.length === 0 ? "TOTAL" : path[path.length - 1];
-            const header_classes = kind === "text" ? "pd-group-name pd-group-leaf" : "pd-group-name";
-            const tree_levels = tree_header_levels(path, is_open, kind === "text");
-            const header_text = name;
-            TEMPLATE.innerHTML = `<span class="pd-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
-            return TEMPLATE.content.firstChild;
-        }
-
-        async function file_browser_model(start_col, start_row, end_col, end_row) {
-            const data = [];
-            for (let cix = start_col; cix < end_col; cix++) {
-                const name = COLUMN_HEADERS[cix];
-                data.push(
-                    VIEW_STATE.slice(start_row, end_row).map((c) => {
-                        return name === "modified" ? DATE_FORMATTER.format(c[name]) : c[name];
-                    })
-                );
-            }
-
-            return {
-                num_rows: VIEW_STATE.length,
-                num_columns: COLUMN_HEADERS.length,
-                column_headers: COLUMN_HEADERS.map((col) => [col]),
-                row_headers: VIEW_STATE.slice(start_row, end_row).map((x) => [tree_header(x)]),
-                data,
-            };
-        }
-
-        function file_browser_style() {
-            // style the column header sort carets
-            const sort_obj = Object.fromEntries(SORT);
-            // for (const th of treeFinder.get_ths()) {
-
-            const ths = treeFinder.querySelectorAll("thead th");
-            for (const th of ths) {
-                const column_header = treeFinder.getMeta(th)?.column_header?.[0];
-                if (column_header) {
-                    const sort_dir = sort_obj[column_header === "0" ? "path" : column_header];
-                    th.className = sort_dir ? `rt-sort-${sort_dir}` : "";
-                }
-            }
-
-            // style the browser's filetype icons
-            const trs = treeFinder.querySelectorAll("tbody tr");
-            for (const tr of trs) {
-                const {children} = tr;
-                const row_name_node = children[0].querySelector(".pd-group-name");
-                for (let i = 1; i < children.length; i++) {
-                    const text = children[i].textContent;
-                    if (text === "dir") {
-                        row_name_node.classList.add("rt-browser-filetype-icon", "rt-browser-dir-icon");
-                        break;
-                    } else if (text === "text") {
-                        row_name_node.classList.add("rt-browser-filetype-icon", "rt-browser-text-icon");
-                        break;
-                    }
-                }
-            }
-        }
-
-        function file_browser_on_sort_click() {
-            const metadata = treeFinder.getMeta(event.target);
-
-            if (metadata?.hasOwnProperty('column_header')) {
-                const column_name = metadata.value || "path";
-                const multi = event.shiftKey;
-
-                [VIEW_STATE, SORT] = window.getSortedContents(ROOT, SORT, false, column_name, multi);
-                treeFinder.draw({invalid_viewport: true});
-            }
-        }
-
-        function file_browser_on_tree_click() {
-            let target = event.target;
-            if (target.tagName === "SPAN" && target.className === "pd-row-header-icon") {
-                let metadata = treeFinder.getMeta(target);
-                while (!metadata && target.parentElement) {
-                    target = target.parentElement;
-                    metadata = treeFinder.getMeta(target);
-                }
-
-                if (VIEW_STATE[metadata.y].is_open) {
-                    collapse(metadata.y);
-                } else {
-                    expand(metadata.y);
-                }
-                treeFinder.draw({invalid_viewport: true});
-            }
-        }
-
-        window.addEventListener("DOMContentLoaded", async function () {
-            treeFinder.setDataListener(file_browser_model);
-            treeFinder.addEventListener("mousedown", file_browser_on_sort_click);
-            treeFinder.addEventListener("mousedown", file_browser_on_tree_click);
-            treeFinder.addStyleListener(file_browser_style);
-            await treeFinder.draw();
-        });
-    </script>
+    window.addEventListener("DOMContentLoaded", async function () {
+      treeFinder.setDataListener(file_browser_model);
+      treeFinder.addEventListener("mousedown", file_browser_on_sort_click);
+      treeFinder.addEventListener("mousedown", file_browser_on_tree_click);
+      treeFinder.addStyleListener(file_browser_style);
+      await treeFinder.draw();
+    });
+  </script>
 
 </body>
 
