@@ -1,4 +1,11 @@
-import { IContent, IContentRow, Path } from "./content";
+/******************************************************************************
+ *
+ * Copyright (c) 2020, Max Klein
+ *
+ * This file is part of the tree-finder library, distributed under the terms of
+ * the BSD 3 Clause license.  The full license can be found in the LICENSE file.
+ */
+import { IContent, IContentRow } from "./content";
 
 const SORT_ORDERS = ["asc", "desc", null] as const;
 type SortOrder = typeof SORT_ORDERS[number];
@@ -70,10 +77,12 @@ function _flattenContents<T extends IContentRow>(content: IContent<T>, sorter: (
         return contentsFlat;
     }
 
-    for (const child of sorter ? content.children.sort(sorter) : content.children) {
-        contentsFlat.push(child);
-        if (child.expanded) {
-            _flattenContents(child, sorter, contentsFlat);
+    if (content.children) {
+        for (const child of sorter ? content.children?.sort(sorter) : content.children) {
+            contentsFlat.push(child);
+            if (child.expanded) {
+                _flattenContents(child, sorter, contentsFlat);
+            }
         }
     }
 

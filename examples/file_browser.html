@@ -258,7 +258,13 @@
         async function collapse(rix) {
             VIEW_STATE[rix].is_open = false;
             const contents = window.getFileSystemContents(VIEW_STATE[rix].path);
+
+            // we need to find the count of all children and subchildren. Start
+            // by getting the length of the immediate children...
             let npop = contents.contents.length;
+
+            // ...then count the grandchildren etc by iterating through the
+            // subsequent items until we find one at the same tree level
             let check_ix = rix + 1 + npop;
             while (VIEW_STATE[check_ix++].path.length > contents.path.length) {
                 npop++;

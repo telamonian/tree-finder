@@ -1,3 +1,10 @@
+/******************************************************************************
+ *
+ * Copyright (c) 2020, Max Klein
+ *
+ * This file is part of the tree-finder library, distributed under the terms of
+ * the BSD 3 Clause license.  The full license can be found in the LICENSE file.
+ */
 import { IContent, Path, IContentRow } from "./content";
 
 const DIR_NAMES = [
@@ -50,7 +57,6 @@ export function mockContent(path: Path, expand?: boolean, nchildren: number = 10
         content = CONTENTS_CACHE.get(key);
     } else {
         content = {
-            children: [],
             row: {
                 path,
                 modified: new Date(12 * 60 * 60 * 1000),
@@ -62,11 +68,13 @@ export function mockContent(path: Path, expand?: boolean, nchildren: number = 10
         CONTENTS_CACHE.set(key, content);
     }
 
-    if (!expand || content.children.length) {
+    if (!expand || "children" in content) {
         // do nothing further
         return content;
     }
 
+    content.expanded = true;
+    content.children = [];
     for (let i = 0; i < nchildren; i++) {
         const child = {
             children: [],

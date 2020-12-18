@@ -1,7 +1,7 @@
 {
-  "name": "regular-tree",
+  "name": "tree-finder",
   "version": "0.0.1",
-  "description": "Tree DOM custom element built on top of regular-table",
+  "description": "browser/tree widget implemented as a custom DOM element. Built on top of regular-table",
   "homepage": "https://github.com/telamonian/regular-tree",
   "bugs": {
     "url": "https://github.com/telamonian/regular-tree/issues"
@@ -12,6 +12,10 @@
   },
   "license": "BSD-3-Clause",
   "author": "Max Klein <telamonian@users.noreply.github.com>",
+  "workspaces": [
+    ".",
+    "examples/*"
+  ],
   "files": [
     "lib/**/*.{d.ts,js}",
     "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
