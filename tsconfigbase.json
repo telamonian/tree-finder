@@ -11,10 +11,6 @@
     "noImplicitAny": true,
     "sourceMap": true,
     "strictNullChecks": true,
-    "target": "esnext",
-
-    "outDir": "lib",
-    "rootDir": "src"
-  },
-  "include": ["src/**/*"]
+    "target": "esnext"
+  }
 }
