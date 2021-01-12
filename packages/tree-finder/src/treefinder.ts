@@ -5,12 +5,11 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license.  The full license can be found in the LICENSE file.
  */
-import "regular-table";
 
 import { DEFAULT_COL, IContent, IContentRow } from "./content";
 import { DEFAULT_SORT_ORDER, ISortState, sortContentRoot, SortOrder } from "./sort";
 
-await customElements.whenDefined('regular-table');
+// await customElements.whenDefined('regular-table');
 const RegularTableElement = customElements.get('regular-table');
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("en-us");
