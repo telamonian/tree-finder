@@ -7,7 +7,7 @@
  */
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+// const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 // To improve build times for large projects enable fork-ts-checker-webpack-plugin
 // const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
@@ -49,9 +49,9 @@ module.exports = {
     //   packages: path.resolve(__dirname, 'packages/'),
     // },
     extensions: [".js", ".ts", ".tsx"],
-    plugins: [
-      new TsconfigPathsPlugin({})
-    ]
+    // plugins: [
+    //   new TsconfigPathsPlugin({})
+    // ]
   },
   plugins: [
     new HtmlWebpackPlugin({
