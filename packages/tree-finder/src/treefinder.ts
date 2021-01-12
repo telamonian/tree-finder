@@ -15,8 +15,12 @@ const RegularTableElement = customElements.get('regular-table');
 const DATE_FORMATTER = new Intl.DateTimeFormat("en-us");
 
 export class TreeFinderElement<T extends IContentRow> extends RegularTableElement {
-  constructor(public root: IContent<T>) {
+  constructor() {
     super();
+  }
+
+  setRoot(root: IContent<T>) {
+    this.root = root;
 
     // set initial sort
     const DEFAULT_SORT_STATES: ISortState<T>[] = [{col: DEFAULT_COL, order: DEFAULT_SORT_ORDER}];
@@ -171,9 +175,8 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
   }
 
   protected contents: IContent<T>[] = [];
+  protected root: IContent<T>;
   protected sortStates: ISortState<T>[] = [];
-
-
 
   private _template = document.createElement("template");
 }
