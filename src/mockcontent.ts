@@ -38,11 +38,8 @@ const DIR_NAMES = [
 
 const CONTENTS_CACHE = new Map();
 
-type Kind = "dir" | "file";
 interface IMockContentRow extends IContentRow {
   modified: Date;
-
-  kind: Kind;
 
   writable: boolean;
 }
@@ -81,7 +78,7 @@ export function mockContent(path: Path, expand?: boolean, nchildren: number = 10
       row: {
         path: [...path, i < ndirectories ? `${DIR_NAMES[i]}/` : `file_${i - ndirectories}.txt`],
         modified: new Date(content.row.modified.getTime() + 24 * 60 * 60 * 1000 * (365 + i)),
-        kind: i < ndirectories ? "dir" : "text" as Kind,
+        kind: i < ndirectories ? "dir" : "text",
         writable: false,
       },
       expanded: false,

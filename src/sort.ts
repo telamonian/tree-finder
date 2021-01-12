@@ -5,19 +5,20 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license.  The full license can be found in the LICENSE file.
  */
-import { IContent, IContentRow } from "./content";
+import { DEFAULT_COL, IContent, IContentRow } from "./content";
 
 const SORT_ORDERS = ["asc", "desc", null] as const;
-type SortOrder = typeof SORT_ORDERS[number];
+export type SortOrder = typeof SORT_ORDERS[number];
 
-interface ISortState<T extends IContentRow> {
+export const DEFAULT_SORT_ORDER = SORT_ORDERS[0];
+
+export interface ISortState<T extends IContentRow> {
   col: keyof T;
 
   order: SortOrder;
 }
-type ISortStates<T extends IContentRow> = ISortState<T>[];
 
-function contentsSorterClosure<T extends IContentRow>(sortStates: ISortStates<T>) {
+function contentsSorterClosure<T extends IContentRow>(sortStates: ISortState<T>[]) {
   // map sort direction string onto sort direction sign
   const signs = sortStates.map(({col, order}) => {return {col, sign: (order === "desc" ? -1 : 1)}});
 
@@ -47,7 +48,7 @@ function contentsSorterClosure<T extends IContentRow>(sortStates: ISortStates<T>
   };
 }
 
-function updateSort<T extends IContentRow>(sortStates: ISortStates<T>, col: keyof T, multisort: boolean = false): ISortStates<T> {
+function updateSort<T extends IContentRow>(sortStates: ISortState<T>[], col: keyof T, multisort: boolean = false): ISortState<T>[] {
   const currentIdx = sortStates.findIndex((x) => x.col === col);
   if (currentIdx > -1) {
     const oldOrder = sortStates[currentIdx].order;
@@ -60,7 +61,7 @@ function updateSort<T extends IContentRow>(sortStates: ISortStates<T>, col: keyo
       sortStates.splice(currentIdx, 1);
     }
   } else {
-    const newSortState = {col, order: SORT_ORDERS[0]};
+    const newSortState = {col, order: DEFAULT_SORT_ORDER};
     if (multisort) {
       sortStates.push(newSortState);
     } else {
@@ -89,13 +90,13 @@ function _flattenContents<T extends IContentRow>(content: IContent<T>, sorter: (
   return contentsFlat;
 }
 
-export function sortContentRoot<T extends IContentRow>({root, sortStates, col, expand, multisort}: {root: IContent<T>, sortStates: ISortStates<T>, col: keyof T, expand?: boolean, multisort?: boolean}) {
+export function sortContentRoot<T extends IContentRow>({root, sortStates, col, expand, multisort}: {root: IContent<T>, sortStates: ISortState<T>[], col?: keyof T, expand?: boolean, multisort?: boolean}): [IContent<T>[], ISortState<T>[]] {
   // update sort orders, if requested
   if (col) {
     sortStates = updateSort(sortStates, col, multisort);
 
     // if sortStates is empty, use a default sortState
-    sortStates = sortStates.length > 0 ? sortStates : [{col: "path", order: "asc"}];
+    sortStates = sortStates.length > 0 ? sortStates : [{col: DEFAULT_COL, order: DEFAULT_SORT_ORDER}];
   }
 
   // mark as expanded/not expanded, if requested

@@ -7,15 +7,21 @@
  */
 import "regular-table";
 
-import { IContent, IContentRow } from "./content";
-import { sortContentRoot } from "./sort";
+import { DEFAULT_COL, IContent, IContentRow } from "./content";
+import { DEFAULT_SORT_ORDER, ISortState, sortContentRoot, SortOrder } from "./sort";
 
 await customElements.whenDefined('regular-table');
 const RegularTableElement = customElements.get('regular-table');
 
+const DATE_FORMATTER = new Intl.DateTimeFormat("en-us");
+
 export class TreeFinderElement<T extends IContentRow> extends RegularTableElement {
   constructor(public root: IContent<T>) {
     super();
+
+    // set initial sort
+    const DEFAULT_SORT_STATES: ISortState<T>[] = [{col: DEFAULT_COL, order: DEFAULT_SORT_ORDER}];
+    [this.contents, this.sortStates] = sortContentRoot({root: this.root, sortStates: DEFAULT_SORT_STATES, expand: true});
 
     this.setDataListener(() => this.model);
     this.addEventListener("mousedown", () => this.onSortClick);
@@ -41,14 +47,16 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     const content = this.contents[rix];
     content.expanded = true;
 
-    const foo = sortContentRoot(this.contents[rix], SORT, true);
-    this.contents.splice(rix + 1, 0, ...(foo as IContent<T>[]));
+    const [nodeContents, _] = sortContentRoot({root: this.contents[rix], sortStates: this.sortStates, expand: true});
+    this.contents.splice(rix + 1, 0, ...nodeContents);
   }
 
-  treeHeaderLevels(path, expandContent, is_leaf) {
-    const tree_levels = path.slice(1).map(() => '<span class="pd-tree-group"></span>');
+  treeHeaderLevels(node: IContent<T>) {
+    const is_leaf = node.row.kind !== "dir";
+
+    const tree_levels = node.row.path.slice(1).map(() => '<span class="pd-tree-group"></span>');
     if (!is_leaf) {
-      const group_icon = expandContent ? "remove" : "add";
+      const group_icon = node.expanded ? "remove" : "add";
       const tree_button = `<span class="pd-row-header-icon">${group_icon} </span>`;
       tree_levels.push(tree_button);
     }
@@ -56,30 +64,34 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     return tree_levels.join("");
   }
 
-  treeHeader({path, expandContent, kind}) {
+  treeHeader(node: IContent<T>) {
+    const {path, kind} = node.row;
+
     const name = path.length === 0 ? "TOTAL" : path[path.length - 1];
     const header_classes = kind === "text" ? "pd-group-name pd-group-leaf" : "pd-group-name";
-    const tree_levels = this.treeHeaderLevels(path, expandContent, kind === "text");
+    const tree_levels = this.treeHeaderLevels(node);
     const header_text = name;
-    TEMPLATE.innerHTML = `<span class="pd-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
-    return TEMPLATE.content.firstChild;
+    this._template.innerHTML = `<span class="pd-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
+    return this._template.content.firstChild;
   }
 
   async model(start_col: number, start_row: number, end_col: number, end_row: number) {
+    const column_names = this.column_names;
+
     const data = [];
     for (let cix = start_col; cix < end_col; cix++) {
-      const name = COLUMN_HEADERS[cix];
+      const name = column_names[cix];
       data.push(
-        this.contents.slice(start_row, end_row).map((c) => {
-          return name === "modified" ? DATE_FORMATTER.format(c[name]) : c[name];
+        this.contents.slice(start_row, end_row).map((c: any) => {
+          return (name as string).includes("date") ? DATE_FORMATTER.format(c[name]) : c[name];
         })
       );
     }
 
     return {
       num_rows: this.contents.length,
-      num_columns: COLUMN_HEADERS.length,
-      column_headers: COLUMN_HEADERS.map((col) => [col]),
+      num_columns: column_names.length,
+      column_headers: column_names.map(col => [col]),
       row_headers: this.contents.slice(start_row, end_row).map((x) => [this.treeHeader(x)]),
       data,
     };
@@ -87,14 +99,11 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
 
   styleModel() {
     // style the column header sort carets
-    const sort_obj = Object.fromEntries(SORT);
-    // for (const th of this.get_ths()) {
-
     const ths = this.querySelectorAll("thead th");
     for (const th of ths) {
-      const column_header = this.getMeta(th as HTMLTableCellElement)?.column_header?.[0];
-      if (column_header) {
-        const sort_dir = sort_obj[column_header === "0" ? "path" : column_header];
+      const column_name: keyof T = this.getMeta(th as HTMLTableCellElement)?.column_header?.[0] as any;
+      if (column_name) {
+        const sort_dir = this.sortOrderByColName[column_name === "0" ? "path" : column_name];
         th.className = sort_dir ? `rt-sort-${sort_dir}` : "";
       }
     }
@@ -117,45 +126,55 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     }
   }
 
-  onSortClick() {
-    const metadata = this.getMeta(event.target);
+  onSortClick(event: MouseEvent) {
+    const target = event.target as HTMLTableCellElement;
+    const metadata = this.getMeta(target);
 
     if (metadata?.hasOwnProperty('column_header')) {
-      const column_name = metadata.value || "path";
-      const multi = event.shiftKey;
+      // .value isn't included in the jsdocs for MetaData, and so isn't in the typings
+      const col = (metadata as any).value || DEFAULT_COL;
+      const expand = true;
+      const multisort = event.shiftKey;
 
-      [this.contents, SORT] = sortContentRoot(ROOT, SORT, false, column_name, multi);
-      this.draw({invalid_viewport: true});
+      // [this.contents, SORT] = sortContentRoot(ROOT, SORT, false, column_name, multi);
+      [this.contents, this.sortStates] = sortContentRoot({root: this.root, sortStates: this.sortStates, col, expand, multisort});
+
+      // .draw not in the RegularTableElement jsdocs/typings
+      (this as any).draw({invalid_viewport: true});
     }
   }
 
   onTreeClick(event: MouseEvent) {
-    let target = event.target as HTMLElement;
+    let target = event.target as HTMLTableCellElement;
     if (target.tagName === "SPAN" && target.className === "pd-row-header-icon") {
       let metadata = this.getMeta(target);
       while (!metadata && target.parentElement) {
-        target = target.parentElement;
+        target = target.parentElement as HTMLTableCellElement;
         metadata = this.getMeta(target);
       }
 
-      if (this.contents[metadata.y].expanded) {
-        collapse(metadata.y);
+      if (this.contents[metadata.y!].expanded) {
+        this.collapse(metadata.y!);
       } else {
-        expand(metadata.y);
+        this.expand(metadata.y!);
       }
-      this.draw({invalid_viewport: true});
+      (this as any).draw({invalid_viewport: true});
     }
   }
 
-  contents: IContent<T>[] = [];
+  protected get column_names() {
+    return Object.keys(this.root.row) as (keyof T)[]
+  }
+
+  protected get sortOrderByColName() {
+    type SortOrderByColName = {[k in keyof T]: SortOrder};
+    return this.sortStates.reduce((obj, state) => {obj[state.col] = state.order; return obj;}, {} as SortOrderByColName);
+  }
+
+  protected contents: IContent<T>[] = [];
+  protected sortStates: ISortState<T>[] = [];
+
+
+
+  private _template = document.createElement("template");
 }
-
-const COLUMN_HEADERS = ["modified", "kind", "writable"];
-const DATE_FORMATTER = new Intl.DateTimeFormat("en-us");
-let ROOT = [];
-// const treeFinder = document.getElementsByTagName("tree-finder")[0];
-const TEMPLATE = document.createElement("template");
-
-// set initial sort while also creating the root contents
-let [this.contents, SORT] = sortContentRoot(ROOT, [["path", "asc"]], true);
-
