@@ -6,10 +6,14 @@
  * the BSD 3 Clause license.  The full license can be found in the LICENSE file.
  */
 import "tree-finder";
+import { mockContent } from "tree-finder";
 
 import "./index.css";
 
 window.addEventListener("load", async () => {
-  const viewer = document.createElement("tree-finder");
-  document.body.append(viewer);
+  const treeFinder = document.createElement("tree-finder");
+  document.body.append(treeFinder);
+
+  const root = mockContent([], true);
+  await treeFinder.setRoot(root);
 });

@@ -11,62 +11,81 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 // To improve build times for large projects enable fork-ts-checker-webpack-plugin
 // const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
-module.exports = {
-  "mode": "development",
-  "entry": "src/index.ts",
-  "output": {
-    "path": __dirname+'/dist',
-    "filename": "[name].js"
+// load dependency source maps
+const depSrcMapRules = [
+  {
+    test: /\.js$/,
+    use: 'source-map-loader',
+    enforce: 'pre',
+    exclude: /node_modules/,
   },
-  "watch": false,
-  "context": __dirname, // to automatically find tsconfig.json
-  "module": {
-    "rules": [
+  {test: /\.js.map$/, use: 'file-loader'},
+]
+
+let config = {
+  mode: process.env.NODE_ENV || 'development',
+  devtool: 'source-map',
+  entry: 'src/index.ts',
+  output: {
+    path: __dirname+'/dist',
+    filename: '[name].js'
+  },
+  watch: false,
+  context: __dirname, // to automatically find tsconfig.json
+  module: {
+    rules: [
+      {test: /\.css$/, use: ['style-loader', 'css-loader']},
       {
-        "test": /\.tsx?$/,
-        "exclude": /node_modules/,
-        "use": {
-          "loader": "ts-loader",
-          "options": {
-            "transpileOnly": false, // Set to true if you are using fork-ts-checker-webpack-plugin
-            "projectReferences": true
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'ts-loader',
+          options: {
+            transpileOnly: false, // Set to true if you are using fork-ts-checker-webpack-plugin
+            projectReferences: true
           }
         }
       },
-      {
-        test: /\.css$/,
-        use: [{loader: "style-loader"}, {loader: "css-loader"}]
-      },
+      ...depSrcMapRules
     ]
   },
   resolve: {
     modules: [
-      "node_modules",
+      'node_modules',
       path.resolve(__dirname)
     ],
+    extensions: ['.js', '.ts', '.tsx']
+
+    // plugins: [
+    //   new TsconfigPathsPlugin({})
+    // ],
+    //
     // TsconfigPathsPlugin will automatically add this
     // alias: {
     //   packages: path.resolve(__dirname, 'packages/'),
-    // },
-    extensions: [".js", ".ts", ".tsx"],
-    // plugins: [
-    //   new TsconfigPathsPlugin({})
-    // ]
+    // }
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: "simple tree-finder example"
-    }),
-    // new HtmlWebpackPlugin({
-    //   templateContent: `
-    //     <html>
-    //       <body>
-    //         <h1>Project Reference Demo App</h1>
-    //         <div id='react-content'></div>
-    //       </body>
-    //     </html>
-    //   `
-    // }),
-    // new ForkTsCheckerWebpackPlugin()
-  ]
+      title: 'simple tree-finder example'
+    })
+  ],
+  devServer: {
+    // contentBase: [path.join(__dirname, "examples"), path.join(__dirname, ".")],
+    // inline: false,
+    // publicPath: '/dist/',
+
+    // dev-server writes to disk instead of keeping the bundle in memory
+    writeToDisk: true,
+  },
 }
+
+module.exports = (env, argv) => {
+
+  if (argv.mode === 'development') {
+    config.devtool = 'source-map';
+    config.optimization.minimize = false;
+  }
+
+  return config;
+};

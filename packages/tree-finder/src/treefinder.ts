@@ -19,7 +19,7 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     super();
   }
 
-  setRoot(root: IContent<T>) {
+  async setRoot(root: IContent<T>) {
     this.root = root;
 
     // set initial sort
@@ -30,6 +30,8 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     this.addEventListener("mousedown", () => this.onSortClick);
     this.addEventListener("mousedown", () => this.onTreeClick);
     this.addStyleListener(() => this.styleModel);
+
+    await (this as any).draw();
   }
 
   // splice out the contents of the collapsed node and any expanded subnodes
