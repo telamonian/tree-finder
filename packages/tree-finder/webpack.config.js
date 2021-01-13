@@ -6,7 +6,7 @@ const depSrcMapRules = [
     test: /\.js$/,
     use: 'source-map-loader',
     enforce: 'pre',
-    // exclude: /node_modules/,
+    exclude: /node_modules/,
   },
   {test: /\.js.map$/, use: 'file-loader'},
 ]
@@ -38,24 +38,24 @@ let config = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
-    filename: 'regular-tree.js',
+    filename: 'tree-finder.js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/dist/',
 
     // use a unique name for each chunk
     // filename: '[name].[chunkhash].js',
   },
-  devServer: {
-    contentBase: [path.join(__dirname, "examples"), path.join(__dirname, ".")],
-    inline: false,
-    publicPath: '/dist/',
+  // devServer: {
+  //   contentBase: [path.join(__dirname, "examples"), path.join(__dirname, ".")],
+  //   inline: false,
+  //   publicPath: '/dist/',
 
-    // dev-server writes to disk instead of keeping the bundle in memory
-    // writeToDisk: true,
-  },
-  experiments: {
-    topLevelAwait: true,
-  },
+  //   // dev-server writes to disk instead of keeping the bundle in memory
+  //   // writeToDisk: true,
+  // },
+  // experiments: {
+  //   topLevelAwait: true,
+  // },
 
   // don't include any external packages in bundle
   // externals: [/^[a-z0-9@]/],

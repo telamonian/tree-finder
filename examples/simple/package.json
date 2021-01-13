@@ -5,6 +5,7 @@
   "description": "An example app built using tree-finder.",
   "scripts": {
     "build": "tsc --build",
+    "clean": "rimraf dist lib node_modules *.tsbuildinfo",
     "start": "webpack-dev-server --open",
     "webpack": "webpack --colour"
   },
@@ -21,7 +22,7 @@
     "style-loader": "^2.0.0",
     "ts-loader": "^8.0.3",
     "tsconfig-paths-webpack-plugin": "^3.3.0",
-    "typescript": "^3.9.7",
+    "typescript": "^4.1.3",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
