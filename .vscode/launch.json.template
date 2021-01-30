@@ -1,0 +1,46 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "simple",
+      "type": "node",
+      "request": "launch",
+
+      "cwd": "${workspaceFolder}/examples/simple",
+      "program": "${workspaceFolder}/node_modules/.bin/webpack-dev-server",
+      "args": [
+        "--port",
+        "12121"
+      ],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "frontend",
+      "type": "chrome",
+      "request": "launch",
+
+      // it may be necessary to uncomment some/all of the below to get breakpoints to work
+      // "sourceMapPathOverrides": {
+      //   "webpack:///*": "${workspaceFolder}/*",
+      //   // "webpack:///*": "${workspaceFolder}/packages/tree-finder/*",
+      //   "webpack:////*": "${workspaceFolder}/*",
+      // },
+
+      "timeout": 180000,
+      "url": "http://localhost:12121",
+      "webRoot": "${workspaceFolder}/examples/simple",
+
+      // debug using a specific copy of chrome/chromium
+      // "runtimeExecutable": "/Applications/Chromium.app/Contents/MacOS/Chromium",
+    },
+  ],
+  "compounds": [
+    {
+      "name": "simple compound",
+      "configurations": [
+        "simple",
+        "frontend"
+      ]
+    },
+  ]
+}
