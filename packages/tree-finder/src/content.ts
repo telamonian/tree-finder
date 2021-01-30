@@ -12,10 +12,44 @@ export const DEFAULT_COL = "path";
 export interface IContentRow {
   path: Path;
   kind: string;
+  getChildren?: () => IContentRow[];
 }
 
-export interface IContent<T extends IContentRow> {
-  children?: IContent<T>[];
-  expanded?: boolean;
-  row: T;
+
+export class Content<T extends IContentRow> {
+  constructor(row: T) {
+    this.isDir = row.kind === "dir";
+    this.row = row;
+  }
+
+  close() {
+    this._isOpen = false;
+  }
+
+  fetchChildren(refresh: boolean = false) {
+    if (!this.isDir || (!refresh && this._children)) {
+      return;
+    }
+
+    this._children = this.row.getChildren!().map((c: T) => new Content<T>(c));
+  }
+
+  open(refresh: boolean = false) {
+    this.fetchChildren(refresh)
+    this._isOpen = true;
+  }
+
+  get children() {
+    return this._children;
+  }
+
+  get isOpen() {
+    return this._children
+  }
+
+  readonly isDir: boolean;
+  readonly row: T;
+
+  protected _children?: Content<T>[];
+  protected _isOpen: boolean = false;
 }

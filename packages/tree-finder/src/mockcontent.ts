@@ -5,7 +5,7 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license.  The full license can be found in the LICENSE file.
  */
-import { IContent, Path, IContentRow } from "./content";
+import { Path, IContentRow } from "./content";
 
 const DIR_NAMES = [
   "able",
@@ -36,56 +36,45 @@ const DIR_NAMES = [
   "zebra",
 ];
 
-const CONTENTS_CACHE = new Map();
-
 interface IMockContentRow extends IContentRow {
   modified: Date;
 
   writable: boolean;
 }
-type IMockContent = IContent<IMockContentRow>
 
-export function mockContent(path: Path, expand?: boolean, nchildren: number = 100, ndirectories: number = 10) {
+export function mockContent(props: {path: Path, kind: string, modDays?: number, nchildren?: number, ndirectories?: number}): IMockContentRow {
   // infinite recursive mock contents
-  const key = path.join("");
+  const {path, kind, modDays = 0, nchildren = 100, ndirectories = 10} = props;
+  const modified = new Date(modDays * 24 * 60 * 60 * 1000);
 
-  let content: IMockContent;
-  if (CONTENTS_CACHE.has(key)) {
-    content = CONTENTS_CACHE.get(key);
-  } else {
+  let content: IMockContentRow;
+  if (kind === "dir") {
+    // is a dir
     content = {
-      row: {
-        path,
-        modified: new Date(12 * 60 * 60 * 1000),
-        kind: "dir",
-        writable: false,
+      kind,
+      path,
+      modified,
+      writable: false,
+      getChildren: () => {
+        const children = [];
+        for (let i = 0; i < nchildren; i++) {
+          children.push(mockContent({
+            kind: i < ndirectories ? "dir" : "text",
+            path: [...path, i < ndirectories ? `${DIR_NAMES[i]}/` : `file_${i - ndirectories}.txt`],
+            modDays: modDays + i,
+          }));
+        }
+        return children;
       },
-      expanded: false,
     };
-    CONTENTS_CACHE.set(key, content);
-  }
-
-  if (!expand || "children" in content) {
-    // do nothing further
-    return content;
-  }
-
-  content.expanded = true;
-  content.children = [];
-  for (let i = 0; i < nchildren; i++) {
-    const child = {
-      children: [],
-      row: {
-        path: [...path, i < ndirectories ? `${DIR_NAMES[i]}/` : `file_${i - ndirectories}.txt`],
-        modified: new Date(content.row.modified.getTime() + 24 * 60 * 60 * 1000 * (365 + i)),
-        kind: i < ndirectories ? "dir" : "text",
-        writable: false,
-      },
-      expanded: false,
+  } else {
+    // is a file
+    content = {
+      kind,
+      path,
+      modified,
+      writable: false,
     };
-
-    CONTENTS_CACHE.set(child.row.path.join(""), child);
-    content.children.push(child);
   }
 
   return content;
