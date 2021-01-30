@@ -1,10 +1,9 @@
-/******************************************************************************
- *
- * Copyright (c) 2020, Max Klein
- *
- * This file is part of the tree-finder library, distributed under the terms of
- * the BSD 3 Clause license.  The full license can be found in the LICENSE file.
- */
+/*----------------------------------------------------------------------------|
+| Copyright (c) 2020, Max Klein
+|
+| This file is part of the tree-finder library, distributed under the terms of
+| the BSD 3 Clause license. The full license can be found in the LICENSE file.
+|----------------------------------------------------------------------------*/
 import { DEFAULT_COL, Content, IContentRow } from "./content";
 import { DEFAULT_SORT_ORDER, ISortState, sortContentRoot, SortOrder } from "./sort";
 
@@ -117,9 +116,9 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       }
     }
 
-    // style the browser's filetype icons
     const trs = this.querySelectorAll("tbody tr");
     for (const tr of trs) {
+      // style the browser's filetype icons
       const {children} = tr;
       const row_name_node = children[0].querySelector(".pd-group-name") as HTMLElement;
       for (let i = 1; i < children.length; i++) {
@@ -153,6 +152,25 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       (this as any).draw({invalid_viewport: true});
     }
   }
+
+  onRowDoubleClick(event: MouseEvent) {
+    let target = event.target as HTMLTableCellElement;
+    if (target.tagName === "SPAN" && target.className === "pd-row-header-icon") {
+      let metadata = this.getMeta(target);
+      while (!metadata && target.parentElement) {
+        target = target.parentElement as HTMLTableCellElement;
+        metadata = this.getMeta(target);
+      }
+
+      if (this.contents[metadata.y!].isOpen) {
+        this.collapse(metadata.y!);
+      } else {
+        this.expand(metadata.y!);
+      }
+      (this as any).draw({invalid_viewport: true});
+    }
+  }
+
 
   onTreeClick(event: MouseEvent) {
     let target = event.target as HTMLTableCellElement;
