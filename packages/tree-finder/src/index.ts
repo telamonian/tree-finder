@@ -10,6 +10,8 @@ import "regular-table";
 import { IContentRow } from "./content";
 import { TreeFinderElement } from "./treefinder";
 
+import "../style/base.css"
+
 declare global {
   interface Document {
     createElement<T extends IContentRow>(tagName: "tree-finder", options?: ElementCreationOptions): TreeFinderElement<T>;

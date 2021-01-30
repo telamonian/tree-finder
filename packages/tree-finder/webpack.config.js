@@ -1,4 +1,5 @@
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 // load dependency source maps
 const depSrcMapRules = [
@@ -15,10 +16,26 @@ let config = {
   mode: process.env.NODE_ENV || 'development',
   entry: './src/index.ts',
   devtool: 'source-map',
+
+  output: {
+    filename: 'tree-finder.js',
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '/dist/',
+
+    // use a unique name for each chunk
+    // filename: '[name].[chunkhash].js',
+  },
+
   module: {
     rules: [
-      {test: /\.css$/, use: ['style-loader', 'css-loader']},
-      {test: /\.(jpg|png|gif)$/, use: 'file-loader'},
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader']
+      },
+      {
+        test: /\.(jpg|png|gif)$/,
+        use: 'file-loader'
+      },
       {
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
         use: {
@@ -34,17 +51,15 @@ let config = {
       ...depSrcMapRules
     ],
   },
+
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
-  output: {
-    filename: 'tree-finder.js',
-    path: path.resolve(__dirname, 'dist'),
-    publicPath: '/dist/',
 
-    // use a unique name for each chunk
-    // filename: '[name].[chunkhash].js',
-  },
+  plugins: [
+    new MiniCssExtractPlugin(),
+  ],
+
   // devServer: {
   //   contentBase: [path.join(__dirname, "examples"), path.join(__dirname, ".")],
   //   inline: false,
@@ -53,6 +68,7 @@ let config = {
   //   // dev-server writes to disk instead of keeping the bundle in memory
   //   // writeToDisk: true,
   // },
+
   // experiments: {
   //   topLevelAwait: true,
   // },

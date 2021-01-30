@@ -9,7 +9,8 @@
   "scripts": {
     "build": "lerna run build",
     "build:watch": "lerna run build:watch",
-    "clean": "lerna run clean && rimraf node_modules",
+    "clean": "lerna run clean",
+    "clean:slate": "lerna run clean:slate && rimraf node_modules",
     "webpack": "lerna run webpack",
     "webpack:watch": "lerna run webpack:watch"
   },

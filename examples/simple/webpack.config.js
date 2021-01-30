@@ -7,6 +7,7 @@
  */
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 // To improve build times for large projects enable fork-ts-checker-webpack-plugin
 // const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
@@ -26,15 +27,20 @@ let config = {
   mode: process.env.NODE_ENV || 'development',
   devtool: 'source-map',
   entry: 'src/index.ts',
-  output: {
-    path: __dirname+'/dist',
-    filename: '[name].js'
-  },
   watch: false,
   context: __dirname, // to automatically find tsconfig.json
+
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].js'
+  },
+
   module: {
     rules: [
-      {test: /\.css$/, use: ['style-loader', 'css-loader']},
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader']
+      },
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
@@ -49,6 +55,7 @@ let config = {
       ...depSrcMapRules
     ]
   },
+
   resolve: {
     modules: [
       'node_modules',
@@ -65,11 +72,7 @@ let config = {
     //   packages: path.resolve(__dirname, 'packages/'),
     // }
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      title: 'simple tree-finder example'
-    })
-  ],
+
   devServer: {
     // contentBase: [path.join(__dirname, "examples"), path.join(__dirname, ".")],
     // inline: false,
@@ -78,6 +81,13 @@ let config = {
     // dev-server writes to disk instead of keeping the bundle in memory
     writeToDisk: true,
   },
+
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: 'simple tree-finder example'
+    }),
+    new MiniCssExtractPlugin(),
+  ],
 }
 
 module.exports = (env, argv) => {
