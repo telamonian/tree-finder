@@ -15,9 +15,9 @@ const RegularTableElement = customElements.get('regular-table');
 const DATE_FORMATTER = new Intl.DateTimeFormat("en-us");
 
 export class TreeFinderElement<T extends IContentRow> extends RegularTableElement {
-  constructor() {
-    super();
-  }
+  // constructor() {
+  //   super();
+  // }
 
   async init(root: T, options: TreeFinderElement.IOptions = {}) {
     const {refresh = false} = options;
@@ -30,12 +30,16 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     const DEFAULT_SORT_STATES: ISortState<T>[] = [{col: DEFAULT_COL, order: DEFAULT_SORT_ORDER}];
     [this.contents, this.sortStates] = sortContentRoot({root: this.root, sortStates: DEFAULT_SORT_STATES});
 
-    this.setDataListener(() => this.model);
-    this.addEventListener("mousedown", () => this.onSortClick);
-    this.addEventListener("mousedown", () => this.onTreeClick);
-    this.addStyleListener(() => this.styleModel);
+    this.setDataListener((start_col: number, start_row: number, end_col: number, end_row: number) => this.model(start_col, start_row, end_col, end_row));
+    this.addEventListener("mousedown", event => this.onSortClick(event));
+    this.addEventListener("mousedown", event => this.onTreeClick(event));
+    this.addStyleListener(() => this.styleModel());
 
     await (this as any).draw();
+
+    const {num_columns, num_rows} = await (this as any)._view_cache.view(0, 0, 0, 0);
+
+    console.log('hiho');
   }
 
   // splice out the contents of the collapsed node and any expanded subnodes
@@ -88,11 +92,11 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     const column_names = this.column_names;
 
     const data = [];
-    for (let cix = start_col; cix < end_col; cix++) {
-      const name = column_names[cix];
+    for (let cix = start_col; cix < end_col - 1; cix++) {
+      const name = column_names[cix] as string;
       data.push(
         this.contents.slice(start_row, end_row).map((c: any) => {
-          return (name as string).includes("date") ? DATE_FORMATTER.format(c[name]) : c[name];
+          return (name?.includes("date") || name?.includes("modified")) ? DATE_FORMATTER.format(c[name]) : c[name];
         })
       );
     }
@@ -173,7 +177,7 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
   }
 
   protected get column_names() {
-    return Object.keys(this.root.row) as (keyof T)[]
+    return Object.keys(this.root.row).filter(x => !["path", "getChildren"].includes(x)) as (keyof T)[];
   }
 
   protected get sortOrderByColName() {

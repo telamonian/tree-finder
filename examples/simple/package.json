@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc --build",
     "clean": "rimraf dist lib node_modules *.tsbuildinfo",
-    "start": "webpack-dev-server --open",
+    "start": "webpack-dev-server",
     "webpack": "webpack --colour"
   },
   "keywords": [],
