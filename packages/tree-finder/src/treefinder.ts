@@ -117,7 +117,7 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       const column_name: keyof T = this.getMeta(th as HTMLTableCellElement)?.column_header?.[0] as any;
       if (column_name) {
         const sort_dir = this.sortOrderByColName[column_name === "0" ? "path" : column_name];
-        th.className = sort_dir ? `rt-sort-${sort_dir}` : "";
+        th.className = sort_dir ? `tf-sort-${sort_dir}` : "";
       }
     }
 
@@ -129,10 +129,10 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       for (let i = 1; i < children.length; i++) {
         const text = children[i].textContent;
         if (text === "dir") {
-          row_name_node.classList.add("rt-browser-filetype-icon", "rt-browser-dir-icon");
+          row_name_node.classList.add("tf-browser-filetype-icon", "tf-browser-dir-icon");
           break;
         } else if (text === "text") {
-          row_name_node.classList.add("rt-browser-filetype-icon", "rt-browser-text-icon");
+          row_name_node.classList.add("tf-browser-filetype-icon", "tf-browser-text-icon");
           break;
         }
       }

@@ -5,10 +5,12 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license.  The full license can be found in the LICENSE file.
  */
+ @import url("https://fonts.googleapis.com/css?family=Open+Sans");
+ @import url("https://fonts.googleapis.com/css?family=Material+Icons");
+ @import url("https://fonts.googleapis.com/css?family=Roboto+Mono");
 
-@import url("https://fonts.googleapis.com/css?family=Open+Sans");
-@import url("https://fonts.googleapis.com/css?family=Material+Icons");
-@import url("https://fonts.googleapis.com/css?family=Roboto+Mono");
+ @import url("base.css");
+
 tree-finder {
   padding-top: 12px;
   padding-left: 12px;

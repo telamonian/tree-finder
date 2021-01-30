@@ -29,10 +29,10 @@ function contentsSorterClosure<T extends IContentRow>(sortStates: ISortState<T>[
       let rval = r.row[col];
 
       // the "paths" field will be an array of the parts of the path, just compare the last part
-      // if (Array.isArray(lval)) {
-      //   lval = lval[lval.length - 1];
-      //   rval = rval[rval.length - 1];
-      // }
+      if (Array.isArray(lval)) {
+        lval = lval[lval.length - 1];
+        rval = (rval as any)[(rval as any).length - 1];
+      }
 
       if (typeof lval === "string") {
         cmp = (lval as string).localeCompare(rval as any as string);
