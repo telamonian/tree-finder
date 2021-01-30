@@ -28,12 +28,12 @@
     "build": "tsc --build",
     "build:watch": "tsc --build --watch",
     "clean": "rimraf dist lib node_modules *.tsbuildinfo",
-    "webpack": "webpack",
-    "webpack:watch": "webpack --watch"
+    "webpack": "webpack --color",
+    "webpack:watch": "webpack --color --watch"
   },
   "dependencies": {
     "@types/react": "^17.0.0",
-    "regular-table": "^0.1.5"
+    "regular-table": "^0.1.6"
   },
   "devDependencies": {
     "css-loader": "^5.0.1",

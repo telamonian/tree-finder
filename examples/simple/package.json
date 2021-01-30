@@ -5,9 +5,11 @@
   "description": "An example app built using tree-finder.",
   "scripts": {
     "build": "tsc --build",
+    "build:watch": "tsc --build --watch",
     "clean": "rimraf dist lib node_modules *.tsbuildinfo",
-    "start": "webpack-dev-server",
-    "webpack": "webpack --colour"
+    "start": "webpack-dev-server --open",
+    "webpack": "webpack --color",
+    "webpack:watch": "webpack --color --watch"
   },
   "keywords": [],
   "license": "Apache-2.0",

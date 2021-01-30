@@ -7,7 +7,11 @@
     ]
   },
   "scripts": {
-    "clean": "lerna run clean && rimraf node_modules"
+    "build": "lerna run build",
+    "build:watch": "lerna run build:watch",
+    "clean": "lerna run clean && rimraf node_modules",
+    "webpack": "lerna run webpack",
+    "webpack:watch": "lerna run webpack:watch"
   },
   "devDependencies": {
     "lerna": "^3.22.1",
