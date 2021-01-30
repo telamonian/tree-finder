@@ -96,7 +96,7 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       const name = column_names[cix] as string;
       data.push(
         this.contents.slice(start_row, end_row).map((c: any) => {
-          return (name?.includes("date") || name?.includes("modified")) ? DATE_FORMATTER.format(c[name]) : c[name];
+          return (name?.includes("date") || name?.includes("modified")) ? DATE_FORMATTER.format(c.row[name]) : c.row[name];
         })
       );
     }
