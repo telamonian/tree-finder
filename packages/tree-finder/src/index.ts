@@ -27,3 +27,4 @@ export * from "./content";
 export * from "./mockcontent";
 export * from "./sort";
 export * from "./treefinder";
+export * from "./util";

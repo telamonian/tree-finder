@@ -13,6 +13,10 @@ window.addEventListener("load", async () => {
   const treeFinder = document.createElement("tree-finder");
   document.body.append(treeFinder);
 
-  const root = mockContent({path: [], kind: "dir"});
+  const root = mockContent({
+    kind: "dir",
+    path: [],
+    randomize: true,
+  });
   await treeFinder.init(root);
 });
