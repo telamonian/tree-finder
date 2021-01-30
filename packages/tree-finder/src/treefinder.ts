@@ -5,7 +5,6 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license.  The full license can be found in the LICENSE file.
  */
-
 import { DEFAULT_COL, Content, IContentRow } from "./content";
 import { DEFAULT_SORT_ORDER, ISortState, sortContentRoot, SortOrder } from "./sort";
 
@@ -15,15 +14,17 @@ const RegularTableElement = customElements.get('regular-table');
 const DATE_FORMATTER = new Intl.DateTimeFormat("en-us");
 
 export class TreeFinderElement<T extends IContentRow> extends RegularTableElement {
-  // constructor() {
-  //   super();
-  // }
+  async init(root: T, options: TreeFinderElement.IOptions<T> = {}) {
+    this.root = new Content(root);
 
-  async init(root: T, options: TreeFinderElement.IOptions = {}) {
-    const {refresh = false} = options;
+    const {
+      columnNames = Object.keys(this.root.row) as (keyof T)[],
+      refresh = false
+    } = options;
+    this.columnNames = columnNames.filter(x => !["path", "getChildren"].includes(x as string));
     this.refresh = refresh;
 
-    this.root = new Content(root);
+    // fetch root's children and mark it as open
     this.root.open();
 
     // set initial sort
@@ -36,10 +37,6 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     this.addStyleListener(() => this.styleModel());
 
     await (this as any).draw();
-
-    const {num_columns, num_rows} = await (this as any)._view_cache.view(0, 0, 0, 0);
-
-    console.log('hiho');
   }
 
   // splice out the contents of the collapsed node and any expanded subnodes
@@ -87,14 +84,15 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
   }
 
   async model(start_col: number, start_row: number, end_col: number, end_row: number) {
-    const column_names = this.column_names;
+    const column_names = this.columnNames;
 
     const data = [];
     for (let cix = start_col; cix < end_col - 1; cix++) {
-      const name = column_names[cix] as string;
+      const name = column_names[cix];
       data.push(
-        this.contents.slice(start_row, end_row).map((c: any) => {
-          return (name?.includes("date") || name?.includes("modified")) ? DATE_FORMATTER.format(c.row[name]) : c.row[name];
+        this.contents.slice(start_row, end_row).map((c) => {
+          const val = c.row[name];
+          return val instanceof Date ? DATE_FORMATTER.format(val) : val;
         })
       );
     }
@@ -174,15 +172,12 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     }
   }
 
-  protected get column_names() {
-    return Object.keys(this.root.row).filter(x => !["path", "getChildren"].includes(x)) as (keyof T)[];
-  }
-
   protected get sortOrderByColName() {
     type SortOrderByColName = {[k in keyof T]: SortOrder};
     return this.sortStates.reduce((obj, state) => {obj[state.col] = state.order; return obj;}, {} as SortOrderByColName);
   }
 
+  protected columnNames: (keyof T)[];
   protected contents: Content<T>[] = [];
   protected refresh: boolean = false;
   protected root: Content<T>;
@@ -192,7 +187,9 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
 }
 
 export namespace TreeFinderElement {
-  export interface IOptions {
+  export interface IOptions<T extends IContentRow> {
+    columnNames?: (keyof T)[];
+
     refresh?: boolean;
   }
 }
