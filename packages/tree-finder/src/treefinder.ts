@@ -65,10 +65,8 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
   }
 
   treeHeaderLevels(node: Content<T>) {
-    const is_leaf = node.row.kind !== "dir";
-
     const tree_levels = node.row.path.slice(1).map(() => '<span class="pd-tree-group"></span>');
-    if (!is_leaf) {
+    if (node.isDir) {
       const group_icon = node.isOpen ? "remove" : "add";
       const tree_button = `<span class="pd-row-header-icon">${group_icon} </span>`;
       tree_levels.push(tree_button);

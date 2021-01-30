@@ -44,7 +44,7 @@ export class Content<T extends IContentRow> {
   }
 
   get isOpen() {
-    return this._children
+    return this._isOpen;
   }
 
   readonly isDir: boolean;
