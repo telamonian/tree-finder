@@ -6,6 +6,17 @@
 |----------------------------------------------------------------------------*/
 @import url("https://fonts.googleapis.com/css?family=Material+Icons");
 
+.tf-header:after {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  color: var(--tf-background-color);
+  content: "";
+  float: right;
+}
+
 .tf-header-border {
   border-right: 1px solid #ddd;
 }
@@ -22,32 +33,9 @@
   text-align: right;
 }
 
-.tf-header-align-left:after {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 16px;
-  min-width: 16px;
-  min-height: 16px;
-  /* padding-right: 16px; */
-  content: "XX";
-  color: var(--tf-background-color);
-}
-
-.tf-header-align-right:after {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 16px;
-  min-width: 16px;
-  min-height: 16px;
-  /* padding-right: 16px; */
-  content: "XX";
-  color: var(--tf-background-color);
-}
-
 .tf-header-sort-desc:after {
   color: inherit;
   content: "arrow_downward";
-  float: right;
   font-family: "Material Icons";
   font-size: 16px;
 }
@@ -55,7 +43,6 @@
 .tf-header-sort-asc:after {
   color: inherit;
   content: "arrow_upward";
-  float: right;
   font-family: "Material Icons";
   font-size: 16px;
 }

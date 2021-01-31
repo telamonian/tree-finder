@@ -6,6 +6,7 @@
 |----------------------------------------------------------------------------*/
 import { DEFAULT_COL, Content, IContentRow } from "./content";
 import { DEFAULT_SORT_ORDER, ISortState, sortContentRoot, SortOrder } from "./sort";
+import { RegularTable } from "./util";
 
 // await customElements.whenDefined('regular-table');
 const RegularTableElement = customElements.get('regular-table');
@@ -47,6 +48,9 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     this.addEventListener("mousedown", event => this.onTreeClick(event));
     this.addEventListener("dblclick", event => this.onRowDoubleClick(event));
     // this.addEventListener("scroll", () => (this as any)._resetAutoSize());
+
+    // click debug listener
+    // this.addEventListener("mousedown", event => RegularTable.clickLoggingListener(event, this));
 
     await (this as any).draw();
 
@@ -165,80 +169,75 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       // needs_border = needs_border || (x + 1) % (this as any)._config.columns.length === 0;
       th.classList.toggle("tf-header-border", needs_border);
       th.classList.toggle("tf-header-corner", typeof x === "undefined");
+
+      th.classList.toggle("tf-header", true);
       th.classList.toggle("tf-header-align-left", true);
-      // td.classList.toggle("tf-header-sort-asc", !!sort && sort[1] === "asc");
-      // td.classList.toggle("tf-header-sort-desc", !!sort && sort[1] === "desc");
     }
   }
 
   onSortClick(event: MouseEvent) {
     const target = event.target as HTMLTableCellElement;
-    const metadata = this.getMeta(target);
+    const metadata = RegularTable.metadataFromTarget(target, this);
 
-    if (metadata?.hasOwnProperty('column_header')) {
-      // event.stopPropagation();
-      // event.returnValue = false;
-
-      // .value isn't included in the jsdocs for MetaData, and so isn't in the typings
-      const col = (metadata as any).value || DEFAULT_COL;
-      const multisort = event.shiftKey;
-
-      this.root.open(this.options.doRefetch);
-
-      [this.contents, this.sortStates] = sortContentRoot({root: this.root, sortStates: this.sortStates, col, multisort});
-
-      // .draw not in the RegularTableElement jsdocs/typings
-      (this as any).draw({invalid_viewport: true});
+    if (!metadata || !RegularTable.columnHeaderClicked(metadata)) {
+      return;
     }
+
+    // .value isn't included in the jsdocs for MetaData, and so isn't in the typings
+    const col = (metadata as any).value || DEFAULT_COL;
+    const multisort = event.shiftKey;
+
+    this.root.open(this.options.doRefetch);
+
+    [this.contents, this.sortStates] = sortContentRoot({root: this.root, sortStates: this.sortStates, col, multisort});
+
+    // .draw not in the RegularTableElement jsdocs/typings
+    (this as any).draw({invalid_viewport: true});
   }
 
   onRowDoubleClick(event: MouseEvent) {
-    let target = event.target as HTMLTableCellElement;
+    const target = event.target as HTMLTableCellElement;
+    const metadata = RegularTable.metadataFromTarget(target, this);
 
-    if (target.tagName === "SPAN" && target.className === "pd-row-header-icon") {
+    if (!metadata || !RegularTable.rowClicked(metadata)) {
       return;
     }
 
-    event.stopPropagation();
-    // event.stopImmediatePropagation();
-    event.returnValue = false;
+    const newRootContent = this.contents[metadata.y!];
 
-    let metadata = this.getMeta(target);
-    while (!metadata && target.parentElement) {
-      target = target.parentElement as HTMLTableCellElement;
-      metadata = this.getMeta(target);
+    if (newRootContent.isDir) {
+      event.preventDefault();
+      event.stopPropagation();
+      // event.stopImmediatePropagation();
+      event.returnValue = false;
+
+      // .init() calls .draw()
+      this.init(newRootContent.row, this.options);
     }
-
-    if (metadata?.hasOwnProperty('column_header')) {
-      return;
-    }
-
-    // .init() calls .draw()
-    this.init(this.contents[metadata.y!].row, this.options);
   }
 
   onTreeClick(event: MouseEvent) {
     let target = event.target as HTMLTableCellElement;
-    if (target.tagName === "SPAN" && target.className === "pd-row-header-icon") {
-
-      // event.stopPropagation();
-      // event.returnValue = false;
-
-      let metadata = this.getMeta(target);
-      while (!metadata && target.parentElement) {
-        target = target.parentElement as HTMLTableCellElement;
-        metadata = this.getMeta(target);
-      }
-
-      if (this.contents[metadata.y!].isOpen) {
-        this.collapse(metadata.y!);
-      } else {
-        this.expand(metadata.y!);
-      }
-
-      // (this as any)._resetAutoSize();
-      (this as any).draw();
+    if (!(target.tagName === "SPAN" && target.className === "pd-row-header-icon")) {
+      return;
     }
+
+    // given the className, infer that the metadata exists
+    const metadata = RegularTable.metadataFromTarget(target, this)!;
+
+    event.preventDefault();
+    event.stopPropagation();
+    // event.stopImmediatePropagation();
+    event.returnValue = false;
+
+    if (this.contents[metadata.y!].isOpen) {
+      this.collapse(metadata.y!);
+    } else {
+      this.expand(metadata.y!);
+    }
+
+    // (this as any)._resetAutoSize();
+    (this as any).draw();
   }
 
   protected get sortOrderByColName() {

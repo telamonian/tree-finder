@@ -22,7 +22,7 @@ window.addEventListener("load", async () => {
     root,
     {
       doWindowReize: true,
-      doRefetch: true,
+      doRefetch: false,
     }
   );
 });
