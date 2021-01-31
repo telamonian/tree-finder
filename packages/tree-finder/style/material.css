@@ -8,6 +8,10 @@
 @import url("https://fonts.googleapis.com/css?family=Material+Icons");
 @import url("https://fonts.googleapis.com/css?family=Roboto+Mono");
 
+:root {
+  --tf-background-color: #fff;
+}
+
 tree-finder {
   padding-top: 12px;
   padding-left: 12px;

@@ -224,7 +224,8 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
         this.expand(metadata.y!);
       }
 
-      (this as any).draw({invalid_viewport: true});
+      // (this as any)._resetAutoSize();
+      (this as any).draw();
     }
   }
 
