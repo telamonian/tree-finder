@@ -19,31 +19,43 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
 
     const {
       columnNames = Object.keys(this.root.row) as (keyof T)[],
-      refresh = false
+      doRefetch = false,
+      doWindowReize = false,
     } = options;
     this.options = {
       columnNames: columnNames.filter(x => !["path", "getChildren"].includes(x as string)),
-      refresh,
+      doRefetch,
+      doWindowReize,
     }
 
     // build a columnName -> columnIx table; add 1 to account for leading "path" column
     this._columnIx = Object.fromEntries(this.options.columnNames.map((x, ix) => [x, ix + 1])) as {[k in keyof T]: number};
 
     // fetch root's children and mark it as open
-    this.root.open(this.options.refresh);
+    this.root.open(this.options.doRefetch);
 
     // set initial sort
     const DEFAULT_SORT_STATES: ISortState<T>[] = [{col: DEFAULT_COL, order: DEFAULT_SORT_ORDER}];
     [this.contents, this.sortStates] = sortContentRoot({root: this.root, sortStates: DEFAULT_SORT_STATES});
 
     this.setDataListener((start_col: number, start_row: number, end_col: number, end_row: number) => this.model(start_col, start_row, end_col, end_row));
-    this.addEventListener("mousedown", event => this.onSortClick(event));
-    this.addEventListener("mousedown", event => this.onTreeClick(event));
-    this.addEventListener("dblclick", event => this.onRowDoubleClick(event));
+
     this.addStyleListener(() => this.columnHeaderStyleListener())
     this.addStyleListener(() => this.styleListener());
 
+    this.addEventListener("mousedown", event => this.onSortClick(event));
+    this.addEventListener("mousedown", event => this.onTreeClick(event));
+    this.addEventListener("dblclick", event => this.onRowDoubleClick(event));
+    // this.addEventListener("scroll", () => (this as any)._resetAutoSize());
+
     await (this as any).draw();
+
+    if (doWindowReize) {
+      // resize whenever window size changes, if requested
+      window.addEventListener('resize', async () => {
+        await (this as any).draw();
+      });
+    }
   }
 
   // splice out the contents of the collapsed node and any expanded subnodes
@@ -62,7 +74,7 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
 
   async expand(rix: number) {
     const content = this.contents[rix];
-    content.open(this.options.refresh);
+    content.open(this.options.doRefetch);
 
     const [nodeContents, _] = sortContentRoot({root: this.contents[rix], sortStates: this.sortStates});
     this.contents.splice(rix + 1, 0, ...nodeContents);
@@ -171,7 +183,7 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       const col = (metadata as any).value || DEFAULT_COL;
       const multisort = event.shiftKey;
 
-      this.root.open(this.options.refresh);
+      this.root.open(this.options.doRefetch);
 
       [this.contents, this.sortStates] = sortContentRoot({root: this.root, sortStates: this.sortStates, col, multisort});
 
@@ -246,8 +258,19 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
 
 export namespace TreeFinderElement {
   export interface IOptions<T extends IContentRow> {
+    /**
+     * optionally specify the visible columns, and the order they appear in
+     */
     columnNames: (keyof T)[];
 
-    refresh: boolean;
+    /**
+     * if true, always (re)fetch children when opening a dir
+     */
+    doRefetch: boolean;
+
+    /**
+     * if true, redraw the tree-finder element on window resize events
+     */
+    doWindowReize: boolean;
   }
 }

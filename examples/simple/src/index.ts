@@ -18,5 +18,11 @@ window.addEventListener("load", async () => {
     path: [],
     randomize: true,
   });
-  await treeFinder.init(root);
+  await treeFinder.init(
+    root,
+    {
+      doWindowReize: true,
+      doRefetch: true,
+    }
+  );
 });
