@@ -26,6 +26,8 @@ export namespace Random {
 }
 
 export namespace RegularTable {
+  const TOP_LEVEL_TAGNAME = "TREE-FINDER";
+
   /*
    * click-related functions
    */
@@ -35,7 +37,7 @@ export namespace RegularTable {
   }
 
   export function columnHeaderClicked(metadata: MetaData): boolean {
-    return typeof (metadata as any)?.row_header_y !== "undefined" && !!metadata?.column_header;
+    return typeof (metadata as any)?.column_header_y !== "undefined" && !!metadata?.column_header;
   }
 
   export function rowClicked(metadata: MetaData): boolean {
@@ -51,7 +53,12 @@ export namespace RegularTable {
    */
 
   export function clickLoggingListener(event: MouseEvent, rt: RegularTableElement) {
-    const metadata = metadataFromEvent(event, rt);
+    const metadata = metadataFromTarget(event.target as HTMLElement, rt, true);
+
+    if (!metadata) {
+      console.log(`event has no metadata`);
+      return;
+    }
 
     if (cellClicked(metadata)) {
       console.log(`cell clicked`);
@@ -71,7 +78,17 @@ export namespace RegularTable {
    * general metadata-related functions
    */
 
-  export function metadataFromEvent(event: Event, rt: RegularTableElement) {
-    return rt.getMeta(event.target as HTMLTableCellElement);
+  export function metadataFromTarget(target: HTMLElement, rt: RegularTableElement, recursive = true): MetaData | undefined {
+    if (target.tagName === TOP_LEVEL_TAGNAME) {
+      return;
+    }
+
+    let metadata = rt.getMeta(target as HTMLTableCellElement);
+
+    if (!recursive || metadata || !target.parentElement) {
+      return metadata;
+    }
+
+    return metadataFromTarget(target.parentElement, rt, recursive)
   }
 }
