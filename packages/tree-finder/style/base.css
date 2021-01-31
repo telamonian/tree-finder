@@ -41,13 +41,21 @@ thead th span:first-child:before {
   content: '';
 }
 
-thead th.tf-sort-asc span:first-child:before {
+.tf-align-left {
+  text-align: left;
+}
+
+.tf-align-right {
+  text-align: right;
+}
+
+/* thead th.tf-sort-asc span:first-child:before {
   background-image: var(--tf-caret-up);
 }
 
 thead th.tf-sort-desc span:first-child:before {
   background-image: var(--tf-caret-down);
-}
+} */
 
 table {
   cursor: default;

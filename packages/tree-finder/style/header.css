@@ -1,0 +1,35 @@
+/*----------------------------------------------------------------------------|
+| Copyright (c) 2020, Max Klein
+|
+| This file is part of the tree-finder library, distributed under the terms of
+| the BSD 3 Clause license. The full license can be found in the LICENSE file.
+|----------------------------------------------------------------------------*/
+@import url("https://fonts.googleapis.com/css?family=Material+Icons");
+
+.tf-header-border {
+  border-right: 1px solid #ddd;
+}
+
+.tf-header-border:last-child {
+  border-right-width: 0px;
+}
+
+.tf-header-align-left {
+  text-align: left;
+}
+
+.tf-header-align-right {
+  text-align: right;
+}
+
+.tf-header-sort-desc:after {
+  font-family: "Material Icons";
+  font-size: 16px;
+  content: "arrow_downward"
+}
+
+.tf-header-sort-asc:after {
+  font-family: "Material Icons";
+  font-size: 16px;
+  content: "arrow_upward"
+}

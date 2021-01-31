@@ -40,7 +40,8 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     this.addEventListener("mousedown", event => this.onSortClick(event));
     this.addEventListener("mousedown", event => this.onTreeClick(event));
     this.addEventListener("dblclick", event => this.onRowDoubleClick(event));
-    this.addStyleListener(() => this.styleModel());
+    this.addStyleListener(() => this.columnHeaderStyleListener())
+    this.addStyleListener(() => this.styleListener());
 
     await (this as any).draw();
   }
@@ -102,25 +103,27 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       );
     }
 
+    // num_columns/rows: number -> count of cols/rows
+    // column/row_headers: string[] -> arrays of path parts that get displayed as the first value in each col/row. Length > 1 implies a tree structure
     return {
-      num_rows: this.contents.length,
       num_columns: this.options.columnNames.length,
+      num_rows: this.contents.length,
       column_headers: this.options.columnNames.map(col => [col]),
       row_headers: this.contents.slice(start_row, end_row).map((x) => [this.treeHeader(x)]),
       data,
     };
   }
 
-  styleModel() {
-    // style the column header sort carets
-    const ths = this.querySelectorAll("thead th");
-    for (const th of ths) {
-      const column_name: keyof T = this.getMeta(th as HTMLTableCellElement)?.column_header?.[0] as any;
-      if (column_name) {
-        const sort_dir = this.sortOrderByColName[column_name === "0" ? "path" : column_name];
-        th.classList.toggle(`tf-sort-${sort_dir}`, !!sort_dir);
-      }
-    }
+  styleListener() {
+    // // style the column header sort carets
+    // const ths = this.querySelectorAll("thead th");
+    // for (const th of ths) {
+    //   const column_name: keyof T = this.getMeta(th as HTMLTableCellElement)?.column_header?.[0] as any;
+    //   if (column_name) {
+    //     const sort_dir = this.sortOrderByColName[column_name === "0" ? "path" : column_name];
+    //     th.classList.toggle(`tf-sort-${sort_dir}`, !!sort_dir);
+    //   }
+    // }
 
     const trs = this.querySelectorAll("tbody tr");
     for (const tr of trs) {
@@ -129,6 +132,30 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
 
       const text = tr.children[this._columnIx["kind"]].textContent;
       row_name_node.classList.add("tf-browser-filetype-icon", `tf-browser-${text}-icon`);
+    }
+  }
+
+  columnHeaderStyleListener() {
+    const header_depth = (this as any)._view_cache.config.row_pivots.length - 1;
+
+    for (const th of this.querySelectorAll("thead tr:last-child th")) {
+      const {column_header, row_header_x, x}: {column_header: object[], row_header_x: number, x: number} = this.getMeta(th as HTMLTableCellElement) as any;
+
+      const columnName: keyof T = column_header[column_header.length - 1] as any;
+      if (columnName) {
+        const sortDir = this.sortOrderByColName[columnName === "0" ? "path" : columnName];
+        th.classList.toggle(`tf-header-sort-${sortDir}`, !!sortDir);
+      }
+
+      // const sort = (this as any)._config.sort.find((x: any) => x[0] === metadata?.column_header?.[metadata?.column_header?.length - 1]);
+
+      let needs_border = row_header_x === header_depth;
+      // needs_border = needs_border || (x + 1) % (this as any)._config.columns.length === 0;
+      th.classList.toggle("tf-header-border", needs_border);
+      th.classList.toggle("tf-header-corner", typeof x === "undefined");
+      th.classList.toggle("tf-header-align-left", true);
+      // td.classList.toggle("tf-header-sort-asc", !!sort && sort[1] === "asc");
+      // td.classList.toggle("tf-header-sort-desc", !!sort && sort[1] === "desc");
     }
   }
 
