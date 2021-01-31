@@ -1,0 +1,93 @@
+## replace default svgo config
+
+full: true
+# multipass: true
+
+## plugin format:
+#
+# - name
+#
+# or:
+# - name: false
+# - name: true
+#
+# or:
+# - name:
+#     param1: 1
+#     param2: 2
+
+plugins:
+  - addAttributesToSVGElement
+  - addClassesToSVGElement
+  - cleanupAttrs
+  - cleanupEnableBackground
+  - cleanupIDs
+  - cleanupListOfValues
+  - cleanupNumericValues
+  - convertColors
+  - convertEllipseToCircle
+  - convertPathData
+  - convertShapeToPath
+  - convertStyleToAttrs
+  - convertTransform
+  - inlineStyles
+  - mergePaths
+  - minifyStyles
+  - moveElemsAttrsToGroup
+  - prefixIds
+  - removeAttributesBySelector
+  - removeAttrs
+  - removeComments
+  - removeDesc
+  - removeDimensions
+  - removeDoctype
+  - removeEditorsNSData
+  - removeElementsByAttr
+  - removeEmptyAttrs
+  - removeEmptyContainers
+  - removeEmptyText
+  - removeHiddenElems
+  - removeMetadata
+  - removeNonInheritableGroupAttrs
+  - removeOffCanvasPaths
+  - removeRasterImages
+  - removeScriptElement
+  - removeStyleElement
+  - removeTitle
+  - removeUnusedNS
+  - removeUselessDefs
+  - removeUselessStrokeAndFill
+  - removeXMLNS
+  - removeXMLProcInst
+  - reusePaths
+  - sortAttrs
+  - sortDefsChildren
+
+  ## active plugins, with options
+  - removeUnknownsAndDefaults:
+      defaultAttrs: false
+
+  ## disabled plugins
+  # - collapseGroups
+  # - moveGroupAttrsToElems
+  # - removeViewBox
+
+  ## low precision math
+  # - cleanupListOfValues:
+  #     floatPrecision: 2
+  # - cleanupNumericValues:
+  #     floatPrecision: 2
+  # - convertPathData:
+  #     floatPrecision: 2
+  # - convertTransform:
+  #     floatPrecision: 2
+  # - transformsWithOnePath:
+  #     floatPrecision: 2
+
+# configure the indent (default 4 spaces) used by `--pretty` here:
+#
+# @see https://github.com/svg/svgo/blob/master/lib/svgo/js2svg.js#L6 for more config options
+#
+js2svg:
+ pretty: true
+ indent: '  '
