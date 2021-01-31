@@ -14,7 +14,6 @@ export interface IContentRow {
   getChildren?: () => IContentRow[];
 }
 
-
 export class Content<T extends IContentRow> {
   constructor(row: T) {
     this.isDir = row.kind === "dir";
@@ -31,6 +30,10 @@ export class Content<T extends IContentRow> {
     }
 
     this._children = this.row.getChildren!().map((c: T) => new Content<T>(c));
+  }
+
+  getPathAtDepth(depth = 0) {
+    return this.row.path.slice(depth);
   }
 
   open(refresh: boolean = false) {
