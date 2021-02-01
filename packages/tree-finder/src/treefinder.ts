@@ -41,25 +41,30 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
 
     this.setDataListener((start_col: number, start_row: number, end_col: number, end_row: number) => this.model(start_col, start_row, end_col, end_row));
 
-    this.addStyleListener(() => this.columnHeaderStyleListener())
-    this.addStyleListener(() => this.styleListener());
+    // run listener initializations only once
+    if (!this._initializedListeners) {
+      this.addStyleListener(() => this.columnHeaderStyleListener())
+      this.addStyleListener(() => this.styleListener());
 
-    this.addEventListener("mousedown", event => this.onSortClick(event));
-    this.addEventListener("mousedown", event => this.onTreeClick(event));
-    this.addEventListener("dblclick", event => this.onRowDoubleClick(event));
-    // this.addEventListener("scroll", () => (this as any)._resetAutoSize());
+      this.addEventListener("mousedown", event => this.onSortClick(event));
+      this.addEventListener("mousedown", event => this.onTreeClick(event));
+      this.addEventListener("dblclick", event => this.onRowDoubleClick(event));
+      // this.addEventListener("scroll", () => (this as any)._resetAutoSize());
 
-    // click debug listener
-    // this.addEventListener("mousedown", event => RegularTable.clickLoggingListener(event, this));
+      // click debug listener
+      // this.addEventListener("mousedown", event => RegularTable.clickLoggingListener(event, this));
+
+      if (this.options.doWindowReize) {
+        // resize whenever window size changes, if requested
+        window.addEventListener('resize', async () => {
+          await (this as any).draw();
+        });
+      }
+
+      this._initializedListeners = true;
+    }
 
     await (this as any).draw();
-
-    if (doWindowReize) {
-      // resize whenever window size changes, if requested
-      window.addEventListener('resize', async () => {
-        await (this as any).draw();
-      });
-    }
   }
 
   // splice out the contents of the collapsed node and any expanded subnodes
@@ -256,6 +261,7 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
   protected sortStates: ISortState<T>[] = [];
 
   private _columnIx: {[k in keyof T]: number};
+  private _initializedListeners: boolean = false;
   private _pathDepth: number;
   private _template = document.createElement("template");
 }
