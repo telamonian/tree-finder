@@ -177,6 +177,12 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
 
   onSortClick(event: MouseEvent) {
     const target = event.target as HTMLTableCellElement;
+
+    // don't sort when the column resize handle nodes are clicked
+    if (target.classList.contains("pd-column-resize")) {
+      return;
+    }
+
     const metadata = RegularTable.metadataFromTarget(target, this);
 
     if (!metadata || !RegularTable.columnHeaderClicked(metadata)) {
@@ -236,7 +242,7 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       this.expand(metadata.y!);
     }
 
-    // (this as any)._resetAutoSize();
+    (this as any)._resetAutoSize();
     (this as any).draw();
   }
 
