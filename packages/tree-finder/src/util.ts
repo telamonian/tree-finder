@@ -53,7 +53,7 @@ export namespace RegularTable {
    */
 
   export function clickLoggingListener(event: MouseEvent, rt: RegularTableElement) {
-    const metadata = metadataFromTarget(event.target as HTMLElement, rt, true);
+    const metadata = metadataFromElement(event.target as HTMLElement, rt, true);
 
     if (!metadata) {
       console.log(`event has no metadata`);
@@ -78,7 +78,7 @@ export namespace RegularTable {
    * general metadata-related functions
    */
 
-  export function metadataFromTarget(target: HTMLElement, rt: RegularTableElement, recursive = true): MetaData | undefined {
+  export function metadataFromElement(target: HTMLElement, rt: RegularTableElement, recursive = true): MetaData | undefined {
     if (target.tagName === TOP_LEVEL_TAGNAME) {
       return;
     }
@@ -89,6 +89,6 @@ export namespace RegularTable {
       return metadata;
     }
 
-    return metadataFromTarget(target.parentElement, rt, recursive)
+    return metadataFromElement(target.parentElement, rt, recursive)
   }
 }

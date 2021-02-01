@@ -181,15 +181,17 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
   }
 
   onSortClick(event: MouseEvent) {
-    const target = event.target as HTMLTableCellElement;
-
-    // don't sort when the column resize handle nodes are clicked
-    if (target.classList.contains("pd-column-resize")) {
+    if (event.button !== 0) {
       return;
     }
 
-    const metadata = RegularTable.metadataFromTarget(target, this);
+    const element = event.target as HTMLTableCellElement;
+    if (element.classList.contains("pd-column-resize")) {
+      // don't sort when the column resize handle nodes are clicked
+      return;
+    }
 
+    const metadata = RegularTable.metadataFromElement(element, this);
     if (!metadata || !RegularTable.columnHeaderClicked(metadata)) {
       return;
     }
@@ -208,10 +210,39 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     (this as any).draw({invalid_viewport: true});
   }
 
-  onRowDoubleClick(event: MouseEvent) {
-    const target = event.target as HTMLTableCellElement;
-    const metadata = RegularTable.metadataFromTarget(target, this);
+  onTreeClick(event: MouseEvent) {
+    if (event.button !== 0) {
+      return;
+    }
 
+    let element = event.target as HTMLTableCellElement;
+    if (!element.classList.contains("pd-row-header-icon")) {
+      // only open/close node when open/close icon is clicked
+      return;
+    }
+
+    // given element's className, assert that metadata exists
+    const metadata = RegularTable.metadataFromElement(element, this)!;
+
+    event.preventDefault();
+
+    if (this.contents[metadata.y!].isOpen) {
+      this.collapse(metadata.y!);
+    } else {
+      this.expand(metadata.y!);
+    }
+
+    (this as any)._resetAutoSize();
+    (this as any).draw();
+  }
+
+  onRowDoubleClick(event: MouseEvent) {
+    if (event.button !== 0) {
+      return;
+    }
+
+    const element = event.target as HTMLTableCellElement;
+    const metadata = RegularTable.metadataFromElement(element, this);
     if (!metadata || !RegularTable.rowClicked(metadata)) {
       return;
     }
@@ -227,27 +258,6 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       // .init() calls .draw()
       this.init(newRootContent.row, this.options);
     }
-  }
-
-  onTreeClick(event: MouseEvent) {
-    let target = event.target as HTMLTableCellElement;
-    if (!(target.tagName === "SPAN" && target.className === "pd-row-header-icon")) {
-      return;
-    }
-
-    // given the className, infer that the metadata exists
-    const metadata = RegularTable.metadataFromTarget(target, this)!;
-
-    event.preventDefault();
-
-    if (this.contents[metadata.y!].isOpen) {
-      this.collapse(metadata.y!);
-    } else {
-      this.expand(metadata.y!);
-    }
-
-    (this as any)._resetAutoSize();
-    (this as any).draw();
   }
 
   protected get sortOrderByColName() {
