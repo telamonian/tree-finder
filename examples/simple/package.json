@@ -8,7 +8,7 @@
     "build:watch": "tsc --build --watch",
     "clean": "rimraf dist lib *.tsbuildinfo",
     "clean:slate": "yarn run clean && rimraf node_modules",
-    "start": "webpack-dev-server --open",
+    "start": "webpack-dev-server --open 'chromium'",
     "webpack": "webpack --color",
     "webpack:watch": "webpack --color --watch"
   },

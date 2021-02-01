@@ -189,6 +189,8 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       return;
     }
 
+    event.preventDefault();
+
     // .value isn't included in the jsdocs for MetaData, and so isn't in the typings
     const col = (metadata as any).value || DEFAULT_COL;
     const multisort = event.shiftKey;
@@ -209,14 +211,14 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       return;
     }
 
+    event.preventDefault();
+    // event.stopPropagation();
+    // event.stopImmediatePropagation();
+    // event.returnValue = false;
+
     const newRootContent = this.contents[metadata.y!];
 
     if (newRootContent.isDir) {
-      event.preventDefault();
-      event.stopPropagation();
-      // event.stopImmediatePropagation();
-      event.returnValue = false;
-
       // .init() calls .draw()
       this.init(newRootContent.row, this.options);
     }
@@ -232,9 +234,6 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     const metadata = RegularTable.metadataFromTarget(target, this)!;
 
     event.preventDefault();
-    event.stopPropagation();
-    // event.stopImmediatePropagation();
-    event.returnValue = false;
 
     if (this.contents[metadata.y!].isOpen) {
       this.collapse(metadata.y!);

@@ -4,15 +4,13 @@
 | This file is part of the tree-finder library, distributed under the terms of
 | the BSD 3 Clause license. The full license can be found in the LICENSE file.
 |----------------------------------------------------------------------------*/
-@import url("https://fonts.googleapis.com/css?family=Material+Icons");
-
 .tf-header:after {
   background-position: center;
   background-repeat: no-repeat;
   background-size: 16px;
   min-width: 16px;
   min-height: 16px;
-  color: var(--tf-background-color);
+  color: var(--tf-background);
   content: "";
   float: right;
 }
@@ -36,14 +34,14 @@
 .tf-header-sort-desc:after {
   color: inherit;
   content: "arrow_downward";
-  font-family: "Material Icons";
+  font-family: var(--tf-icon-font);
   font-size: 16px;
 }
 
 .tf-header-sort-asc:after {
   color: inherit;
   content: "arrow_upward";
-  font-family: "Material Icons";
+  font-family: var(--tf-icon-font);
   font-size: 16px;
 }
 

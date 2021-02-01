@@ -57,6 +57,10 @@ thead th.tf-sort-desc span:first-child:before {
   background-image: var(--tf-caret-down);
 } */
 
-table {
+tree-finder {
+  user-select: none;
+}
+
+tree-finder table {
   cursor: default;
 }

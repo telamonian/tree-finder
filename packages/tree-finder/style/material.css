@@ -9,7 +9,10 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto+Mono");
 
 :root {
-  --tf-background-color: #fff;
+  --tf-background: #fff;
+  --tf-icon-font: "Material Icons";
+  --tf-row-hover-background: #eee;
+  --tf-row-hover-color: #333;
 }
 
 tree-finder {
@@ -112,14 +115,14 @@ tree-finder th,
   padding-bottom: 0px;
   height: 19px;
 }
-tree-finder tbody:hover tr:hover td,
-:host tbody:hover tr:hover td {
-  background: #eee;
+tree-finder tbody:hover tr:hover,
+:host tbody:hover tr:hover {
+  background: var(--tf-row-hover-background);
   opacity: 1;
 }
-tree-finder table tr:hover,
-:host table tr:hover {
-  color: #333;
+tree-finder tbody:hover tr:hover,
+:host tbody:hover tr:hover {
+  color: var(--tf-row-hover-color);
 }
 tree-finder table *,
 :host table * {
