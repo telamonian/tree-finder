@@ -21,7 +21,7 @@ which can be used to easily render filebrowers or other hierarchical trees. Only
 ||
 |:--|
 |basic|
-|[![basic](https://raw.githubusercontent.com/telamonian/tree-finder/master/packages/tree-finder/docs/basic_example.png)](https://bl.ocks.org/telamonian/330781ee64e02c514081851d272cd0a6)|
+|[![basic](https://raw.githubusercontent.com/telamonian/tree-finder/master/docs/basic_example.png)](https://bl.ocks.org/telamonian/330781ee64e02c514081851d272cd0a6)|
 
 ## Installation
 
