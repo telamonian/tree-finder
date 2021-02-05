@@ -196,8 +196,6 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       return;
     }
 
-    event.preventDefault();
-
     // .value isn't included in the jsdocs for MetaData, and so isn't in the typings
     const col = (metadata as any).value || DEFAULT_COL;
     const multisort = event.shiftKey;
@@ -224,8 +222,6 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     // given element's className, assert that metadata exists
     const metadata = RegularTable.metadataFromElement(element, this)!;
 
-    event.preventDefault();
-
     if (this.contents[metadata.y!].isOpen) {
       this.collapse(metadata.y!);
     } else {
@@ -247,7 +243,7 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       return;
     }
 
-    event.preventDefault();
+    // event.preventDefault();
     // event.stopPropagation();
     // event.stopImmediatePropagation();
     // event.returnValue = false;
