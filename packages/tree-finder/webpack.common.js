@@ -18,15 +18,16 @@ const depSrcMapRules = [
   {test: /\.js.map$/, use: 'file-loader'},
 ]
 
-let config = {
-  mode: process.env.NODE_ENV || 'development',
+module.exports = {
   entry: './src/index.ts',
+
   devtool: 'source-map',
 
   output: {
     filename: 'tree-finder.js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/dist/',
+    // libraryTarget: 'umd',
 
     // use a unique name for each chunk
     // filename: '[name].[chunkhash].js',
@@ -88,14 +89,4 @@ let config = {
   //     chunks: 'all'
   //   }
   // },
-};
-
-module.exports = (env, argv) => {
-
-  if (argv.mode === 'development') {
-    config.devtool = 'source-map';
-    config.optimization.minimize = false;
-  }
-
-  return config;
 };

@@ -2,7 +2,7 @@
 
    Copyright (c) 2020, Max Klein.
 
-   This file is part of the regular-tree library, distributed under the terms of
+   This file is part of the tree-finder library, distributed under the terms of
    the BSD 3 Clause license. The full license can be found in the LICENSE file.
 
 -->
@@ -19,9 +19,9 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
-  <script src="../../packages/tree-finder/dist/tree-finder.js"></script>
-  <link rel='stylesheet' href="../../packages/tree-finder/dist/main.css">
-  <link rel='stylesheet' href="../../packages/tree-finder/style/theme/material.css">
+  <script src="https://cdn.jsdelivr.net/npm/tree-finder@0.0.1/dist/tree-finder.js"></script>
+  <link rel='stylesheet' href="https://cdn.jsdelivr.net/npm/tree-finder@0.0.1/dist/main.css">
+  <link rel='stylesheet' href="https://cdn.jsdelivr.net/npm/tree-finder@0.0.1/style/theme/material.css">
 
 </head>
 
@@ -30,65 +30,24 @@
   <tree-finder></tree-finder>
 
   <script>
-    function bool() {
-      return Math.random() < 0.5;
-    }
+    const N_CHILDREN = 100;
+    const N_DIRECTORIES = 10;
 
-    function shuffle(arr, inPlace = false) {
-      arr = inPlace ? arr : [...arr];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }
-
-    const DIR_NAMES = [
-      "able",
-      "baker",
-      "charlie",
-      "dog",
-      "easy",
-      "fox",
-      "george",
-      "how",
-      "item",
-      "jig",
-      "king",
-      "love",
-      "mike",
-      "nan",
-      "oboe",
-      "peter",
-      "queen",
-      "roger",
-      "sugar",
-      "tare",
-      "uncle",
-      "victor",
-      "william",
-      "xray",
-      "yoke",
-      "zebra",
-    ];
-    let mockFileIx = 0;
-    let modDaysIx = -1;
     function mockContent(props) {
-      const { path, kind, modDays = modDaysIx++, nchildren = 100, ndirectories = 10, randomize = false } = props;
+      const {path, kind, modDays = 0} = props;
       const modified = new Date(modDays * 24 * 60 * 60 * 1000);
-      const writable = randomize && bool();
-      let content;
+      const writable = !!(modDays % 2);
+
       if (kind === "dir") {
         const getChildren = () => {
           const children = [];
-          const dirNames = randomize ? shuffle(DIR_NAMES) : DIR_NAMES;
-          for (let i = 0; i < nchildren; i++) {
+          for (let i = 0; i < N_CHILDREN; i++) {
+            const ipad = `${i}`.padStart(3, '0');
+
             children.push(mockContent({
-              kind: i < ndirectories ? "dir" : "text",
-              path: [...path, i < ndirectories ? `${dirNames[i]}/` : `file_${`${mockFileIx++}`.padStart(7, '0')}.txt`],
-              nchildren,
-              ndirectories,
-              randomize,
+              kind: i < N_DIRECTORIES ? "dir" : "text",
+              path: [...path, i < N_DIRECTORIES ? `dir_${ipad}/` : `file_${ipad}.txt`],
+              modDays: modDays + i,
             }));
           }
           return children;
@@ -104,7 +63,6 @@
       const root = mockContent({
         kind: "dir",
         path: [],
-        randomize: true,
       });
 
       const treeFinder = document.getElementsByTagName("tree-finder")[0];

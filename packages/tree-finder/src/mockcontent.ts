@@ -51,10 +51,9 @@ export function mockContent(props: {path: Path, kind: string, modDays?: number, 
   const modified = new Date(modDays * 24 * 60 * 60 * 1000);
   const writable = randomize && Random.bool();
 
-  let content: IMockContentRow;
   if (kind === "dir") {
     // is a dir
-    content = {
+    return {
       kind,
       path,
       modified,
@@ -77,13 +76,11 @@ export function mockContent(props: {path: Path, kind: string, modDays?: number, 
     };
   } else {
     // is a file
-    content = {
+    return {
       kind,
       path,
       modified,
       writable,
     };
   }
-
-  return content;
 }
