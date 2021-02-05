@@ -41,7 +41,7 @@ thead th.tf-header-corner:before {
   color: inherit;
   content: "arrow_downward";
   font-family: var(--tf-icon-font);
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .tf-header-sort-asc:after {
@@ -49,5 +49,5 @@ thead th.tf-header-corner:before {
   color: inherit;
   content: "arrow_upward";
   font-family: var(--tf-icon-font);
-  font-size: 16px;
+  font-size: 15px;
 }
