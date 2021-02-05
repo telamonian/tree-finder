@@ -5,7 +5,7 @@
 | the BSD 3 Clause license. The full license can be found in the LICENSE file.
 |----------------------------------------------------------------------------*/
 import { DEFAULT_COL, Content, IContentRow } from "./content";
-import { DEFAULT_SORT_ORDER, ISortState, sortContentRoot, SortOrder } from "./sort";
+import { ContentsModel } from "./model";
 import { RegularTable } from "./util";
 
 // await customElements.whenDefined('regular-table');
@@ -14,32 +14,16 @@ const RegularTableElement = customElements.get('regular-table');
 const DATE_FORMATTER = new Intl.DateTimeFormat("en-us");
 
 export class TreeFinderElement<T extends IContentRow> extends RegularTableElement {
-  async init(root: T, options: Partial<TreeFinderElement.IOptions<T>> = {}) {
-    this.root = new Content(root);
-    this._pathDepth = this.root.row.path.length;
-
+  async init(model: ContentsModel<T>, options: Partial<TreeFinderElement.IOptions<T>> = {}) {
     const {
-      columnNames = Object.keys(this.root.row) as (keyof T)[],
-      doRefetch = false,
       doWindowReize = false,
     } = options;
     this.options = {
-      columnNames: columnNames.filter(x => !["path", "getChildren"].includes(x as string)),
-      doRefetch,
       doWindowReize,
     }
 
-    // build a columnName -> columnIx table; add 1 to account for leading "path" column
-    this._columnIx = Object.fromEntries(this.options.columnNames.map((x, ix) => [x, ix + 1])) as {[k in keyof T]: number};
-
-    // fetch root's children and mark it as open
-    this.root.open(this.options.doRefetch);
-
-    // set initial sort
-    const DEFAULT_SORT_STATES: ISortState<T>[] = [{col: DEFAULT_COL, order: DEFAULT_SORT_ORDER}];
-    [this.contents, this.sortStates] = sortContentRoot({root: this.root, sortStates: DEFAULT_SORT_STATES});
-
-    this.setDataListener((start_col: number, start_row: number, end_col: number, end_row: number) => this.model(start_col, start_row, end_col, end_row));
+    this.model = model;
+    this.setDataListener((x0: number, y0: number, x1: number, y1: number) => this.dataListener(x0, y0, x1, y1));
 
     // run listener initializations only once
     if (!this._initializedListeners) {
@@ -67,57 +51,12 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     await (this as any).draw();
   }
 
-  // splice out the contents of the collapsed node and any expanded subnodes
-  async collapse(rix: number) {
-    const content = this.contents[rix];
-
-    let npop = content.children?.length ?? 0;
-    let check_ix = rix + 1 + npop;
-    while (this.contents[check_ix++].row.path.length > content.row.path.length) {
-      npop++;
-    }
-    this.contents.splice(rix + 1, npop);
-
-    content.close();
-  }
-
-  async expand(rix: number) {
-    const content = this.contents[rix];
-    content.open(this.options.doRefetch);
-
-    const [nodeContents, _] = sortContentRoot({root: this.contents[rix], sortStates: this.sortStates});
-    this.contents.splice(rix + 1, 0, ...nodeContents);
-  }
-
-  treeHeaderLevels({isDir, isOpen, path}: {isDir: boolean, isOpen: boolean, path: string[]}) {
-    const tree_levels = path.slice(1).map(() => '<span class="pd-tree-group"></span>');
-    if (isDir) {
-      const group_icon = isOpen ? "remove" : "add";
-      const tree_button = `<span class="pd-row-header-icon">${group_icon} </span>`;
-      tree_levels.push(tree_button);
-    }
-
-    return tree_levels.join("");
-  }
-
-  treeHeader(node: Content<T>) {
-    const kind = node.row.kind;
-    const path = node.getPathAtDepth(this._pathDepth);
-
-    const name = path.length === 0 ? "TOTAL" : path[path.length - 1];
-    const header_classes = kind === "text" ? "pd-group-name pd-group-leaf" : "pd-group-name";
-    const tree_levels = this.treeHeaderLevels({isDir: node.isDir, isOpen: node.isOpen, path});
-    const header_text = name;
-    this._template.innerHTML = `<span class="pd-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
-    return this._template.content.firstChild;
-  }
-
-  async model(start_col: number, start_row: number, end_col: number, end_row: number) {
+  async dataListener(start_col: number, start_row: number, end_col: number, end_row: number) {
     const data = [];
     for (let cix = start_col; cix < end_col - 1; cix++) {
-      const name = this.options.columnNames[cix];
+      const name = this.model.columns[cix];
       data.push(
-        this.contents.slice(start_row, end_row).map((c) => {
+        this.model.contents.slice(start_row, end_row).map((c) => {
           const val = c.row[name];
           return val instanceof Date ? DATE_FORMATTER.format(val) : val;
         })
@@ -127,10 +66,10 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     // num_columns/rows: number -> count of cols/rows
     // column/row_headers: string[] -> arrays of path parts that get displayed as the first value in each col/row. Length > 1 implies a tree structure
     return {
-      num_columns: this.options.columnNames.length,
-      num_rows: this.contents.length,
-      column_headers: this.options.columnNames.map(col => [col]),
-      row_headers: this.contents.slice(start_row, end_row).map((x) => [this.treeHeader(x)]),
+      num_columns: this.model.columns.length,
+      num_rows: this.model.contents.length,
+      column_headers: this.model.columns.map(col => [col]),
+      row_headers: this.model.contents.slice(start_row, end_row).map((x) => [Tree.treeHeader(x, this.model.pathDepth)]),
       data,
     };
   }
@@ -151,7 +90,7 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       // style the browser's filetype icons
       const row_name_node = tr.children[0].querySelector(".pd-group-name") as HTMLElement;
 
-      const text = tr.children[this._columnIx["kind"]].textContent;
+      const text = tr.children[this.model.ixByColumn["kind"]].textContent;
       row_name_node.classList.add("tf-browser-filetype-icon", `tf-browser-${text}-icon`);
     }
   }
@@ -164,8 +103,8 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
 
       const columnName: keyof T = column_header[column_header.length - 1] as any;
       if (columnName) {
-        const sortDir = this.sortOrderByColName[columnName === "0" ? "path" : columnName];
-        th.classList.toggle(`tf-header-sort-${sortDir}`, !!sortDir);
+        const sortOrder = this.model.sortStates.byColumn[columnName === "0" ? "path" : columnName]?.order;
+        th.classList.toggle(`tf-header-sort-${sortOrder}`, !!sortOrder);
       }
 
       // const sort = (this as any)._config.sort.find((x: any) => x[0] === metadata?.column_header?.[metadata?.column_header?.length - 1]);
@@ -196,16 +135,12 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       return;
     }
 
-    // .value isn't included in the jsdocs for MetaData, and so isn't in the typings
-    const col = (metadata as any).value || DEFAULT_COL;
-    const multisort = event.shiftKey;
+    this.model.sort({
+      col: (metadata as any).value || DEFAULT_COL,
+      multisort: event.shiftKey,
+    });
 
-    this.root.open(this.options.doRefetch);
-
-    [this.contents, this.sortStates] = sortContentRoot({root: this.root, sortStates: this.sortStates, col, multisort});
-
-    // .draw not in the RegularTableElement jsdocs/typings
-    (this as any).draw({invalid_viewport: true});
+    (this as any).draw();
   }
 
   onTreeClick(event: MouseEvent) {
@@ -219,13 +154,13 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
       return;
     }
 
-    // given element's className, assert that metadata exists
+    // assert that metadata exists, given element.classList check above
     const metadata = RegularTable.metadataFromElement(element, this)!;
 
-    if (this.contents[metadata.y!].isOpen) {
-      this.collapse(metadata.y!);
+    if (this.model.contents[metadata.y!].isOpen) {
+      this.model.collapse(metadata.y!);
     } else {
-      this.expand(metadata.y!);
+      this.model.expand(metadata.y!);
     }
 
     (this as any)._resetAutoSize();
@@ -248,45 +183,54 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     // event.stopImmediatePropagation();
     // event.returnValue = false;
 
-    const newRootContent = this.contents[metadata.y!];
+    const newRootContent = this.model.contents[metadata.y!];
 
     if (newRootContent.isDir) {
+      this.model.setRoot(newRootContent.row);
+
       // .init() calls .draw()
-      this.init(newRootContent.row, this.options);
+      this.init(this.model, this.options);
     }
   }
 
-  protected get sortOrderByColName() {
-    type SortOrderByColName = {[k in keyof T]: SortOrder};
-    return this.sortStates.reduce((obj, state) => {obj[state.col] = state.order; return obj;}, {} as SortOrderByColName);
-  }
-
-  protected contents: Content<T>[] = [];
   protected options: TreeFinderElement.IOptions<T>;
-  protected root: Content<T>;
-  protected sortStates: ISortState<T>[] = [];
+  protected model: ContentsModel<T>;
 
-  private _columnIx: {[k in keyof T]: number};
   private _initializedListeners: boolean = false;
-  private _pathDepth: number;
-  private _template = document.createElement("template");
 }
 
 export namespace TreeFinderElement {
   export interface IOptions<T extends IContentRow> {
     /**
-     * optionally specify the visible columns, and the order they appear in
-     */
-    columnNames: (keyof T)[];
-
-    /**
-     * if true, always (re)fetch children when opening a dir
-     */
-    doRefetch: boolean;
-
-    /**
      * if true, redraw the tree-finder element on window resize events
      */
     doWindowReize: boolean;
+  }
+}
+
+namespace Tree {
+  const treeTemplate = document.createElement("template");
+
+  function treeHeaderLevels({isDir, isOpen, path}: {isDir: boolean, isOpen: boolean, path: string[]}) {
+    const tree_levels = path.slice(1).map(() => '<span class="pd-tree-group"></span>');
+    if (isDir) {
+      const group_icon = isOpen ? "remove" : "add";
+      const tree_button = `<span class="pd-row-header-icon">${group_icon} </span>`;
+      tree_levels.push(tree_button);
+    }
+
+    return tree_levels.join("");
+  }
+
+  export function treeHeader<T extends IContentRow>(node: Content<T>, pathDepth: number) {
+    const kind = node.row.kind;
+    const path = node.getPathAtDepth(pathDepth);
+
+    const name = path.length === 0 ? "TOTAL" : path[path.length - 1];
+    const header_classes = kind === "text" ? "pd-group-name pd-group-leaf" : "pd-group-name";
+    const tree_levels = treeHeaderLevels({isDir: node.isDir, isOpen: node.isOpen, path});
+    const header_text = name;
+    treeTemplate.innerHTML = `<span class="pd-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
+    return treeTemplate.content.firstChild;
   }
 }

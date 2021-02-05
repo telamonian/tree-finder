@@ -5,24 +5,27 @@
 | the BSD 3 Clause license. The full license can be found in the LICENSE file.
 |----------------------------------------------------------------------------*/
 import "tree-finder";
-import { mockContent } from "tree-finder";
+import { mockContent, ContentsModel } from "tree-finder";
 
 import "./index.css";
 
+const root = mockContent({
+  kind: "dir",
+  path: [],
+  randomize: true,
+});
+const model = new ContentsModel(root, {
+  doRefetch: false,
+})
+
 window.addEventListener("load", async () => {
-  const treeFinder = document.createElement("tree-finder");
+  const treeFinder = document.createElement<typeof root>("tree-finder");
   document.body.append(treeFinder);
 
-  const root = mockContent({
-    kind: "dir",
-    path: [],
-    randomize: true,
-  });
   await treeFinder.init(
-    root,
+    model,
     {
       doWindowReize: true,
-      doRefetch: false,
     }
   );
 });
