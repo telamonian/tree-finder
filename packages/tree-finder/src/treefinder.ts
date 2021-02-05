@@ -107,11 +107,6 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
         th.classList.toggle(`tf-header-sort-${sortOrder}`, !!sortOrder);
       }
 
-      // const sort = (this as any)._config.sort.find((x: any) => x[0] === metadata?.column_header?.[metadata?.column_header?.length - 1]);
-
-      let needs_border = row_header_x === header_depth;
-      // needs_border = needs_border || (x + 1) % (this as any)._config.columns.length === 0;
-      th.classList.toggle("tf-header-border", needs_border);
       th.classList.toggle("tf-header-corner", typeof x === "undefined");
 
       th.classList.toggle("tf-header", true);

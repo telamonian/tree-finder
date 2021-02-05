@@ -1,10 +1,10 @@
 <p align="center">
-    <img alt="tree-finder" src="https://raw.githubusercontent.com/telamonian/tree-finder/master/packages/tree-finder/style/icons/treeFinder.svg" width="300">
+  <img alt="tree-finder" src="https://raw.githubusercontent.com/telamonian/tree-finder/master/packages/tree-finder/style/icons/treeFinder.svg" width="300">
 </p>
 
 
 <p align="center">
-  <h1 algin="center">tree-finder</h1>
+  <h1 align="center">tree-finder</h1>
 </p>
 
 <p align="center">

@@ -17,16 +17,12 @@ thead th.tf-header-corner:before {
   float: left;
 }
 
-.tf-header-border {
+.tf-header {
   border-right: 1px solid #ddd;
 }
 
-.tf-header-border:last-child {
-  border-right-width: 0px;
-}
-
 .tf-header:after {
-  background-position: right;
+  background-position: center;
   background-repeat: no-repeat;
   background-size: 10px;
   min-width: 16px;
