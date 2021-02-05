@@ -11,8 +11,16 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // To improve build times for large projects enable fork-ts-checker-webpack-plugin
 // const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
+// load bitmap image rules
+const bitmapRules = [
+  {
+    test: /\.(jpg|png|gif)$/,
+    use: 'file-loader'
+  },
+]
+
 // load dependency source maps
-const depSrcMapRules = [
+const dependencySrcMapRules = [
   {
     test: /\.js$/,
     use: 'source-map-loader',
@@ -20,6 +28,17 @@ const depSrcMapRules = [
     exclude: /node_modules/,
   },
   {test: /\.js.map$/, use: 'file-loader'},
+]
+
+// load svg via css url() rules
+const svgUrlRules = [
+  {
+    test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+    use: {
+      loader: 'svg-url-loader',
+      options: {encoding: 'none', limit: 10000},
+    },
+  },
 ]
 
 let config = {
@@ -51,7 +70,8 @@ let config = {
           }
         }
       },
-      ...depSrcMapRules
+      ...dependencySrcMapRules,
+      ...svgUrlRules,
     ]
   },
 

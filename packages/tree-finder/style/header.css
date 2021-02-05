@@ -26,10 +26,10 @@ thead th.tf-header-corner:before {
 }
 
 .tf-header:after {
-  background-position: center;
+  background-position: right;
   background-repeat: no-repeat;
-  background-size: 16px;
-  min-width: 16px;
+  background-size: 10px;
+  min-width: 18px;
   min-height: 16px;
   color: var(--tf-background);
   content: "";
@@ -37,17 +37,9 @@ thead th.tf-header-corner:before {
 }
 
 .tf-header-sort-desc:after {
-  /* background-image: var(--tf-caret-down); */
-  color: inherit;
-  content: "arrow_downward";
-  font-family: var(--tf-icon-font);
-  font-size: 15px;
+  background-image: var(--tf-caret-down);
 }
 
 .tf-header-sort-asc:after {
-  /* background-image: var(--tf-caret-up); */
-  color: inherit;
-  content: "arrow_upward";
-  font-family: var(--tf-icon-font);
-  font-size: 15px;
+  background-image: var(--tf-caret-up);
 }

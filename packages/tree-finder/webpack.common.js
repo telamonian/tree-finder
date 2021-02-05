@@ -7,8 +7,16 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
+// load bitmap image rules
+const bitmapRules = [
+  {
+    test: /\.(jpg|png|gif)$/,
+    use: 'file-loader'
+  },
+]
+
 // load dependency source maps
-const depSrcMapRules = [
+const dependencySrcMapRules = [
   {
     test: /\.js$/,
     use: 'source-map-loader',
@@ -16,6 +24,17 @@ const depSrcMapRules = [
     exclude: /node_modules/,
   },
   {test: /\.js.map$/, use: 'file-loader'},
+]
+
+// load svg via css url() rules
+const svgUrlRules = [
+  {
+    test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+    use: {
+      loader: 'svg-url-loader',
+      options: {encoding: 'none', limit: 10000},
+    },
+  },
 ]
 
 module.exports = {
@@ -40,22 +59,12 @@ module.exports = {
         use: [MiniCssExtractPlugin.loader, 'css-loader']
       },
       {
-        test: /\.(jpg|png|gif)$/,
-        use: 'file-loader'
-      },
-      {
-        test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-        use: {
-          loader: 'svg-url-loader',
-          options: {encoding: 'none', limit: 10000},
-        },
-      },
-      {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
       },
-      ...depSrcMapRules
+      ...dependencySrcMapRules,
+      ...svgUrlRules,
     ],
   },
 
