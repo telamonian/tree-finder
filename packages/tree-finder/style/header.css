@@ -4,6 +4,27 @@
 | This file is part of the tree-finder library, distributed under the terms of
 | the BSD 3 Clause license. The full license can be found in the LICENSE file.
 |----------------------------------------------------------------------------*/
+.tf-header-align-left {
+  text-align: left;
+}
+
+.tf-header-align-right {
+  text-align: right;
+}
+
+thead th.tf-header-corner:before {
+  content: "path";
+  float: left;
+}
+
+.tf-header-border {
+  border-right: 1px solid #ddd;
+}
+
+.tf-header-border:last-child {
+  border-right-width: 0px;
+}
+
 .tf-header:after {
   background-position: center;
   background-repeat: no-repeat;
@@ -15,23 +36,8 @@
   float: right;
 }
 
-.tf-header-border {
-  border-right: 1px solid #ddd;
-}
-
-.tf-header-border:last-child {
-  border-right-width: 0px;
-}
-
-.tf-header-align-left {
-  text-align: left;
-}
-
-.tf-header-align-right {
-  text-align: right;
-}
-
 .tf-header-sort-desc:after {
+  /* background-image: var(--tf-caret-down); */
   color: inherit;
   content: "arrow_downward";
   font-family: var(--tf-icon-font);
@@ -39,13 +45,9 @@
 }
 
 .tf-header-sort-asc:after {
+  /* background-image: var(--tf-caret-up); */
   color: inherit;
   content: "arrow_upward";
   font-family: var(--tf-icon-font);
   font-size: 16px;
-}
-
-thead th.tf-header-corner:before {
-  content: "path";
-  float: left;
 }

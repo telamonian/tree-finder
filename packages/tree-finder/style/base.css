@@ -14,33 +14,6 @@
   --tf-caret-down: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgdmlld0JveD0iMCAwIDE4IDE4Ij48cGF0aCBkPSJNNS4yIDcuNUw5IDExLjJsMy44LTMuOEg1LjJ6IiBmaWxsPSIjNjE2MTYxIiBzaGFwZS1yZW5kZXJpbmc9Imdlb21ldHJpY1ByZWNpc2lvbiIvPjwvc3ZnPg==");
 }
 
-.tf-browser-filetype-icon:before {
-  content: "";
-  float: left;
-  margin-right: 5px;
-  margin-left: -10px;
-  min-width: 16px;
-  min-height: 16px;
-}
-
-.tf-browser-dir-icon:before {
-  background-image: var(--tf-dir-icon);
-}
-
-.tf-browser-text-icon:before {
-  background-image: var(--tf-text-icon);
-}
-
-thead th span:first-child:before {
-  background-position: right;
-  background-repeat: no-repeat;
-  background-size: 16px;
-  min-width: 16px;
-  min-height: 16px;
-  padding-right: 16px;
-  content: '';
-}
-
 .tf-align-left {
   text-align: left;
 }
@@ -48,14 +21,6 @@ thead th span:first-child:before {
 .tf-align-right {
   text-align: right;
 }
-
-/* thead th.tf-sort-asc span:first-child:before {
-  background-image: var(--tf-caret-up);
-}
-
-thead th.tf-sort-desc span:first-child:before {
-  background-image: var(--tf-caret-down);
-} */
 
 tree-finder {
   user-select: none;

@@ -9,8 +9,7 @@ import "regular-table";
 import { IContentRow } from "./content";
 import { TreeFinderElement } from "./treefinder";
 
-import "../style/base.css";
-import "../style/header.css";
+import "../style/index.css";
 
 declare global {
   interface Document {
