@@ -1,14 +1,14 @@
 {
   "name": "tree-finder",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "browser/tree widget implemented as a custom DOM element. Built on top of regular-table",
-  "homepage": "https://github.com/telamonian/regular-tree",
+  "homepage": "https://github.com/telamonian/tree-finder",
   "bugs": {
-    "url": "https://github.com/telamonian/regular-tree/issues"
+    "url": "https://github.com/telamonian/tree-finder/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/telamonian/regular-tree.git"
+    "url": "https://github.com/telamonian/tree-finder.git"
   },
   "license": "BSD-3-Clause",
   "author": "Max Klein <telamonian@users.noreply.github.com>",
@@ -32,7 +32,7 @@
     "svgo:uri": "svgo --config svgo.yaml --datauri=base64 -o -",
     "webpack": "webpack --color --config webpack.dev.js",
     "webpack:prod": "webpack --color --config webpack.prod.js",
-    "webpack:watch": "webpack --color --watch"
+    "webpack:watch": "webpack --color --config webpack.dev.js --watch"
   },
   "dependencies": {
     "regular-table": "^0.1.6"
