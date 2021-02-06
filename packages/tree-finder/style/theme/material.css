@@ -15,7 +15,7 @@
   --tf-row-hover-color: #333;
 }
 
-tree-finder {
+tree-finder-grid {
   padding-top: 12px;
   padding-left: 12px;
   padding-bottom: 0;
@@ -23,18 +23,18 @@ tree-finder {
   scrollbar-color: transparent transparent;
   scrollbar-width: thin;
 }
-tree-finder:hover {
+tree-finder-grid:hover {
   scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 }
-tree-finder,
+tree-finder-grid,
 :host {
   font-family: "Open Sans";
 }
-tree-finder div[tabindex],
+tree-finder-grid div[tabindex],
 :host div[tabindex] {
   outline: none;
 }
-tree-finder > div,
+tree-finder-grid > div,
 :host > div {
   position: absolute;
   top: 0;
@@ -43,69 +43,69 @@ tree-finder > div,
   bottom: 0;
   overflow: hidden;
 }
-tree-finder th,
+tree-finder-grid th,
 :host th {
   text-align: center;
 }
-tree-finder thead tr:not(:last-child) th,
+tree-finder-grid thead tr:not(:last-child) th,
 :host thead tr:not(:last-child) th {
   overflow: hidden;
   max-width: 0px;
 }
-tree-finder thead tr:last-child .pd-float,
+tree-finder-grid thead tr:last-child .pd-float,
 :host thead tr:last-child .pd-float,
-tree-finder tbody .pd-float,
+tree-finder-grid tbody .pd-float,
 :host tbody .pd-float {
   text-align: right;
 }
-tree-finder thead .pd-integer,
+tree-finder-grid thead .pd-integer,
 :host thead .pd-integer,
-tree-finder tbody .pd-integer,
+tree-finder-grid tbody .pd-integer,
 :host tbody .pd-integer {
   text-align: right;
 }
-tree-finder tbody th,
+tree-finder-grid tbody th,
 :host tbody th {
   text-align: left;
 }
-tree-finder span.pd-tree-container,
+tree-finder-grid span.pd-tree-container,
 :host span.pd-tree-container {
   display: flex;
   align-items: center;
   height: 100%;
 }
-tree-finder thead .pd-string,
+tree-finder-grid thead .pd-string,
 :host thead .pd-string,
-tree-finder tbody .pd-string,
+tree-finder-grid tbody .pd-string,
 :host tbody .pd-string,
-tree-finder thead .pd-date,
+tree-finder-grid thead .pd-date,
 :host thead .pd-date,
-tree-finder tbody .pd-date,
+tree-finder-grid tbody .pd-date,
 :host tbody .pd-date,
-tree-finder thead .pd-datetime,
+tree-finder-grid thead .pd-datetime,
 :host thead .pd-datetime,
-tree-finder tbody .pd-datetime,
+tree-finder-grid tbody .pd-datetime,
 :host tbody .pd-datetime {
   text-align: left;
 }
-tree-finder thead tr:last-child th,
+tree-finder-grid thead tr:last-child th,
 :host thead tr:last-child th {
   border-bottom: 1px solid #ddd;
 }
-tree-finder th,
+tree-finder-grid th,
 :host th {
   position: relative;
 }
-tree-finder tr th span.pd-tree-group,
+tree-finder-grid tr th span.pd-tree-group,
 :host tr th span.pd-tree-group {
   margin-left: 5px;
   margin-right: 15px;
   border-left: 1px solid #eee;
   height: 100%;
 }
-tree-finder td,
+tree-finder-grid td,
 :host td,
-tree-finder th,
+tree-finder-grid th,
 :host th {
   white-space: nowrap;
   font-size: 12px;
@@ -115,32 +115,32 @@ tree-finder th,
   padding-bottom: 0px;
   height: 19px;
 }
-tree-finder tbody:hover tr:hover,
+tree-finder-grid tbody:hover tr:hover,
 :host tbody:hover tr:hover {
   background: var(--tf-row-hover-background);
   opacity: 1;
 }
-tree-finder tbody:hover tr:hover,
+tree-finder-grid tbody:hover tr:hover,
 :host tbody:hover tr:hover {
   color: var(--tf-row-hover-color);
 }
-tree-finder table *,
+tree-finder-grid table *,
 :host table * {
   box-sizing: border-box;
 }
-tree-finder table,
+tree-finder-grid table,
 :host table {
   position: absolute;
   overflow: hidden;
   color: #666;
 }
-tree-finder span.pd-row-header-icon,
+tree-finder-grid span.pd-row-header-icon,
 :host span.pd-row-header-icon {
   color: #AAA;
   padding-right: 4px;
   font-family: "Material Icons";
 }
-tree-finder span.pd-column-header-icon,
+tree-finder-grid span.pd-column-header-icon,
 :host span.pd-column-header-icon {
   font-size: 10px;
   padding-left: 3px;
@@ -148,23 +148,23 @@ tree-finder span.pd-column-header-icon,
   width: 10px;
   font-family: "Material Icons";
 }
-tree-finder span.pd-row-header-icon:hover,
+tree-finder-grid span.pd-row-header-icon:hover,
 :host span.pd-row-header-icon:hover {
   color: #1a7da1;
   text-shadow: 0px 0px 3px #1a7da1;
 }
-tree-finder .pd-selected td,
+tree-finder-grid .pd-selected td,
 :host .pd-selected td {
   background-color: #eee;
 }
-tree-finder .pd-cell-clip,
+tree-finder-grid .pd-cell-clip,
 :host .pd-cell-clip {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-tree-finder td span.pd-group-name,
+tree-finder-grid td span.pd-group-name,
 :host td span.pd-group-name,
-tree-finder th span.pd-group-name,
+tree-finder-grid th span.pd-group-name,
 :host th span.pd-group-name {
   margin-right: -5px;
   padding-right: 5px;
@@ -172,18 +172,18 @@ tree-finder th span.pd-group-name,
   flex: 1;
   height: 100%;
 }
-tree-finder th span.pd-group-name,
+tree-finder-grid th span.pd-group-name,
 :host th span.pd-group-name {
   text-align: left;
 }
-tree-finder td th span.pd-group-leaf,
+tree-finder-grid td th span.pd-group-leaf,
 :host td th span.pd-group-leaf,
-tree-finder th span.pd-group-leaf,
+tree-finder-grid th span.pd-group-leaf,
 :host th span.pd-group-leaf {
   margin-left: 16px;
   height: 100%;
 }
-tree-finder .pd-column-resize,
+tree-finder-grid .pd-column-resize,
 :host .pd-column-resize {
   height: 100%;
   width: 10px;
@@ -192,31 +192,31 @@ tree-finder .pd-column-resize,
   right: 0;
   cursor: col-resize;
 }
-tree-finder::-webkit-scrollbar,
+tree-finder-grid::-webkit-scrollbar,
 :host::-webkit-scrollbar,
-tree-finder::-webkit-scrollbar-corner,
+tree-finder-grid::-webkit-scrollbar-corner,
 :host::-webkit-scrollbar-corner {
   background-color: transparent;
   height: 12px;
   width: 12px;
 }
-tree-finder::-webkit-scrollbar-thumb,
+tree-finder-grid::-webkit-scrollbar-thumb,
 :host::-webkit-scrollbar-thumb {
   background-clip: content-box;
   background-color: rgba(0, 0, 0, 0);
   border-radius: 5px;
 }
-tree-finder::-webkit-scrollbar-thumb:horizontal,
+tree-finder-grid::-webkit-scrollbar-thumb:horizontal,
 :host::-webkit-scrollbar-thumb:horizontal {
   border-bottom: 2px solid transparent;
   border-top: 2px solid transparent;
 }
-tree-finder::-webkit-scrollbar-thumb:vertical,
+tree-finder-grid::-webkit-scrollbar-thumb:vertical,
 :host::-webkit-scrollbar-thumb:vertical {
   border-left: 2px solid transparent;
   border-right: 2px solid transparent;
 }
-tree-finder:hover::-webkit-scrollbar-thumb,
+tree-finder-grid:hover::-webkit-scrollbar-thumb,
 :host:hover::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.3);
 }

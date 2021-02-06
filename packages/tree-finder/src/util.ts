@@ -93,6 +93,16 @@ export namespace RegularTable {
   }
 }
 
+export namespace Tag {
+  export const html = (strings: TemplateStringsArray, ...args: any[]) => strings
+    .map((str, i) => [str, args[i]])
+    .flat()
+    .filter((a) => !!a)
+    .join("")
+    .replace(/>\s*\n\s*</g, '><')
+    .replace(/\s*\n\s*/g, ' ');
+}
+
 export namespace TreeHeader {
   const treeTemplate = document.createElement("template");
 

@@ -22,10 +22,7 @@
   text-align: right;
 }
 
-tree-finder {
-  user-select: none;
-}
-
-tree-finder table {
+tree-finder-grid table {
   cursor: default;
+  user-select: none;
 }
