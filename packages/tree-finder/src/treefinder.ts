@@ -28,7 +28,7 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     // run listener initializations only once
     if (!this._initializedListeners) {
       this.addStyleListener(() => this.columnHeaderStyleListener())
-      this.addStyleListener(() => this.styleListener());
+      this.addStyleListener(() => this.rowStyleListener());
 
       this.addEventListener("mousedown", event => this.onSortClick(event));
       this.addEventListener("mousedown", event => this.onTreeClick(event));
@@ -83,17 +83,6 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     };
   }
 
-  styleListener() {
-    const trs = this.querySelectorAll("tbody tr");
-    for (const tr of trs) {
-      // style the browser's filetype icons
-      const row_name_node = tr.children[0].querySelector(".pd-group-name") as HTMLElement;
-
-      const text = tr.children[this.model.ixByColumn["kind"]].textContent;
-      row_name_node.classList.add("tf-browser-filetype-icon", `tf-browser-${text}-icon`);
-    }
-  }
-
   columnHeaderStyleListener() {
     const header_depth = (this as any)._view_cache.config.row_pivots.length - 1;
 
@@ -110,6 +99,19 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
 
       th.classList.toggle("tf-header", true);
       th.classList.toggle("tf-header-align-left", true);
+    }
+  }
+
+  rowStyleListener() {
+    const spans = this.querySelectorAll("tbody th .pd-group-name");
+    for (const span of spans) {
+      // style the browser's filetype icons
+      const {y, value} = RegularTable.metadataFromElement(span as HTMLTableCellElement, this) as any;
+
+      if (value) {
+        const kind = this.model.contents[y].row.kind;
+        span.classList.add("tf-browser-filetype-icon", `tf-browser-${kind}-icon`);
+      }
     }
   }
 
