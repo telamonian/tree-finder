@@ -1,9 +1,9 @@
-/*----------------------------------------------------------------------------|
-| Copyright (c) 2020, Max Klein
-|
-| This file is part of the tree-finder library, distributed under the terms of
-| the BSD 3 Clause license. The full license can be found in the LICENSE file.
-|----------------------------------------------------------------------------*/
+/*
+ * Copyright (c) 2020, Max Klein
+ *
+ * This file is part of the tree-finder library, distributed under the terms of
+ * the BSD 3 Clause license. The full license can be found in the LICENSE file.
+ */
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -11,71 +11,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 // To improve build times for large projects enable fork-ts-checker-webpack-plugin
 // const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
-// load bitmap image rules
-const bitmapRules = [
-  {
-    test: /\.(jpg|png|gif)$/,
-    use: "file-loader"
-  },
-];
-
-// css/style rules
-const cssRules = [
-  {
-    test: /\.module\.css$/,
-    use: [
-      {
-        loader: "css-loader",
-        options: {
-          importLoaders: 1,
-          import: true,
-          modules: {
-            localIdentName: "[local]", //"[path][name]__[local]--[hash:base64:5]",
-            // compileType: "module",
-            // mode: "local",
-            // auto: true,
-            // exportGlobals: true,
-            // localIdentContext: path.resolve(__dirname, "src"),
-            // localIdentHashPrefix: "my-custom-hash",
-            // namedExport: true,
-            // exportLocalsConvention: "camelCase",
-            // exportOnlyLocals: false,
-          },
-        },
-      },
-    ],
-  },
-  {
-    test: /(?<!\.module)\.css$/,
-    use: [
-      // MiniCssExtractPlugin.loader,
-      "style-loader",
-      "css-loader",
-    ],
-  },
-];
-
-// load dependency source maps
-const dependencySrcMapRules = [
-  {
-    test: /\.js$/,
-    use: "source-map-loader",
-    enforce: "pre",
-    exclude: /node_modules/,
-  },
-  {test: /\.js.map$/, use: "file-loader"},
-];
-
-// load svg via css url() rules
-const svgUrlRules = [
-  {
-    test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-    use: {
-      loader: "svg-url-loader",
-      options: {encoding: "none", limit: 10000},
-    },
-  },
-];
+const { dependencySrcMapRules, stylingRules, svgUrlRules } = require("../../webpack.rules");
 
 let config = {
   mode: process.env.NODE_ENV || "development",
@@ -102,8 +38,8 @@ let config = {
           }
         }
       },
-      ...cssRules,
       ...dependencySrcMapRules,
+      ...stylingRules,
       ...svgUrlRules,
     ]
   },

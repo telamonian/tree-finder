@@ -1,15 +1,15 @@
-/*----------------------------------------------------------------------------|
-| Copyright (c) 2020, Max Klein
-|
-| This file is part of the tree-finder library, distributed under the terms of
-| the BSD 3 Clause license. The full license can be found in the LICENSE file.
-|----------------------------------------------------------------------------*/
+/*
+ * Copyright (c) 2020, Max Klein
+ *
+ * This file is part of the tree-finder library, distributed under the terms of
+ * the BSD 3 Clause license. The full license can be found in the LICENSE file.
+ */
 import { IContentRow } from "./content";
 import { ContentsModel } from "./model";
 import { TreeFinderGridElement } from "./grid";
 import { Tag } from "./util";
 
-import panelCSS from "../style/index.module.css";
+import panelCSS from "../style/grid/index.less";
 
 export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   connectedCallback() {

@@ -1,48 +1,26 @@
-/*----------------------------------------------------------------------------|
-| Copyright (c) 2020, Max Klein
-|
-| This file is part of the tree-finder library, distributed under the terms of
-| the BSD 3 Clause license. The full license can be found in the LICENSE file.
-|----------------------------------------------------------------------------*/
+/*
+ * Copyright (c) 2020, Max Klein
+ *
+ * This file is part of the tree-finder library, distributed under the terms of
+ * the BSD 3 Clause license. The full license can be found in the LICENSE file.
+ */
+const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
+// const RemoveEmptyScriptsPlugin = require('webpack-remove-empty-scripts');
 
-// load bitmap image rules
-const bitmapRules = [
-  {
-    test: /\.(jpg|png|gif)$/,
-    use: 'file-loader',
-  },
-];
-
-// load dependency source maps
-const dependencySrcMapRules = [
-  {
-    test: /\.js$/,
-    use: 'source-map-loader',
-    enforce: 'pre',
-    exclude: /node_modules/,
-  },
-  {test: /\.js.map$/, use: 'file-loader'},
-];
-
-// load svg via css url() rules
-const svgUrlRules = [
-  {
-    test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-    use: {
-      loader: 'svg-url-loader',
-      options: {encoding: 'none', limit: 10000},
-    },
-  },
-];
+const { dependencySrcMapRules, stylingRules, svgUrlRules } = require("../../webpack.rules");
 
 module.exports = {
-  entry: './src/index.ts',
+  entry: {
+    'index' : './src/index.ts',
+    'themes': ['./style/theme/material.css'],
+  },
 
   devtool: 'source-map',
 
   output: {
-    filename: 'tree-finder.js',
+    // filename: 'tree-finder.js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/dist/',
     // libraryTarget: 'umd',
@@ -59,6 +37,7 @@ module.exports = {
         exclude: /node_modules/,
       },
       ...dependencySrcMapRules,
+      ...stylingRules,
       ...svgUrlRules,
     ],
   },
@@ -66,6 +45,14 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
+
+  plugins: [
+    new FixStyleOnlyEntriesPlugin(),
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+    }),
+    // new RemoveEmptyScriptsPlugin(),
+  ],
 
   // devServer: {
   //   contentBase: [path.join(__dirname, "examples"), path.join(__dirname, ".")],
