@@ -281,10 +281,10 @@
     }
 
     function tree_header_levels(path, is_open, is_leaf) {
-      const tree_levels = path.slice(1).map(() => '<span class="pd-tree-group"></span>');
+      const tree_levels = path.slice(1).map(() => '<span class="rt-tree-group"></span>');
       if (!is_leaf) {
         const group_icon = is_open ? "remove" : "add";
-        const tree_button = `<span class="pd-row-header-icon">${group_icon} </span>`;
+        const tree_button = `<span class="rt-row-header-icon">${group_icon} </span>`;
         tree_levels.push(tree_button);
       }
 
@@ -293,10 +293,10 @@
 
     function tree_header({path, is_open, kind}) {
       const name = path.length === 0 ? "TOTAL" : path[path.length - 1];
-      const header_classes = kind === "text" ? "pd-group-name pd-group-leaf" : "pd-group-name";
+      const header_classes = kind === "text" ? "rt-group-name rt-group-leaf" : "rt-group-name";
       const tree_levels = tree_header_levels(path, is_open, kind === "text");
       const header_text = name;
-      TEMPLATE.innerHTML = `<span class="pd-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
+      TEMPLATE.innerHTML = `<span class="rt-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
       return TEMPLATE.content.firstChild;
     }
 
@@ -338,7 +338,7 @@
       const trs = treeFinder.querySelectorAll("tbody tr");
       for (const tr of trs) {
         const {children} = tr;
-        const row_name_node = children[0].querySelector(".pd-group-name");
+        const row_name_node = children[0].querySelector(".rt-group-name");
         for (let i = 1; i < children.length; i++) {
           const text = children[i].textContent;
           if (text === "dir") {
@@ -366,7 +366,7 @@
 
     function file_browser_on_tree_click() {
       let target = event.target;
-      if (target.tagName === "SPAN" && target.className === "pd-row-header-icon") {
+      if (target.tagName === "SPAN" && target.className === "rt-row-header-icon") {
         let metadata = treeFinder.getMeta(target);
         while (!metadata && target.parentElement) {
           target = target.parentElement;

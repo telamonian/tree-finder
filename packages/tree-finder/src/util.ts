@@ -107,10 +107,10 @@ export namespace TreeHeader {
   const treeTemplate = document.createElement("template");
 
   function treeHeaderLevels({isDir, isOpen, path}: {isDir: boolean, isOpen: boolean, path: string[]}) {
-    const tree_levels = path.slice(1).map(() => '<span class="pd-tree-group"></span>');
+    const tree_levels = path.slice(1).map(() => '<span class="rt-tree-group"></span>');
     if (isDir) {
       const group_icon = isOpen ? "remove" : "add";
-      const tree_button = `<span class="pd-row-header-icon">${group_icon}</span>`;
+      const tree_button = `<span class="rt-row-header-icon">${group_icon}</span>`;
       tree_levels.push(tree_button);
     }
 
@@ -119,10 +119,10 @@ export namespace TreeHeader {
 
   export function treeHeader({isDir, isOpen, path}: {isDir: boolean, isOpen: boolean, path: string[]}) {
     const tree_levels = treeHeaderLevels({isDir, isOpen, path});
-    const header_classes = !isDir ? "pd-group-name pd-group-leaf" : "pd-group-name";
+    const header_classes = !isDir ? "rt-group-name rt-group-leaf" : "rt-group-name";
     const header_text = path.length === 0 ? "TOTAL" : path[path.length - 1];
 
-    treeTemplate.innerHTML = `<span class="pd-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
+    treeTemplate.innerHTML = `<span class="rt-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
     return treeTemplate.content.firstChild;
   }
 }

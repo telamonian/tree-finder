@@ -101,7 +101,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   }
 
   rowStyleListener() {
-    const spans = this.querySelectorAll("tbody th .pd-group-name");
+    const spans = this.querySelectorAll("tbody th .rt-group-name");
     for (const span of spans) {
       // style the browser's filetype icons
       const {y, value} = RegularTable.metadataFromElement(span as HTMLTableCellElement, this)!;
@@ -119,7 +119,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     }
 
     const element = event.target as HTMLTableCellElement;
-    if (element.classList.contains("pd-column-resize")) {
+    if (element.classList.contains("rt-column-resize")) {
       // don't sort when the column resize handle nodes are clicked
       return;
     }
@@ -143,7 +143,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     }
 
     let element = event.target as HTMLTableCellElement;
-    if (!element.classList.contains("pd-row-header-icon")) {
+    if (!element.classList.contains("rt-row-header-icon")) {
       // only open/close node when open/close icon is clicked
       return;
     }
