@@ -10,6 +10,7 @@
     "clean:slate": "yarn run clean && rimraf node_modules",
     "start": "webpack-dev-server --open 'chromium'",
     "webpack": "webpack --color",
+    "webpack:prod": "NODE_ENV=production webpack --color",
     "webpack:watch": "webpack --color --watch"
   },
   "keywords": [],

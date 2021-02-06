@@ -10,6 +10,8 @@ import { IContentRow } from "./content";
 import { TreeFinderGridElement } from "./grid";
 import { TreeFinderPanelElement } from "./panel";
 
+import "../style/grid/index.less";
+
 declare global {
   interface Document {
     createElement<T extends IContentRow>(tagName: "tree-finder-grid", options?: ElementCreationOptions): TreeFinderGridElement<T>;

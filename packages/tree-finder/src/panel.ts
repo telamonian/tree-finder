@@ -9,7 +9,7 @@ import { ContentsModel } from "./model";
 import { TreeFinderGridElement } from "./grid";
 import { Tag } from "./util";
 
-import panelCSS from "../style/grid/index.less";
+// import panelCSS from "../style/grid/index.module.less";
 
 export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   connectedCallback() {
@@ -21,15 +21,22 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
 
   clear() {
     this.innerHTML = Tag.html`
-      <div className="tf-panel-breadcrumbs" slot="breadcrumbs"></div>
-      <div className="tf-panel-filter" slot="filter"></div>
-      <tree-finder-grid className="tf-panel-grid" slot="grid"></tree-finder-grid>
+      <div class="tf-panel-breadcrumbs" slot="breadcrumbs"></div>
+      <div class="tf-panel-filter" slot="filter"></div>
+      <tree-finder-grid class="tf-panel-grid" slot="grid"></tree-finder-grid>
     `;
 
     [this.breadcrumbs, this.filter, this.grid] = this.children as any as [HTMLElement, HTMLElement, TreeFinderGridElement<T>];
   }
 
-  async init(root: T, options: Partial<TreeFinderPanelElement.IOptions<T>> = {}) {
+  async init(root: T, options: Partial<TreeFinderPanelElement.IOptions<T> & ContentsModel.IOptions<T> & TreeFinderGridElement.IOptions<T>> = {}) {
+    // const {
+    //   openChildren = true,
+    // } = options;
+    // this.options = {
+    //   openChildren,
+    // }
+
     this.clear();
 
     const gridOptions: Partial<TreeFinderGridElement.IOptions<T>> = {
@@ -60,7 +67,6 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
 
     this.shadowRoot!.innerHTML = Tag.html`
       <style>
-        ${panelCSS}
       </style>
       <div class="tf-panel-breadcrumbs-container">
         ${breadcrumbsSlot}
@@ -73,9 +79,10 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
       </div>
     `;
 
-    [, this.breadcrumbsContainer, this.filterContainer, this.gridContainer] = this.shadowRoot!.children as any as [void, HTMLElement, HTMLElement, HTMLElement];
+    [this.shadowSheet, this.breadcrumbsContainer, this.filterContainer, this.gridContainer] = this.shadowRoot!.children as any as [StyleSheet, HTMLElement, HTMLElement, HTMLElement];
   }
 
+  protected shadowSheet: StyleSheet;
   protected breadcrumbsContainer: HTMLElement;
   protected filterContainer: HTMLElement;
   protected gridContainer: HTMLElement;
@@ -91,5 +98,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
 }
 
 export namespace TreeFinderPanelElement {
-  export interface IOptions<T extends IContentRow> extends ContentsModel.IOptions<T>, TreeFinderGridElement.IOptions<T> {}
+  export interface IOptions<T extends IContentRow> {
+    openChildren: boolean;
+  }
 }
