@@ -55,7 +55,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   }
 
   async draw() {
-    await (this.grid as any).draw();
+    await this.grid.draw();
   }
 
   create_shadow_dom() {
