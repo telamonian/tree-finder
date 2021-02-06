@@ -35,7 +35,7 @@
     "webpack:watch": "webpack --color --watch"
   },
   "dependencies": {
-    "regular-table": "^0.1.6"
+    "regular-table": "^0.2.1"
   },
   "devDependencies": {
     "@types/react": "^17.0.0",

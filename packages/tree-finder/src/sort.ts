@@ -56,7 +56,7 @@ function contentsSorterClosure<T extends IContentRow>(sortStates: SortStates<T>)
       }
 
       if (typeof lval === "string") {
-        cmp = (lval as string).localeCompare(rval as any as string);
+        cmp = lval.localeCompare(rval as any as string);
       } else {
         cmp = (lval as any as number) - (rval as any as number);
       }
