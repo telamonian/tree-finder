@@ -30,9 +30,9 @@
     "prepublishOnly": "npm run clean && npm run build && npm run webpack:prod",
     "svgo": "svgo --config svgo.yaml",
     "svgo:uri": "svgo --config svgo.yaml --datauri=base64 -o -",
-    "webpack": "webpack --color --config webpack.dev.js",
-    "webpack:prod": "NODE_ENV=production webpack --color --config webpack.prod.js",
-    "webpack:watch": "webpack --color --config webpack.dev.js --watch"
+    "webpack": "webpack --color",
+    "webpack:prod": "NODE_ENV=production webpack --color",
+    "webpack:watch": "webpack --color --watch"
   },
   "dependencies": {
     "regular-table": "^0.1.6"

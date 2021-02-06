@@ -6,7 +6,7 @@
  */
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-const cssLoader = () => { return {
+const cssLoader = () => {return {
   loader: "css-loader",
   options: {
     importLoaders: 1,
@@ -25,6 +25,20 @@ const cssLoader = () => { return {
     },
   },
 };}
+
+// const postCssLoader = () => {return {
+//   loader: "postcss-loader",
+//   ...(process.env.NODE_ENV === "production") && {options: {
+//     postcssOptions: {
+//       minimize: true,
+//       plugins: [
+//         cssnano({
+//           preset: "lite"
+//         }),
+//       ],
+//     },
+//   }},
+// };}
 
 // load bitmap image rules
 const bitmapRules = [
@@ -56,8 +70,8 @@ const stylingRules = [
   {
     test: /(?<!\.module)\.css$/,
     use: [
-      MiniCssExtractPlugin.loader,
       // "style-loader",
+      MiniCssExtractPlugin.loader,
       cssLoader(),
     ],
   },
@@ -72,8 +86,8 @@ const stylingRules = [
   {
     test: /(?<!\.module)\.less$/,
     use: [
-      MiniCssExtractPlugin.loader,
       // "style-loader",
+      MiniCssExtractPlugin.loader,
       cssLoader(),
       "postcss-loader",
       "less-loader",

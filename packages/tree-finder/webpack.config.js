@@ -4,6 +4,7 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
+const CssnanoPlugin = require('cssnano-webpack-plugin');
 const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
@@ -11,18 +12,18 @@ const path = require('path');
 
 const { dependencySrcMapRules, stylingRules, svgUrlRules } = require("../../webpack.rules");
 
-module.exports = {
+const treeFinderConfig = {
   entry: {
-    'index' : './src/index.ts',
-    'themes': ['./style/theme/material.css'],
+    'tree-finder': './src/index.ts',
   },
 
   devtool: 'source-map',
 
   output: {
-    // filename: 'tree-finder.js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/dist/',
+
+    // filename: "[name].js",
     // libraryTarget: 'umd',
 
     // use a unique name for each chunk
@@ -47,12 +48,18 @@ module.exports = {
   },
 
   plugins: [
-    new FixStyleOnlyEntriesPlugin(),
-    new MiniCssExtractPlugin({
-      filename: '[name].css',
-    }),
-    // new RemoveEmptyScriptsPlugin(),
+    new MiniCssExtractPlugin(),
+    ...(process.env.NODE_ENV === 'production') && [new CssnanoPlugin()],
   ],
+
+  mode: process.env.NODE_ENV === 'production' ? 'production': 'development',
+
+  optimization: {
+    minimize: process.env.NODE_ENV === 'production',
+
+    // webpack v5.x only syntax
+    // ...(process.env.NODE_ENV === 'production') && {minimizer: ['...', new CssnanoPlugin()]},
+  },
 
   // devServer: {
   //   contentBase: [path.join(__dirname, "examples"), path.join(__dirname, ".")],
@@ -77,3 +84,54 @@ module.exports = {
   //   }
   // },
 };
+
+const themeConfig = {
+  entry: {
+    'material': './style/theme/material.css',
+  },
+
+  devtool: 'source-map',
+
+  output: {
+    path: path.resolve(__dirname, 'dist/theme'),
+    publicPath: '/dist/',
+  },
+
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+      ...dependencySrcMapRules,
+      ...stylingRules,
+      ...svgUrlRules,
+    ],
+  },
+
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
+  },
+
+  plugins: [
+    new FixStyleOnlyEntriesPlugin(),
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+    }),
+    ...(process.env.NODE_ENV === 'production') && [new CssnanoPlugin()],
+
+    // new RemoveEmptyScriptsPlugin(),
+  ],
+
+  mode: process.env.NODE_ENV === 'production' ? 'production': 'development',
+
+  optimization: {
+    minimize: process.env.NODE_ENV === 'production',
+  },
+};
+
+module.exports = [
+  treeFinderConfig,
+  themeConfig
+]
