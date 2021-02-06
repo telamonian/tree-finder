@@ -6,7 +6,7 @@
 |----------------------------------------------------------------------------*/
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 // To improve build times for large projects enable fork-ts-checker-webpack-plugin
 // const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
@@ -17,7 +17,18 @@ const bitmapRules = [
     test: /\.(jpg|png|gif)$/,
     use: 'file-loader'
   },
-]
+];
+
+// css/style rules
+const cssRules = [
+  {
+    test: /\.css$/,
+    use: [
+      // 'style-loader',
+      'css-loader',
+    ]
+  },
+];
 
 // load dependency source maps
 const dependencySrcMapRules = [
@@ -28,7 +39,7 @@ const dependencySrcMapRules = [
     exclude: /node_modules/,
   },
   {test: /\.js.map$/, use: 'file-loader'},
-]
+];
 
 // load svg via css url() rules
 const svgUrlRules = [
@@ -39,7 +50,7 @@ const svgUrlRules = [
       options: {encoding: 'none', limit: 10000},
     },
   },
-]
+];
 
 let config = {
   mode: process.env.NODE_ENV || 'development',
@@ -56,10 +67,6 @@ let config = {
   module: {
     rules: [
       {
-        test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader']
-      },
-      {
         test: /\.tsx?$/,
         exclude: /node_modules/,
         use: {
@@ -70,6 +77,7 @@ let config = {
           }
         }
       },
+      ...cssRules,
       ...dependencySrcMapRules,
       ...svgUrlRules,
     ]
@@ -105,7 +113,7 @@ let config = {
     new HtmlWebpackPlugin({
       title: 'simple tree-finder example'
     }),
-    new MiniCssExtractPlugin(),
+    // new MiniCssExtractPlugin(),
   ],
 }
 

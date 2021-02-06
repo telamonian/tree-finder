@@ -13,8 +13,8 @@ const RegularTableElement = customElements.get('regular-table');
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("en-us");
 
-export class TreeFinderElement<T extends IContentRow> extends RegularTableElement {
-  async init(model: ContentsModel<T>, options: Partial<TreeFinderElement.IOptions<T>> = {}) {
+export class TreeFinderGridElement<T extends IContentRow> extends RegularTableElement {
+  async init(model: ContentsModel<T>, options: Partial<TreeFinderGridElement.IOptions<T>> = {}) {
     const {
       doWindowReize = false,
     } = options;
@@ -189,13 +189,13 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     }
   }
 
-  protected options: TreeFinderElement.IOptions<T>;
+  protected options: TreeFinderGridElement.IOptions<T>;
   protected model: ContentsModel<T>;
 
   private _initializedListeners: boolean = false;
 }
 
-export namespace TreeFinderElement {
+export namespace TreeFinderGridElement {
   export interface IOptions<T extends IContentRow> {
     /**
      * if true, redraw the tree-finder element on window resize events

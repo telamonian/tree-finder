@@ -5,15 +5,14 @@
 | the BSD 3 Clause license. The full license can be found in the LICENSE file.
 |----------------------------------------------------------------------------*/
 const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 // load bitmap image rules
 const bitmapRules = [
   {
     test: /\.(jpg|png|gif)$/,
-    use: 'file-loader'
+    use: 'file-loader',
   },
-]
+];
 
 // load dependency source maps
 const dependencySrcMapRules = [
@@ -24,7 +23,7 @@ const dependencySrcMapRules = [
     exclude: /node_modules/,
   },
   {test: /\.js.map$/, use: 'file-loader'},
-]
+];
 
 // load svg via css url() rules
 const svgUrlRules = [
@@ -35,7 +34,7 @@ const svgUrlRules = [
       options: {encoding: 'none', limit: 10000},
     },
   },
-]
+];
 
 module.exports = {
   entry: './src/index.ts',
@@ -55,10 +54,6 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader']
-      },
-      {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
@@ -71,10 +66,6 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
-
-  plugins: [
-    new MiniCssExtractPlugin(),
-  ],
 
   // devServer: {
   //   contentBase: [path.join(__dirname, "examples"), path.join(__dirname, ".")],

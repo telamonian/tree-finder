@@ -4,11 +4,11 @@
 | This file is part of the tree-finder library, distributed under the terms of
 | the BSD 3 Clause license. The full license can be found in the LICENSE file.
 |----------------------------------------------------------------------------*/
-import { DEFAULT_COL, Content, IContentRow } from "./content";
+import { Content, IContentRow } from "./content";
 import { SortStates, sortContentRoot} from "./sort";
 
 export class ContentsModel<T extends IContentRow> {
-  constructor(root?: T, options: Partial<TreeFinderGridElement.IOptions<T>> = {}) {
+  constructor(root?: T, options: Partial<ContentsModel.IOptions<T>> = {}) {
     this.options = options;
 
     if (root) {
@@ -90,7 +90,7 @@ export class ContentsModel<T extends IContentRow> {
     return {...this._options};
   }
 
-  set options(options: Partial<TreeFinderGridElement.IOptions<T>>) {
+  set options(options: Partial<ContentsModel.IOptions<T>>) {
     const {
       columnNames,
       doRefetch = false,
@@ -110,12 +110,12 @@ export class ContentsModel<T extends IContentRow> {
   protected _root: Content<T>;
   protected _sortStates: SortStates<T>;
 
-  protected _options: TreeFinderGridElement.IOptions<T>;
+  protected _options: ContentsModel.IOptions<T>;
 
   private _ixByColumn: {[k in keyof T]: number};
 }
 
-export namespace TreeFinderGridElement {
+export namespace ContentsModel {
   export interface IOptions<T extends IContentRow> {
     /**
      * optionally specify the visible columns, and the order they appear in

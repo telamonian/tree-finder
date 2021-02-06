@@ -8,8 +8,33 @@ const { merge } = require('webpack-merge');
 
 const common = require('./webpack.common.js');
 
+// css/style rules
+const cssRules = [
+  {
+    test: /\.css$/i,
+    use: [
+      // "style-loader",
+      // "@teamsupercell/typings-for-css-modules-loader",
+      // {
+      //   loader: "@teamsupercell/typings-for-css-modules-loader",
+      //   options: {
+      //     verifyOnly: true,
+      //   }
+      // },
+      "css-loader",
+    ],
+  },
+];
+
 module.exports = merge(common, {
   mode: 'development',
+
+  module: {
+    rules: [
+      ...cssRules,
+    ],
+  },
+
   optimization: {
     minimize: false,
   },

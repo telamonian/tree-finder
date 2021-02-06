@@ -7,25 +7,32 @@
 import "regular-table";
 
 import { IContentRow } from "./content";
-import { TreeFinderElement } from "./treefinder";
-
-import "../style/index.css";
+import { TreeFinderGridElement } from "./grid";
+import { TreeFinderPanelElement } from "./panel";
 
 declare global {
   interface Document {
-    createElement<T extends IContentRow>(tagName: "tree-finder", options?: ElementCreationOptions): TreeFinderElement<T>;
+    createElement<T extends IContentRow>(tagName: "tree-finder-grid", options?: ElementCreationOptions): TreeFinderGridElement<T>;
+  }
+  interface CustomElementRegistry {
+    get(name: "tree-finder-grid"): typeof TreeFinderGridElement;
   }
 
+  interface Document {
+    createElement<T extends IContentRow>(tagName: "tree-finder", options?: ElementCreationOptions): TreeFinderPanelElement<T>;
+  }
   interface CustomElementRegistry {
-    get(name: 'tree-finder'): typeof TreeFinderElement;
+    get(name: "tree-finder"): typeof TreeFinderPanelElement;
   }
 }
 
-customElements.define('tree-finder', TreeFinderElement);
+customElements.define("tree-finder-grid", TreeFinderGridElement);
+customElements.define("tree-finder", TreeFinderPanelElement);
 
 export * from "./content";
+export * from "./panel";
 export * from "./mockcontent";
 export * from "./model";
 export * from "./sort";
-export * from "./treefinder";
+export * from "./grid";
 export * from "./util";
