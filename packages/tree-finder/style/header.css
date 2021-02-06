@@ -12,7 +12,7 @@
   text-align: right;
 }
 
-thead th.tf-header-corner:before {
+thead th.tf-header-corner:first-child:before {
   content: "path";
   float: left;
 }

@@ -59,7 +59,7 @@ export class ContentsModel<T extends IContentRow> {
   }
 
   sort(props: {col?: keyof T, multisort?: boolean} = {}) {
-    const {col = DEFAULT_COL, multisort = false} = props;
+    const {col, multisort} = props;
 
     this._root.open(this._options.doRefetch);
 

@@ -32,8 +32,14 @@ export class Content<T extends IContentRow> {
     this._children = this.row.getChildren!().map((c: T) => new Content<T>(c));
   }
 
-  getPathAtDepth(depth = 0) {
-    return this.row.path.slice(depth);
+  getPathAtDepth(depth = 0, fill?: string) {
+    const pth = this.row.path.slice(depth);
+
+    if (fill !== undefined && pth.length > 1) {
+      return [...Array(pth.length - 1).fill(fill), pth[pth.length - 1]];
+    } else {
+      return pth;
+    }
   }
 
   open(refresh: boolean = false) {

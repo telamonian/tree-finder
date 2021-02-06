@@ -65,7 +65,7 @@ export function mockContent(props: {path: Path, kind: string, modDays?: number, 
         for (let i = 0; i < nchildren; i++) {
           children.push(mockContent({
             kind: i < ndirectories ? "dir" : "text",
-            path: [...path, i < ndirectories ? `${dirNames[i]}/` : `file_${`${mockFileIx++}`.padStart(7, '0')}.txt`],
+            path: [...path, i < ndirectories ? `${dirNames[i]}` : `file_${`${mockFileIx++}`.padStart(7, '0')}.txt`],
             nchildren,
             ndirectories,
             randomize,

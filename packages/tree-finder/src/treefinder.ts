@@ -4,9 +4,9 @@
 | This file is part of the tree-finder library, distributed under the terms of
 | the BSD 3 Clause license. The full license can be found in the LICENSE file.
 |----------------------------------------------------------------------------*/
-import { DEFAULT_COL, Content, IContentRow } from "./content";
+import { IContentRow } from "./content";
 import { ContentsModel } from "./model";
-import { RegularTable } from "./util";
+import { RegularTable, TreeHeader } from "./util";
 
 // await customElements.whenDefined('regular-table');
 const RegularTableElement = customElements.get('regular-table');
@@ -54,37 +54,36 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
   async dataListener(start_col: number, start_row: number, end_col: number, end_row: number) {
     const data = [];
     for (let cix = start_col; cix < end_col - 1; cix++) {
-      const name = this.model.columns[cix];
+      const column = this.model.columns[cix];
       data.push(
-        this.model.contents.slice(start_row, end_row).map((c) => {
-          const val = c.row[name];
+        this.model.contents.slice(start_row, end_row).map(content => {
+          const val = content.row[column];
           return val instanceof Date ? DATE_FORMATTER.format(val) : val;
         })
       );
     }
 
-    // num_columns/rows: number -> count of cols/rows
-    // column/row_headers: string[] -> arrays of path parts that get displayed as the first value in each col/row. Length > 1 implies a tree structure
     return {
+      // num_columns/rows: number -> count of cols/rows
       num_columns: this.model.columns.length,
       num_rows: this.model.contents.length,
+
+      // column/row_headers: string[] -> arrays of path parts that get displayed as the first value in each col/row. Length > 1 implies a tree structure
       column_headers: this.model.columns.map(col => [col]),
-      row_headers: this.model.contents.slice(start_row, end_row).map((x) => [Tree.treeHeader(x, this.model.pathDepth)]),
+      row_headers: this.model.contents.slice(start_row, end_row).map(x => {
+        return [TreeHeader.treeHeader({
+          isDir: x.isDir,
+          isOpen: x.isOpen,
+          path: x.getPathAtDepth(this.model.pathDepth),
+        })];
+      }),
+
+      // data: object[][] -> array of arrays, each subarray containing all of the visible values for one column
       data,
     };
   }
 
   styleListener() {
-    // // style the column header sort carets
-    // const ths = this.querySelectorAll("thead th");
-    // for (const th of ths) {
-    //   const column_name: keyof T = this.getMeta(th as HTMLTableCellElement)?.column_header?.[0] as any;
-    //   if (column_name) {
-    //     const sort_dir = this.sortOrderByColName[column_name === "0" ? "path" : column_name];
-    //     th.classList.toggle(`tf-sort-${sort_dir}`, !!sort_dir);
-    //   }
-    // }
-
     const trs = this.querySelectorAll("tbody tr");
     for (const tr of trs) {
       // style the browser's filetype icons
@@ -131,7 +130,7 @@ export class TreeFinderElement<T extends IContentRow> extends RegularTableElemen
     }
 
     this.model.sort({
-      col: (metadata as any).value || DEFAULT_COL,
+      col: (metadata as any).value || this.model.sortStates.defaultColumn,
       multisort: event.shiftKey,
     });
 
@@ -200,32 +199,5 @@ export namespace TreeFinderElement {
      * if true, redraw the tree-finder element on window resize events
      */
     doWindowReize: boolean;
-  }
-}
-
-namespace Tree {
-  const treeTemplate = document.createElement("template");
-
-  function treeHeaderLevels({isDir, isOpen, path}: {isDir: boolean, isOpen: boolean, path: string[]}) {
-    const tree_levels = path.slice(1).map(() => '<span class="pd-tree-group"></span>');
-    if (isDir) {
-      const group_icon = isOpen ? "remove" : "add";
-      const tree_button = `<span class="pd-row-header-icon">${group_icon} </span>`;
-      tree_levels.push(tree_button);
-    }
-
-    return tree_levels.join("");
-  }
-
-  export function treeHeader<T extends IContentRow>(node: Content<T>, pathDepth: number) {
-    const kind = node.row.kind;
-    const path = node.getPathAtDepth(pathDepth);
-
-    const name = path.length === 0 ? "TOTAL" : path[path.length - 1];
-    const header_classes = kind === "text" ? "pd-group-name pd-group-leaf" : "pd-group-name";
-    const tree_levels = treeHeaderLevels({isDir: node.isDir, isOpen: node.isOpen, path});
-    const header_text = name;
-    treeTemplate.innerHTML = `<span class="pd-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
-    return treeTemplate.content.firstChild;
   }
 }

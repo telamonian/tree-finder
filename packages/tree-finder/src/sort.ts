@@ -24,6 +24,8 @@ interface ISortStateFull<T extends IContentRow> extends ISortState<T> {
 }
 
 export class SortStates<T extends IContentRow> {
+  readonly defaultColumn = DEFAULT_COL;
+
   constructor(states?: ISortState<T>[]) {
     states = states ?? [{col: DEFAULT_COL, order: DEFAULT_SORT_ORDER}];
 
