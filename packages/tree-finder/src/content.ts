@@ -1,9 +1,9 @@
-/*----------------------------------------------------------------------------|
-| Copyright (c) 2020, Max Klein
-|
-| This file is part of the tree-finder library, distributed under the terms of
-| the BSD 3 Clause license. The full license can be found in the LICENSE file.
-|----------------------------------------------------------------------------*/
+/*
+ * Copyright (c) 2020, Max Klein
+ *
+ * This file is part of the tree-finder library, distributed under the terms of
+ * the BSD 3 Clause license. The full license can be found in the LICENSE file.
+ */
 export const DEFAULT_COL = "path";
 
 export type Path = string[];
@@ -32,8 +32,14 @@ export class Content<T extends IContentRow> {
     this._children = this.row.getChildren!().map((c: T) => new Content<T>(c));
   }
 
-  getPathAtDepth(depth = 0) {
-    return this.row.path.slice(depth);
+  getPathAtDepth(depth = 0, fill?: string) {
+    const pth = this.row.path.slice(depth);
+
+    if (fill !== undefined && pth.length > 1) {
+      return [...Array(pth.length - 1).fill(fill), pth[pth.length - 1]];
+    } else {
+      return pth;
+    }
   }
 
   open(refresh: boolean = false) {

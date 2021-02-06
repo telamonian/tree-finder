@@ -30,25 +30,18 @@
     "prepublishOnly": "npm run clean && npm run build && npm run webpack:prod",
     "svgo": "svgo --config svgo.yaml",
     "svgo:uri": "svgo --config svgo.yaml --datauri=base64 -o -",
-    "webpack": "webpack --color --config webpack.dev.js",
-    "webpack:prod": "webpack --color --config webpack.prod.js",
-    "webpack:watch": "webpack --color --config webpack.dev.js --watch"
+    "webpack": "webpack --color",
+    "webpack:prod": "NODE_ENV=production webpack --color",
+    "webpack:watch": "webpack --color --watch"
   },
   "dependencies": {
     "regular-table": "^0.1.6"
   },
   "devDependencies": {
     "@types/react": "^17.0.0",
-    "css-loader": "^5.0.1",
-    "file-loader": "^6.2.0",
-    "html-webpack-plugin": "^4.4.1",
-    "mini-css-extract-plugin": "^1.3.5",
+    "less": "^4.1.1",
     "rimraf": "^3.0.2",
-    "source-map-loader": "^1.0.0",
-    "svg-url-loader": "^7.1.1",
     "svgo": "^1.3.2",
-    "ts-loader": "^8.0.3",
-    "tsconfig-paths-webpack-plugin": "^3.3.0",
     "typescript": "^4.1.3",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",

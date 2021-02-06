@@ -1,28 +1,50 @@
-/*----------------------------------------------------------------------------|
-| Copyright (c) 2020, Max Klein
-|
-| This file is part of the tree-finder library, distributed under the terms of
-| the BSD 3 Clause license. The full license can be found in the LICENSE file.
-|----------------------------------------------------------------------------*/
+/*
+ * Copyright (c) 2020, Max Klein
+ *
+ * This file is part of the tree-finder library, distributed under the terms of
+ * the BSD 3 Clause license. The full license can be found in the LICENSE file.
+ */
 import { DEFAULT_COL, Content, IContentRow } from "./content";
 
 const SORT_ORDERS = ["asc", "desc", null] as const;
 export type SortOrder = typeof SORT_ORDERS[number];
 
-export const DEFAULT_SORT_ORDER = SORT_ORDERS[0];
+const DEFAULT_SORT_ORDER = SORT_ORDERS[0];
 
-export interface ISortState<T extends IContentRow> {
-  col: keyof T;
-
+interface ISortState<T extends IContentRow> {
   order: SortOrder;
+
+  col: keyof T;
 }
 
-function contentsSorterClosure<T extends IContentRow>(sortStates: ISortState<T>[]) {
-  // map sort direction string onto sort direction sign
-  const signs = sortStates.map(({col, order}) => {return {col, sign: (order === "desc" ? -1 : 1)}});
+interface ISortStateFull<T extends IContentRow> extends ISortState<T> {
+  sign: -1 | 1;
 
+  ix: number;
+}
+
+export class SortStates<T extends IContentRow> {
+  readonly defaultColumn = DEFAULT_COL;
+
+  constructor(states?: ISortState<T>[]) {
+    states = states ?? [{col: DEFAULT_COL, order: DEFAULT_SORT_ORDER}];
+
+    this.states = states.map((state, ix) => {return {
+      ...state,
+      ix,
+      sign: state.order === "desc" ? -1 : 1,
+    }});
+
+    this.byColumn = this.states.reduce((obj, state) => {obj[state.col] = state; return obj;}, {} as any);
+  }
+
+  readonly byColumn: {[k in keyof T]: ISortStateFull<T>};
+  readonly states: ISortStateFull<T>[];
+}
+
+function contentsSorterClosure<T extends IContentRow>(sortStates: SortStates<T>) {
   return function contentsSorter(l: Content<T>, r: Content<T>): number {
-    for (const {col, sign} of signs) {
+    for (const {col, sign} of sortStates.states) {
       let cmp;
       let lval = l.row[col];
       let rval = r.row[col];
@@ -47,28 +69,30 @@ function contentsSorterClosure<T extends IContentRow>(sortStates: ISortState<T>[
   };
 }
 
-function updateSort<T extends IContentRow>(sortStates: ISortState<T>[], col: keyof T, multisort: boolean = false): ISortState<T>[] {
-  const currentIdx = sortStates.findIndex((x) => x.col === col);
-  if (currentIdx > -1) {
-    const oldOrder = sortStates[currentIdx].order;
+function updateSort<T extends IContentRow>(sortStates: SortStates<T>, col: keyof T, multisort: boolean = false): SortStates<T> {
+  let newStates: ISortState<T>[] = [...sortStates.states];
+
+  if (col in sortStates.byColumn) {
+    const {ix: currentIdx, order: oldOrder} = sortStates.byColumn[col];
+
     const order = SORT_ORDERS[(SORT_ORDERS.indexOf(oldOrder) + 1) % SORT_ORDERS.length];
     if (order) {
       // update the sort_dir
-      sortStates[currentIdx] = {col, order};
+      newStates[currentIdx] = {col, order};
     } else {
       // remove this column from the sort
-      sortStates.splice(currentIdx, 1);
+      newStates.splice(currentIdx, 1);
     }
   } else {
-    const newSortState = {col, order: DEFAULT_SORT_ORDER};
+    const newState = {col, order: DEFAULT_SORT_ORDER};
     if (multisort) {
-      sortStates.push(newSortState);
+      newStates.push(newState);
     } else {
-      sortStates = [newSortState];
+      newStates = [newState];
     }
   }
 
-  return sortStates;
+  return new SortStates(newStates);
 }
 
 function _flattenContents<T extends IContentRow>(content: Content<T>, sorter: (l: Content<T>, r: Content<T>) => number, contentsFlat: Content<T>[]) {
@@ -89,13 +113,15 @@ function _flattenContents<T extends IContentRow>(content: Content<T>, sorter: (l
   return contentsFlat;
 }
 
-export function sortContentRoot<T extends IContentRow>({root, sortStates, col, multisort}: {root: Content<T>, sortStates: ISortState<T>[], col?: keyof T, multisort?: boolean}): [Content<T>[], ISortState<T>[]] {
+export function sortContentRoot<T extends IContentRow>({root, sortStates, col, multisort}: {root: Content<T>, sortStates: SortStates<T>, col?: keyof T, multisort?: boolean}): [Content<T>[], SortStates<T>] {
   // update sort orders, if requested
   if (col) {
     sortStates = updateSort(sortStates, col, multisort);
 
-    // if sortStates is empty, use a default sortState
-    sortStates = sortStates.length > 0 ? sortStates : [{col: DEFAULT_COL, order: DEFAULT_SORT_ORDER}];
+    if (!sortStates.states.length) {
+      // if empty, use default sortStates
+      sortStates = new SortStates();
+    }
   }
 
   // get sorter then sort/flatten any expanded children of root
