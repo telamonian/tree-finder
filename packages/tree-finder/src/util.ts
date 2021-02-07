@@ -127,14 +127,12 @@ export namespace Tree {
     return treeTemplate.content.firstChild as HTMLSpanElement;
   }
 
-  export function breadcrumbsSpans(path: string[]): HTMLSpanElement[] {
-    treeTemplate.innerHTML = [
+  export function breadcrumbsSpans(path: string[]): string {
+    return [
       `<span class="tf-breadcrumbs-icon tf-breadcrumbs-dir-icon"></span>`,
       ...path.slice(1),
     ]
     .map(x => `<span class="tf-breadcrumbs-crumb">${x}</span>`)
     .join(`<span class="tf-breadcrumbs-separator">/</span>`);
-
-    return treeTemplate.content.children as any as HTMLSpanElement[];
   }
 }

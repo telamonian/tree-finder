@@ -7,12 +7,20 @@
 import "regular-table";
 
 import { IContentRow } from "./content";
+import { TreeFinderBreadcrumbsElement } from "./breadcrumbs";
 import { TreeFinderGridElement } from "./grid";
 import { TreeFinderPanelElement } from "./panel";
 
 import "../style/grid/index.less";
 
 declare global {
+  interface Document {
+    createElement(tagName: "tree-finder-breadcrumbs", options?: ElementCreationOptions): TreeFinderBreadcrumbsElement;
+  }
+  interface CustomElementRegistry {
+    get(name: "tree-finder-breadcrumbs"): typeof TreeFinderBreadcrumbsElement;
+  }
+
   interface Document {
     createElement<T extends IContentRow>(tagName: "tree-finder-grid", options?: ElementCreationOptions): TreeFinderGridElement<T>;
   }

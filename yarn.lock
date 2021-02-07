@@ -6907,11 +6907,6 @@ regexp.prototype.flags@^1.2.0:
     call-bind "^1.0.2"
     define-properties "^1.1.3"
 
-regular-table@^0.1.6:
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/regular-table/-/regular-table-0.1.6.tgz#99f4ff3211dd4521e0f8ce9fa99a58146d3d0b79"
-  integrity sha512-6i2IMAxBE6kNycPpEEhAbNOrBMm/yFmLeAtz3rbg9+VrKq8uyLuuJlbplHOEnZkweeIn1o5bXmdke5UCtT+NhQ==
-
 regular-table@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/regular-table/-/regular-table-0.2.1.tgz#af3d1efeeebe7d8071eda4e0dda689b4683ae156"
@@ -8001,13 +7996,6 @@ tr46@^1.0.1:
   integrity sha1-qLE/1r/SSJUZZ0zN5VujaTtwbQk=
   dependencies:
     punycode "^2.1.0"
-
-tree-finder@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/tree-finder/-/tree-finder-0.0.2.tgz#667eb4aad104106c3f2cb3f6daf213d95dc55607"
-  integrity sha512-rfGhA/8NaHnX2CxqOzpbNW6r9UlJM14vJQscmaBb/aX6DS0c8UheH//YfVuuW4Cz2qG57Yoke3QxrgjlR0ENaw==
-  dependencies:
-    regular-table "^0.1.6"
 
 trim-newlines@^1.0.0:
   version "1.0.0"
