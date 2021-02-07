@@ -29,8 +29,8 @@ Include via a CDN like [JSDelivr](https://cdn.jsdelivr.net/npm/tree-finder):
 
 ```html
   <script src="https://cdn.jsdelivr.net/npm/tree-finder/dist/tree-finder.js"></script>
-  <link rel='stylesheet' href="https://cdn.jsdelivr.net/npm/tree-finder/dist/main.css">
-  <link rel='stylesheet' href="https://cdn.jsdelivr.net/npm/tree-finder/style/theme/material.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tree-finder/dist/tree-finder.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tree-finder/dist/theme/material.css">
 ```
 
 Or, add to your project via `yarn`:
