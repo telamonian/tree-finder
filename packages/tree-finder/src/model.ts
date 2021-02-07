@@ -11,14 +11,31 @@ export class ContentsModel<T extends IContentRow> {
   constructor(root?: T, options: Partial<ContentsModel.IOptions<T>> = {}) {
     this.options = options;
 
+    this.reset();
+
     if (root) {
       this.setRoot(root);
     }
   }
 
+  reset(crumbIx?: number) {
+    this._contents = [];
+
+    if (!crumbIx) {
+      this._crumbs = [];
+      return;
+    }
+
+    const rootContent = this._crumbs[crumbIx];
+    this._crumbs = this._crumbs.slice(0, crumbIx);
+    this.setRoot(rootContent.row);
+  }
+
   setRoot(root: T) {
     this._sortStates = new SortStates();
     this._root = new Content(root);
+    this._crumbs.push(this._root);
+
     this.initColumns();
 
     // fetch root's children and mark it as open
@@ -106,7 +123,8 @@ export class ContentsModel<T extends IContentRow> {
   }
 
   protected _columns: (keyof T)[];
-  protected _contents: Content<T>[] = [];
+  protected _contents: Content<T>[];
+  protected _crumbs: Content<T>[];
   protected _root: Content<T>;
   protected _sortStates: SortStates<T>;
 
