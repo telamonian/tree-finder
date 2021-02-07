@@ -6,7 +6,7 @@
  */
 import { IContentRow } from "./content";
 import { ContentsModel } from "./model";
-import { RegularTable, TreeHeader } from "./util";
+import { RegularTable, Tree } from "./util";
 
 // await customElements.whenDefined('regular-table');
 const RegularTableElement = customElements.get('regular-table');
@@ -30,8 +30,8 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       this.addStyleListener(() => this.columnHeaderStyleListener())
       this.addStyleListener(() => this.rowStyleListener());
 
-      this.addEventListener("mousedown", event => this.onSortClick(event));
-      this.addEventListener("mousedown", event => this.onTreeClick(event));
+      this.addEventListener("mouseup", event => this.onSortClick(event));
+      this.addEventListener("mouseup", event => this.onTreeClick(event));
       this.addEventListener("dblclick", event => this.onRowDoubleClick(event));
       // this.addEventListener("scroll", () => (this as any)._resetAutoSize());
 
@@ -71,7 +71,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       // column/row_headers: string[] -> arrays of path parts that get displayed as the first value in each col/row. Length > 1 implies a tree structure
       column_headers: this.model.columns.map(col => [col]),
       row_headers: this.model.contents.slice(start_row, end_row).map(x => {
-        return [TreeHeader.treeHeader({
+        return [Tree.headerHtml({
           isDir: x.isDir,
           isOpen: x.isOpen,
           path: x.getPathAtDepth(this.model.pathDepth),
@@ -108,7 +108,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
       if (value) {
         const kind = this.model.contents[y!].row.kind;
-        span.classList.add("tf-browser-filetype-icon", `tf-browser-${kind}-icon`);
+        span.classList.add("tf-grid-filetype-icon", `tf-grid-${kind}-icon`);
       }
     }
   }

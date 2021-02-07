@@ -103,10 +103,10 @@ export namespace Tag {
     .replace(/\s*\n\s*/g, ' ');
 }
 
-export namespace TreeHeader {
+export namespace Tree {
   const treeTemplate = document.createElement("template");
 
-  function treeHeaderLevels({isDir, isOpen, path}: {isDir: boolean, isOpen: boolean, path: string[]}) {
+  function headerLevelsHtml({isDir, isOpen, path}: {isDir: boolean, isOpen: boolean, path: string[]}) {
     const tree_levels = path.slice(1).map(() => '<span class="rt-tree-group"></span>');
     if (isDir) {
       const group_icon = isOpen ? "remove" : "add";
@@ -117,8 +117,8 @@ export namespace TreeHeader {
     return tree_levels.join("");
   }
 
-  export function treeHeader({isDir, isOpen, path}: {isDir: boolean, isOpen: boolean, path: string[]}) {
-    const tree_levels = treeHeaderLevels({isDir, isOpen, path});
+  export function headerHtml({isDir, isOpen, path}: {isDir: boolean, isOpen: boolean, path: string[]}) {
+    const tree_levels = headerLevelsHtml({isDir, isOpen, path});
     const header_classes = !isDir ? "rt-group-name rt-group-leaf" : "rt-group-name";
     const header_text = path.length === 0 ? "TOTAL" : path[path.length - 1];
 
