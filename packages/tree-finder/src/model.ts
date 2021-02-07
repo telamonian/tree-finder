@@ -4,6 +4,8 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
+import { BehaviorSubject } from "rxjs/internal/BehaviorSubject";
+
 import { Content, IContentRow } from "./content";
 import { SortStates, sortContentRoot} from "./sort";
 
@@ -23,6 +25,7 @@ export class ContentsModel<T extends IContentRow> {
 
     if (!crumbIx) {
       this._crumbs = [];
+      this.crumbSubject.next(this._crumbs.map(x => x.name));
       return;
     }
 
@@ -34,7 +37,9 @@ export class ContentsModel<T extends IContentRow> {
   setRoot(root: T) {
     this._sortStates = new SortStates();
     this._root = new Content(root);
+
     this._crumbs.push(this._root);
+    this.crumbSubject.next(this._crumbs.map(x => x.name));
 
     this.initColumns();
 
@@ -121,6 +126,8 @@ export class ContentsModel<T extends IContentRow> {
   get ixByColumn() {
     return this._ixByColumn;
   }
+
+  readonly crumbSubject = new BehaviorSubject([] as string[]);
 
   protected _columns: (keyof T)[];
   protected _contents: Content<T>[];

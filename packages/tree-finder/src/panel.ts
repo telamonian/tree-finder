@@ -50,6 +50,10 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
     }
 
     this.model = new ContentsModel(root, modelOptions);
+
+    this.model.crumbSubject.subscribe({
+      next: x => this.breadcrumbs.init(x),
+    });
     this.grid.init(this.model, gridOptions);
 
     await this.draw();

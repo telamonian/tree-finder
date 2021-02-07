@@ -21,7 +21,7 @@ export class TreeFinderBreadcrumbsElement extends HTMLElement {
   create_shadow_dom() {
     this.attachShadow({mode: "open"});
 
-    const crumbsSlot = `<slot"></slot>`;
+    const crumbsSlot = `<slot></slot>`;
 
     this.shadowRoot!.innerHTML = Tag.html`
       <style>
