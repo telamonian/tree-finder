@@ -25,6 +25,10 @@ export class TreeFinderBreadcrumbsElement extends HTMLElement {
 
     this.shadowRoot!.innerHTML = Tag.html`
       <style>
+        .tf-breadcrumbs-top {
+          display: flex;
+          align-items: flex-start;
+        }
       </style>
       <div class="tf-breadcrumbs-top">
         ${crumbsSlot}

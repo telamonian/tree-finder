@@ -12,6 +12,7 @@ import { TreeFinderGridElement } from "./grid";
 import { TreeFinderPanelElement } from "./panel";
 
 import "../style/grid/index.less";
+import "../style/breadcrumbs.less";
 
 declare global {
   interface Document {

@@ -13,10 +13,16 @@
   --tf-icon-font: "Material Icons";
   --tf-row-hover-background: #eee;
   --tf-row-hover-color: #333;
+
+  --tf-select-background: #2196ee;
+  --tf-select-color: #eee;
+
+  --tf-font-family: "Open Sans";
+  --tf-font-size: 12px;
 }
 
 tree-finder .tf-panel-grid {
-  padding-top: 12px;
+  padding-top: 30px;
   padding-left: 12px;
   padding-bottom: 0;
   padding-right: 0;
@@ -108,21 +114,12 @@ tree-finder .tf-panel-grid td,
 tree-finder .tf-panel-grid th,
 :host th {
   white-space: nowrap;
-  font-size: 12px;
+  font-size: var(--tf-font-size);
   padding-right: 5px;
   padding-left: 5px;
   padding-top: 0px;
   padding-bottom: 0px;
   height: 19px;
-}
-tree-finder .tf-panel-grid tbody:hover tr:hover,
-:host tbody:hover tr:hover {
-  background: var(--tf-row-hover-background);
-  opacity: 1;
-}
-tree-finder .tf-panel-grid tbody:hover tr:hover,
-:host tbody:hover tr:hover {
-  color: var(--tf-row-hover-color);
 }
 tree-finder .tf-panel-grid table *,
 :host table * {
