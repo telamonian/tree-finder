@@ -5,6 +5,7 @@
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
 import { IContentRow } from "./content";
+import { TreeFinderBreadcrumbsElement } from "./breadcrumbs"
 import { ContentsModel } from "./model";
 import { TreeFinderGridElement } from "./grid";
 import { Tag } from "./util";
@@ -21,12 +22,12 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
 
   clear() {
     this.innerHTML = Tag.html`
-      <div class="tf-panel-breadcrumbs" slot="breadcrumbs"></div>
+      <tree-finder-breadcrumbs class="tf-panel-breadcrumbs" slot="breadcrumbs"></tree-finder-breadcrumbs>
       <div class="tf-panel-filter" slot="filter"></div>
       <tree-finder-grid class="tf-panel-grid" slot="grid"></tree-finder-grid>
     `;
 
-    [this.breadcrumbs, this.filter, this.grid] = this.children as any as [HTMLElement, HTMLElement, TreeFinderGridElement<T>];
+    [this.breadcrumbs, this.filter, this.grid] = this.children as any as [TreeFinderBreadcrumbsElement, HTMLElement, TreeFinderGridElement<T>];
   }
 
   async init(root: T, options: Partial<TreeFinderPanelElement.IOptions<T> & ContentsModel.IOptions<T> & TreeFinderGridElement.IOptions<T>> = {}) {
@@ -49,6 +50,10 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
     }
 
     this.model = new ContentsModel(root, modelOptions);
+
+    this.model.crumbSubject.subscribe({
+      next: x => this.breadcrumbs.init(x),
+    });
     this.grid.init(this.model, gridOptions);
 
     await this.draw();
@@ -87,7 +92,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   protected filterContainer: HTMLElement;
   protected gridContainer: HTMLElement;
 
-  protected breadcrumbs: HTMLElement;
+  protected breadcrumbs: TreeFinderBreadcrumbsElement;
   protected filter: HTMLElement;
   protected grid: TreeFinderGridElement<T>;
 

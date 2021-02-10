@@ -4,6 +4,8 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
+import { BehaviorSubject } from "rxjs/internal/BehaviorSubject";
+
 import { Content, IContentRow } from "./content";
 import { SortStates, sortContentRoot} from "./sort";
 
@@ -11,14 +13,34 @@ export class ContentsModel<T extends IContentRow> {
   constructor(root?: T, options: Partial<ContentsModel.IOptions<T>> = {}) {
     this.options = options;
 
+    this.reset();
+
     if (root) {
       this.setRoot(root);
     }
   }
 
+  reset(crumbIx?: number) {
+    this._contents = [];
+
+    if (!crumbIx) {
+      this._crumbs = [];
+      this.crumbSubject.next(this._crumbs.map(x => x.name));
+      return;
+    }
+
+    const rootContent = this._crumbs[crumbIx];
+    this._crumbs = this._crumbs.slice(0, crumbIx);
+    this.setRoot(rootContent.row);
+  }
+
   setRoot(root: T) {
     this._sortStates = new SortStates();
     this._root = new Content(root);
+
+    this._crumbs.push(this._root);
+    this.crumbSubject.next(this._crumbs.map(x => x.name));
+
     this.initColumns();
 
     // fetch root's children and mark it as open
@@ -105,8 +127,11 @@ export class ContentsModel<T extends IContentRow> {
     return this._ixByColumn;
   }
 
+  readonly crumbSubject = new BehaviorSubject([] as string[]);
+
   protected _columns: (keyof T)[];
-  protected _contents: Content<T>[] = [];
+  protected _contents: Content<T>[];
+  protected _crumbs: Content<T>[];
   protected _root: Content<T>;
   protected _sortStates: SortStates<T>;
 

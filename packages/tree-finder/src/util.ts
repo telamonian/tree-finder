@@ -5,6 +5,7 @@
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
 import { MetaData, RegularTableElement } from "regular-table";
+import {Template} from "webpack";
 
 export namespace Random {
   export function bool() {
@@ -106,7 +107,7 @@ export namespace Tag {
 export namespace Tree {
   const treeTemplate = document.createElement("template");
 
-  function headerLevelsHtml({isDir, isOpen, path}: {isDir: boolean, isOpen: boolean, path: string[]}) {
+  function rowHeaderLevelsHtml({isDir, isOpen, path}: {isDir: boolean, isOpen: boolean, path: string[]}) {
     const tree_levels = path.slice(1).map(() => '<span class="rt-tree-group"></span>');
     if (isDir) {
       const group_icon = isOpen ? "remove" : "add";
@@ -117,12 +118,20 @@ export namespace Tree {
     return tree_levels.join("");
   }
 
-  export function headerHtml({isDir, isOpen, path}: {isDir: boolean, isOpen: boolean, path: string[]}) {
-    const tree_levels = headerLevelsHtml({isDir, isOpen, path});
+  export function rowHeaderSpan({isDir, isOpen, path}: {isDir: boolean, isOpen: boolean, path: string[]}): HTMLSpanElement {
+    const tree_levels = rowHeaderLevelsHtml({isDir, isOpen, path});
     const header_classes = !isDir ? "rt-group-name rt-group-leaf" : "rt-group-name";
     const header_text = path.length === 0 ? "TOTAL" : path[path.length - 1];
 
     treeTemplate.innerHTML = `<span class="rt-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
-    return treeTemplate.content.firstChild;
+    return treeTemplate.content.firstChild as HTMLSpanElement;
+  }
+
+  export function breadcrumbsSpans(path: string[]): string {
+    return `<div class="tf-breadcrumbs-home"><span class="tf-breadcrumbs-icon tf-breadcrumbs-dir-icon"></span><span>/</span></div>` + (
+      [...path.slice(1),]
+      .map(x => `<span class="tf-breadcrumbs-crumb">${x}</span>`)
+      .join(`<span class="tf-breadcrumbs-separator">/</span>`)
+    );
   }
 }

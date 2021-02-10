@@ -71,7 +71,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       // column/row_headers: string[] -> arrays of path parts that get displayed as the first value in each col/row. Length > 1 implies a tree structure
       column_headers: this.model.columns.map(col => [col]),
       row_headers: this.model.contents.slice(start_row, end_row).map(x => {
-        return [Tree.headerHtml({
+        return [Tree.rowHeaderSpan({
           isDir: x.isDir,
           isOpen: x.isOpen,
           path: x.getPathAtDepth(this.model.pathDepth),

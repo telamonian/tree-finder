@@ -55,6 +55,10 @@ export class Content<T extends IContentRow> {
     return this._isOpen;
   }
 
+  get name() {
+    return (this.row.path && this.row.path.length) ? this.row.path[this.row.path.length - 1] : "";
+  }
+
   readonly isDir: boolean;
   readonly row: T;
 

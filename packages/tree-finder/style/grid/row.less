@@ -6,6 +6,8 @@
 //
 
 .tf-grid-filetype-icon:before {
+  background-size: 16px;
+  background-repeat: no-repeat;
   content: "";
   float: left;
   margin-right: 5px;
@@ -20,4 +22,15 @@
 
 .tf-grid-text-icon:before {
   background-image: var(--tf-text-icon);
+}
+
+tr:hover:not(.tf-mod-select) {
+  background: var(--tf-row-hover-background);
+  color: var(--tf-row-hover-color);
+  opacity: 1;
+}
+
+tr.tf-mod-select {
+  background: var(--tf-select-background);
+  color: var(--tf-select-color);
 }
