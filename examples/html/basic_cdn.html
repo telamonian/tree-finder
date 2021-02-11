@@ -1,0 +1,77 @@
+<!--
+
+   Copyright (c) 2020, Max Klein.
+
+   This file is part of the tree-finder library, distributed under the terms of
+   the BSD 3 Clause license. The full license can be found in the LICENSE file.
+
+-->
+
+<!--
+
+   A simple file browser example built with [`tree-finder`](https://github.com/telamonian/tree-finder),
+   loading the main script from a cdn
+
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" name="viewport">
+  <script src="https://cdn.jsdelivr.net/npm/tree-finder/dist/tree-finder.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tree-finder/dist/tree-finder.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tree-finder/dist/theme/material.css">
+</head>
+
+<body>
+
+  <tree-finder></tree-finder>
+
+  <script>
+    const N_CHILDREN = 100;
+    const N_DIRECTORIES = 10;
+
+    function mockContent(props) {
+      const {path, kind, modDays = 0} = props;
+      const modified = new Date(modDays * 24 * 60 * 60 * 1000);
+      const writable = !!(modDays % 2);
+
+      if (kind === "dir") {
+        const getChildren = () => {
+          const children = [];
+          for (let i = 0; i < N_CHILDREN; i++) {
+            const ipad = `${i}`.padStart(3, "0");
+
+            children.push(mockContent({
+              kind: i < N_DIRECTORIES ? "dir" : "text",
+              path: [...path, i < N_DIRECTORIES ? `dir_${ipad}` : `file_${ipad}.txt`],
+              modDays: modDays + i,
+            }));
+          }
+          return children;
+        };
+        return {kind, path, modified, writable, getChildren};
+      }
+      else {
+        return {kind, path, modified, writable};
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", async function () {
+      const root = mockContent({
+        kind: "dir",
+        path: [],
+      });
+
+      const treeFinder = document.getElementsByTagName("tree-finder")[0];
+      await treeFinder.init(root, {
+        doWindowReize: true,
+        doRefetch: false,
+      });
+    });
+  </script>
+
+</body>
+
+</html>

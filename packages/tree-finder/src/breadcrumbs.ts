@@ -6,6 +6,8 @@
  */
 import { Tag, Tree } from "./util";
 
+import "../style/breadcrumbs.less";
+
 export class TreeFinderBreadcrumbsElement extends HTMLElement {
   connectedCallback() {
     if (!this._initialized) {
@@ -43,3 +45,15 @@ export class TreeFinderBreadcrumbsElement extends HTMLElement {
 
   private _initialized: boolean = false;
 }
+
+export namespace TreeFinderBreadcrumbsElement {
+  export function get() {
+    if (document.createElement("tree-finder-breadcrumbs").constructor === HTMLElement) {
+      customElements.define("tree-finder-breadcrumbs", TreeFinderBreadcrumbsElement);
+    }
+
+    return customElements.get('tree-finder-breadcrumbs');
+  }
+}
+
+TreeFinderBreadcrumbsElement.get();
