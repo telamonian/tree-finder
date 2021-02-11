@@ -16,7 +16,7 @@ a [custom element](https://developer.mozilla.org/en-US/docs/Web/Web_Components/U
 named `<tree-finder>`,
 which can be used to easily render filebrowers or other hierarchical trees. Only visible cells are rendered.
 
-## Examples
+## Examples - try `tree-finder` out live
 
 ||
 |:--|

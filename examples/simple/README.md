@@ -1,3 +1,3 @@
-# Webpack Example
+# Simple Webpack Example
 
-Simple webpack example using `perspective-viewer` and plugins.
+Simple example of building a webpack-based project that uses a `tree-finder` element
