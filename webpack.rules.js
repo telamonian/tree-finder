@@ -108,8 +108,9 @@ const svgUrlRules = [
   },
 ];
 
-const optimization = {
+const getOptimization = () => { return {
   minimizer: [
+    // "...",
     new TerserPlugin({
       // turn off license gen
       terserOptions: {
@@ -122,12 +123,12 @@ const optimization = {
     }),
     new CssnanoPlugin(),
   ],
-}
+};}
 
 module.exports = {
   bitmapRules,
   dependencySrcMapRules,
   stylingRules,
   svgUrlRules,
-  optimization,
+  getOptimization,
 };

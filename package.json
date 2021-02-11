@@ -30,7 +30,6 @@
     "svg-url-loader": "^7.1.1",
     "ts-loader": "^8.0.17",
     "tsconfig-paths-webpack-plugin": "^3.3.0",
-    "webpack-fix-style-only-entries": "^0.6.1",
     "webpack-remove-empty-scripts": "^0.7.1"
   }
 }

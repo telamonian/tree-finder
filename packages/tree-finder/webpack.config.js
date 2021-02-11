@@ -4,12 +4,11 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
-const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
-// const RemoveEmptyScriptsPlugin = require("webpack-remove-empty-scripts");
+const RemoveEmptyScriptsPlugin = require("webpack-remove-empty-scripts");
 
-const { dependencySrcMapRules, stylingRules, svgUrlRules, optimization } = require("../../webpack.rules");
+const { dependencySrcMapRules, stylingRules, svgUrlRules, getOptimization } = require("../../webpack.rules");
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -56,7 +55,7 @@ const treeFinderConfig = {
 
   optimization: {
     minimize: isProd,
-    ...isProd && optimization,
+    ...isProd && getOptimization(),
   },
 
   // experiments: {
@@ -104,19 +103,19 @@ const themeConfig = {
   },
 
   plugins: [
-    new FixStyleOnlyEntriesPlugin(),
+    // new FixStyleOnlyEntriesPlugin(),
     new MiniCssExtractPlugin({
       filename: "[name].css",
     }),
 
-    // new RemoveEmptyScriptsPlugin(),
+    new RemoveEmptyScriptsPlugin(),
   ],
 
   mode: isProd ? "production": "development",
 
   optimization: {
     minimize: isProd,
-    ...isProd && optimization,
+    ...isProd && getOptimization(),
   },
 };
 
