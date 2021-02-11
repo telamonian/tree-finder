@@ -46,7 +46,7 @@
 
             children.push(mockContent({
               kind: i < N_DIRECTORIES ? "dir" : "text",
-              path: [...path, i < N_DIRECTORIES ? `dir_${ipad}/` : `file_${ipad}.txt`],
+              path: [...path, i < N_DIRECTORIES ? `dir_${ipad}` : `file_${ipad}.txt`],
               modDays: modDays + i,
             }));
           }
