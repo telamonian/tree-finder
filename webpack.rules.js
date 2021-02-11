@@ -4,7 +4,9 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
+const CssnanoPlugin = require("cssnano-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 const cssLoader = () => {return {
   loader: "css-loader",
@@ -106,10 +108,26 @@ const svgUrlRules = [
   },
 ];
 
+const optimization = {
+  minimizer: [
+    new TerserPlugin({
+      // turn off license gen
+      terserOptions: {
+        format: {
+          comments: false,
+        },
+      },
+      // turn off license gen
+      extractComments: false,
+    }),
+    new CssnanoPlugin(),
+  ],
+}
 
 module.exports = {
   bitmapRules,
   dependencySrcMapRules,
   stylingRules,
   svgUrlRules,
+  optimization,
 };

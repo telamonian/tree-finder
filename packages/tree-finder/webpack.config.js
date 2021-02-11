@@ -4,13 +4,12 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
-const CssnanoPlugin = require("cssnano-webpack-plugin");
 const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 // const RemoveEmptyScriptsPlugin = require("webpack-remove-empty-scripts");
 
-const { dependencySrcMapRules, stylingRules, svgUrlRules } = require("../../webpack.rules");
+const { dependencySrcMapRules, stylingRules, svgUrlRules, optimization } = require("../../webpack.rules");
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -51,16 +50,13 @@ const treeFinderConfig = {
 
   plugins: [
     new MiniCssExtractPlugin(),
-    ...isProd ? [new CssnanoPlugin()] : [],
   ],
 
   mode: isProd ? "production": "development",
 
   optimization: {
     minimize: isProd,
-
-    // webpack v5.x only syntax
-    // ...(process.env.NODE_ENV === "production") && {minimizer: ["...", new CssnanoPlugin()]},
+    ...isProd && optimization,
   },
 
   // experiments: {
@@ -112,7 +108,6 @@ const themeConfig = {
     new MiniCssExtractPlugin({
       filename: "[name].css",
     }),
-    ...isProd ? [new CssnanoPlugin] : [],
 
     // new RemoveEmptyScriptsPlugin(),
   ],
@@ -121,6 +116,7 @@ const themeConfig = {
 
   optimization: {
     minimize: isProd,
+    ...isProd && optimization,
   },
 };
 

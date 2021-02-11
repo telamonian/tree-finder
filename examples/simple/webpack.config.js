@@ -4,16 +4,15 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
-const CssnanoPlugin = require("cssnano-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+// const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 // To improve build times for large projects enable fork-ts-checker-webpack-plugin
 // const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
-const { dependencySrcMapRules, stylingRules, svgUrlRules } = require("../../webpack.rules");
+const { dependencySrcMapRules, stylingRules, svgUrlRules, optimization } = require("../../webpack.rules");
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -78,13 +77,13 @@ const simpleExampleConfig = {
       title: "simple tree-finder example"
     }),
     new MiniCssExtractPlugin(),
-    ...isProd ? [new CssnanoPlugin] : [],
   ],
 
   mode: isProd ? "production": "development",
 
   optimization: {
     minimize: isProd,
+    ...isProd && optimization,
   },
 }
 
