@@ -11,7 +11,7 @@
   <a href="https://www.npmjs.com/package/tree-finder"><img alt="NPM Version" src="https://img.shields.io/npm/v/tree-finder.svg?color=brightgreen&style=flat-square"></a>
 </p>
 
-A Javascript library for the browser, `tree-finder` exports
+A Javascript library for the browser, [`tree-finder`](https://github.com/telamonian/tree-finder) exports
 a [custom element](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
 named `<tree-finder>`,
 which can be used to easily render filebrowers or other hierarchical trees. Only visible cells are rendered.
