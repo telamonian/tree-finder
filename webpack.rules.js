@@ -79,7 +79,7 @@ const stylingRules = [
     test: /\.module\.less$/,
     use: [
       cssLoader(),
-      "postcss-loader",
+      // "postcss-loader",
       "less-loader",
     ],
   },
@@ -89,7 +89,7 @@ const stylingRules = [
       // "style-loader",
       MiniCssExtractPlugin.loader,
       cssLoader(),
-      "postcss-loader",
+      // "postcss-loader",
       "less-loader",
     ],
   },

@@ -4,15 +4,10 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
-import "regular-table";
-
 import { IContentRow } from "./content";
 import { TreeFinderBreadcrumbsElement } from "./breadcrumbs";
 import { TreeFinderGridElement } from "./grid";
 import { TreeFinderPanelElement } from "./panel";
-
-import "../style/grid/index.less";
-import "../style/breadcrumbs.less";
 
 declare global {
   interface Document {
@@ -28,14 +23,11 @@ declare global {
   }
 }
 
-customElements.define("tree-finder", TreeFinderPanelElement);
-customElements.define("tree-finder-breadcrumbs", TreeFinderBreadcrumbsElement);
-customElements.define("tree-finder-grid", TreeFinderGridElement);
-
+export * from "./breadcrumbs";
 export * from "./content";
-export * from "./panel";
+export * from "./grid";
 export * from "./mockcontent";
 export * from "./model";
+export * from "./panel";
 export * from "./sort";
-export * from "./grid";
 export * from "./util";

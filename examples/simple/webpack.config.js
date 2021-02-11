@@ -9,7 +9,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-// const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 // To improve build times for large projects enable fork-ts-checker-webpack-plugin
 // const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
@@ -36,7 +36,7 @@ const simpleExampleConfig = {
         use: {
           loader: "ts-loader",
           options: {
-            transpileOnly: false, // Set to true if you are using fork-ts-checker-webpack-plugin
+            transpileOnly: true, // Set to true if you are using fork-ts-checker-webpack-plugin
             projectReferences: true
           }
         }
@@ -52,16 +52,16 @@ const simpleExampleConfig = {
       "node_modules",
       path.resolve(__dirname)
     ],
-    extensions: [".js", ".ts", ".tsx"]
+    extensions: [".js", ".ts", ".tsx"],
 
     // plugins: [
     //   new TsconfigPathsPlugin({})
     // ],
-    //
-    // TsconfigPathsPlugin will automatically add this
+
+    // // TsconfigPathsPlugin will automatically add this
     // alias: {
-    //   packages: path.resolve(__dirname, "packages/"),
-    // }
+    //   packages: path.resolve(__dirname, "../../packages/"),
+    // },
   },
 
   devServer: {

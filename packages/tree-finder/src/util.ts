@@ -99,9 +99,7 @@ export namespace Tag {
     .map((str, i) => [str, args[i]])
     .flat()
     .filter((a) => !!a)
-    .join("")
-    .replace(/>\s*\n\s*</g, '><')
-    .replace(/\s*\n\s*/g, ' ');
+    .join("");
 }
 
 export namespace Tree {

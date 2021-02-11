@@ -12,6 +12,9 @@ import { Tag } from "./util";
 
 // import panelCSS from "../style/grid/index.module.less";
 
+TreeFinderBreadcrumbsElement.get();
+TreeFinderGridElement.get();
+
 export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   connectedCallback() {
     if (!this._initialized) {
@@ -106,4 +109,14 @@ export namespace TreeFinderPanelElement {
   export interface IOptions<T extends IContentRow> {
     openChildren: boolean;
   }
+
+  export function get() {
+    if (document.createElement("tree-finder").constructor === HTMLElement) {
+      customElements.define("tree-finder", TreeFinderPanelElement);
+    }
+
+    return customElements.get('tree-finder');
+  }
 }
+
+TreeFinderPanelElement.get();

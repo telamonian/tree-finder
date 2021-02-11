@@ -4,11 +4,18 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
+import * as rt from "regular-table";
+
 import { IContentRow } from "./content";
 import { ContentsModel } from "./model";
 import { RegularTable, Tree } from "./util";
 
+import "../style/grid/index.less";
+
 // await customElements.whenDefined('regular-table');
+if (document.createElement("regular-table").constructor === HTMLElement) {
+  window.customElements.define("regular-table", rt.RegularTableElement);
+}
 const RegularTableElement = customElements.get('regular-table');
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("en-us");
@@ -200,4 +207,14 @@ export namespace TreeFinderGridElement {
      */
     doWindowReize: boolean;
   }
+
+  export function get() {
+    if (document.createElement("tree-finder-grid").constructor === HTMLElement) {
+      customElements.define("tree-finder-grid", TreeFinderGridElement);
 }
+
+    return customElements.get('tree-finder-grid');
+  }
+}
+
+TreeFinderGridElement.get();
