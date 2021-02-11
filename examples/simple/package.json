@@ -1,7 +1,7 @@
 {
   "name": "simple",
   "private": true,
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "An example app built using tree-finder.",
   "scripts": {
     "build": "tsc --build",
@@ -17,7 +17,7 @@
   "keywords": [],
   "license": "BSD-3-Clause",
   "dependencies": {
-    "tree-finder": "^0.0.6"
+    "tree-finder": "^0.0.7"
   },
   "devDependencies": {
     "html-webpack-plugin": "^5.0.0",
