@@ -61,4 +61,5 @@ to run the example
 
 ```
 cd examples/simple
+yarn start
 ```
