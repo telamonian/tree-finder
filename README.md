@@ -45,3 +45,14 @@ yarn add tree-finder
 import "tree-finder";
 import "tree-finder/style/theme/material.css";
 ```
+
+## Development
+
+Download and cd into the repo
+
+```bash
+npm install lerna
+
+yarn
+yarn webpack
+```
