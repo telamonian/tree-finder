@@ -56,3 +56,9 @@ npm install lerna
 yarn
 yarn webpack
 ```
+
+to run the example
+
+```
+cd examples/simple
+```
