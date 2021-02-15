@@ -8,8 +8,9 @@
     "build:watch": "tsc --build --watch",
     "clean": "rimraf dist lib *.tsbuildinfo",
     "clean:slate": "yarn run clean && rimraf node_modules",
-    "start": "webpack serve --open 'chromium'",
-    "start:prod": "NODE_ENV=production webpack serve --open 'chromium'",
+    "start": "webpack serve",
+    "start:chromium": "webpack serve --open 'chromium'",
+    "start:prod": "NODE_ENV=production webpack serve",
     "webpack": "webpack --color",
     "webpack:prod": "NODE_ENV=production webpack --color",
     "webpack:watch": "webpack --color --watch"

@@ -48,18 +48,13 @@ import "tree-finder/style/theme/material.css";
 
 ## Development
 
-Download and cd into the repo
+- First, ensure that you have `nodejs >= 12.0.0` and `yarn >= v1.2.0` installed
+- Clone this repo
+- Build and run the "simple" example
+  ```bash
+  cd examples/webpack
+  yarn
+  yarn start
+  ```
 
-```bash
-npm install lerna
-
-yarn
-yarn webpack
-```
-
-to run the example
-
-```
-cd examples/simple
-yarn start
-```
+`yarn start` will launch a dev server. Open the url it supplies in any browser in order to view the example. While the dev server is running, any changes you make to the source code (ie any `.ts` or `.less` files) will trigger a rebuild, and the example will automatically reload in your browser.
