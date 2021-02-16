@@ -8,7 +8,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 const RemoveEmptyScriptsPlugin = require("webpack-remove-empty-scripts");
 
-const { dependencySrcMapRules, stylingRules, svgUrlRules, getOptimization } = require("../../webpack.rules");
+const { dependencySrcMapRules, stylingRules, svgUrlRules, getOptimization, getResolve } = require("../../webpack.rules");
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -44,11 +44,7 @@ const treeFinderConfig = {
   },
 
   resolve: {
-    modules: [
-      "node_modules",
-      path.resolve(__dirname)
-    ],
-    extensions: [".tsx", ".ts", ".js"],
+    ...getResolve(__dirname),
   },
 
   plugins: [
@@ -103,11 +99,7 @@ const themeConfig = {
   },
 
   resolve: {
-    modules: [
-      "node_modules",
-      path.resolve(__dirname)
-    ],
-    extensions: [".tsx", ".ts", ".js"],
+    ...getResolve(__dirname),
   },
 
   plugins: [

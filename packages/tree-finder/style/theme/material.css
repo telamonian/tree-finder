@@ -22,7 +22,7 @@
 }
 
 tree-finder .tf-panel-grid {
-  padding-top: 30px;
+  padding-top: 12px;
   padding-left: 12px;
   padding-bottom: 0;
   padding-right: 0;
@@ -127,7 +127,6 @@ tree-finder .tf-panel-grid table *,
 }
 tree-finder .tf-panel-grid table,
 :host table {
-  position: absolute;
   overflow: hidden;
   color: #666;
 }

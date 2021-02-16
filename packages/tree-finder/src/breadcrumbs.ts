@@ -6,13 +6,20 @@
  */
 import { Tag, Tree } from "./util";
 
-import "../style/breadcrumbs.less";
+import "../style/breadcrumbs";
 
 export class TreeFinderBreadcrumbsElement extends HTMLElement {
   connectedCallback() {
     if (!this._initialized) {
       this.create_shadow_dom();
+
       this._initialized = true;
+    }
+
+    if (!this._initializedListeners) {
+      this.addEventListener("mouseup", event => this.onClick(event));
+
+      this._initializedListeners = true;
     }
   }
 
@@ -40,10 +47,20 @@ export class TreeFinderBreadcrumbsElement extends HTMLElement {
     [this.shadowSheet, this.top] = this.shadowRoot!.children as any as [StyleSheet,HTMLElement];
   }
 
+  async onClick(event: MouseEvent) {
+    if (event.button !== 0) {
+      return;
+    }
+
+    console.log(event);
+    console.log(event.target);
+  }
+
   protected shadowSheet: StyleSheet;
   protected top: HTMLElement;
 
   private _initialized: boolean = false;
+  private _initializedListeners: boolean = false;
 }
 
 export namespace TreeFinderBreadcrumbsElement {

@@ -10,7 +10,7 @@ import { IContentRow } from "./content";
 import { ContentsModel } from "./model";
 import { RegularTable, Tree } from "./util";
 
-import "../style/grid/index.less";
+import "../style/grid";
 
 // await customElements.whenDefined('regular-table');
 if (document.createElement("regular-table").constructor === HTMLElement) {

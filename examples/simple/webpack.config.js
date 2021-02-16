@@ -12,7 +12,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 // To improve build times for large projects enable fork-ts-checker-webpack-plugin
 // const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
-const { dependencySrcMapRules, stylingRules, svgUrlRules, optimization } = require("../../webpack.rules");
+const { dependencySrcMapRules, stylingRules, svgUrlRules, getOptimization, getResolve } = require("../../webpack.rules");
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -47,11 +47,7 @@ const simpleExampleConfig = {
   },
 
   resolve: {
-    modules: [
-      "node_modules",
-      path.resolve(__dirname)
-    ],
-    extensions: [".js", ".ts", ".tsx"],
+    ...getResolve(__dirname),
 
     // plugins: [
     //   new TsconfigPathsPlugin({})
@@ -83,7 +79,7 @@ const simpleExampleConfig = {
 
   optimization: {
     minimize: isProd,
-    ...isProd && optimization,
+    ...isProd && getOptimization(),
   },
 }
 

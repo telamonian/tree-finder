@@ -10,7 +10,7 @@ import { ContentsModel } from "./model";
 import { TreeFinderGridElement } from "./grid";
 import { Tag } from "./util";
 
-// import panelCSS from "../style/grid/index.module.less";
+import "../style/panel";
 
 TreeFinderBreadcrumbsElement.get();
 TreeFinderGridElement.get();
