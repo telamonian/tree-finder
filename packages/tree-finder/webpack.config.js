@@ -14,10 +14,10 @@ const isProd = process.env.NODE_ENV === "production";
 
 const treeFinderConfig = {
   entry: {
-    "tree-finder": "./src/index.ts",
+    "tree-finder": "src/index.ts",
   },
-
   devtool: "source-map",
+  context: path.resolve(__dirname, "../.."),
 
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -44,6 +44,10 @@ const treeFinderConfig = {
   },
 
   resolve: {
+    modules: [
+      "node_modules",
+      path.resolve(__dirname)
+    ],
     extensions: [".tsx", ".ts", ".js"],
   },
 
@@ -75,10 +79,10 @@ const treeFinderConfig = {
 
 const themeConfig = {
   entry: {
-    "material": "./style/theme/material.css",
+    "material": "style/theme/material.css",
   },
-
   devtool: "source-map",
+  context: path.resolve(__dirname, "../.."),
 
   output: {
     path: path.resolve(__dirname, "dist/theme"),
@@ -99,6 +103,10 @@ const themeConfig = {
   },
 
   resolve: {
+    modules: [
+      "node_modules",
+      path.resolve(__dirname)
+    ],
     extensions: [".tsx", ".ts", ".js"],
   },
 

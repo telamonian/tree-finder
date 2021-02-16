@@ -20,7 +20,7 @@ const simpleExampleConfig = {
   devtool: "source-map",
   entry: "src/index.ts",
   watch: false,
-  context: __dirname, // to automatically find tsconfig.json
+  context: path.resolve(__dirname, "../.."),
 
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -35,7 +35,7 @@ const simpleExampleConfig = {
         use: {
           loader: "ts-loader",
           options: {
-            transpileOnly: true, // Set to true if you are using fork-ts-checker-webpack-plugin
+            transpileOnly: false, // Set to true if you are using fork-ts-checker-webpack-plugin
             projectReferences: true
           }
         }
