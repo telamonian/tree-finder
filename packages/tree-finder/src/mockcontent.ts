@@ -58,7 +58,7 @@ export function mockContent(props: {path: Path, kind: string, modDays?: number, 
       path,
       modified,
       writable,
-      getChildren: () => {
+      getChildren: async () => {
         const children = [];
         const dirNames = randomize ? Random.shuffle(DIR_NAMES) : DIR_NAMES;
 

@@ -80,7 +80,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       row_headers: this.model.contents.slice(start_row, end_row).map(x => {
         return [Tree.rowHeaderSpan({
           isDir: x.isDir,
-          isOpen: x.isOpen,
+          isOpen: x.isExpand,
           path: x.getPathAtDepth(this.model.pathDepth),
         })];
       }),
@@ -120,7 +120,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     }
   }
 
-  onSortClick(event: MouseEvent) {
+  async onSortClick(event: MouseEvent) {
     if (event.button !== 0) {
       return;
     }
@@ -136,7 +136,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       return;
     }
 
-    this.model.sort({
+    await this.model.sort({
       col: metadata.value as any as keyof T || this.model.sortStates.defaultColumn,
       multisort: event.shiftKey,
     });
@@ -144,7 +144,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     this.draw();
   }
 
-  onTreeClick(event: MouseEvent) {
+  async onTreeClick(event: MouseEvent) {
     if (event.button !== 0) {
       return;
     }
@@ -158,17 +158,17 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     // assert that metadata exists, given element.classList check above
     const metadata = RegularTable.metadataFromElement(element, this)!;
 
-    if (this.model.contents[metadata.y!].isOpen) {
-      this.model.collapse(metadata.y!);
+    if (this.model.contents[metadata.y!].isExpand) {
+      await this.model.collapse(metadata.y!);
     } else {
-      this.model.expand(metadata.y!);
+      await this.model.expand(metadata.y!);
     }
 
     (this as any)._resetAutoSize();
     this.draw();
   }
 
-  onRowDoubleClick(event: MouseEvent) {
+  async onRowDoubleClick(event: MouseEvent) {
     if (event.button !== 0) {
       return;
     }
@@ -187,7 +187,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     const newRootContent = this.model.contents[metadata.y!];
 
     if (newRootContent.isDir) {
-      this.model.setRoot(newRootContent.row);
+      await this.model.open(newRootContent.row);
 
       // .init() calls .draw()
       this.init(this.model, this.options);

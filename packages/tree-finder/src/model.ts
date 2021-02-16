@@ -9,45 +9,74 @@ import { BehaviorSubject } from "rxjs";
 import { Content, IContentRow } from "./content";
 import { SortStates, sortContentRoot} from "./sort";
 
+class CrumbModel<T extends IContentRow> {
+  constructor() {
+    this._crumbsRows = [];
+
+    this.crumbNamesSub = new BehaviorSubject([]);
+    this.revertedCrumbSub = new BehaviorSubject(undefined);
+  }
+
+  revert(crumbIx: number) {
+    this._crumbsRows = this._crumbsRows.slice(0, crumbIx + 1);
+    const last = this._crumbsRows.pop();
+
+    this.revertedCrumbSub.next(last);
+    return last;
+  }
+
+  extend(crumbs: T[]) {
+    this._crumbsRows = [...this._crumbsRows, ...crumbs];
+    this._onCrumbUpdate();
+
+    const last = this._crumbsRows[this._crumbsRows.length - 1];
+    return last;
+  }
+
+  protected async _onCrumbUpdate() {
+    this.crumbNamesSub.next(this._crumbsRows.map(r => r.path[r.path.length - 1]));
+  }
+
+  readonly crumbNamesSub: BehaviorSubject<string[]>;
+  readonly revertedCrumbSub: BehaviorSubject<T | undefined>;
+
+  protected _crumbsRows: T[] = [];
+}
+
 export class ContentsModel<T extends IContentRow> {
-  constructor(root?: T, options: Partial<ContentsModel.IOptions<T>> = {}) {
+  constructor(root: T, options: Partial<ContentsModel.IOptions<T>> = {}) {
+    this.crumbs = new CrumbModel<T>();
+    this._parentMap = new WeakMap();
+    this._sortStates = new SortStates();
+
     this.options = options;
 
-    this.reset();
+    this.crumbs.revertedCrumbSub.subscribe(async x => {if (x) {await this.open(x)}});
 
-    if (root) {
-      this.setRoot(root);
-    }
+    this.open(root);
   }
 
-  reset(crumbIx?: number) {
+  async open(root: T) {
     this._contents = [];
 
-    if (!crumbIx) {
-      this._crumbs = [];
-      this.crumbSubject.next(this._crumbs.map(x => x.name));
-      return;
+    const newCrumbs = [root];
+    while (this._parentMap.has(newCrumbs[0])) {
+      newCrumbs.unshift(this._parentMap.get(newCrumbs[0])!);
     }
+    this.crumbs.extend(newCrumbs);
 
-    const rootContent = this._crumbs[crumbIx];
-    this._crumbs = this._crumbs.slice(0, crumbIx);
-    this.setRoot(rootContent.row);
-  }
-
-  setRoot(root: T) {
-    this._sortStates = new SortStates();
+    this._parentMap = new WeakMap();
     this._root = new Content(root);
-
-    this._crumbs.push(this._root);
-    this.crumbSubject.next(this._crumbs.map(x => x.name));
 
     this.initColumns();
 
-    // fetch root's children and mark it as open
-    this._root.open(this._options.doRefetch);
+    await this._root.expand(this._options.doRefetch);
+    for (const c of this._root.children!) {
+      this._parentMap.set(c.row, this._root.row);
+    }
 
-    // set initial sort
-    this.sort();
+    // sort the root's contents and display
+    await this.sort();
   }
 
   initColumns() {
@@ -74,16 +103,19 @@ export class ContentsModel<T extends IContentRow> {
 
   async expand(rix: number) {
     const content = this._contents[rix];
-    content.open(this._options.doRefetch);
+
+    await content.expand(this._options.doRefetch);
+    for (const c of content.children!) {
+      this._parentMap.set(c.row, content.row);
+    }
 
     const [nodeContents, _] = sortContentRoot({root: this._contents[rix], sortStates: this._sortStates});
     this._contents.splice(rix + 1, 0, ...nodeContents);
   }
 
-  sort(props: {col?: keyof T, multisort?: boolean} = {}) {
+  async sort(props: {col?: keyof T, multisort?: boolean} = {}) {
     const {col, multisort} = props;
-
-    this._root.open(this._options.doRefetch);
+    await this._root.expand(this._options.doRefetch);
 
     [this._contents, this._sortStates] = sortContentRoot({root: this._root, sortStates: this._sortStates, col, multisort});
   }
@@ -127,11 +159,11 @@ export class ContentsModel<T extends IContentRow> {
     return this._ixByColumn;
   }
 
-  readonly crumbSubject = new BehaviorSubject([] as string[]);
+  readonly crumbs: CrumbModel<T>;
 
   protected _columns: (keyof T)[];
   protected _contents: Content<T>[];
-  protected _crumbs: Content<T>[];
+  protected _parentMap: ContentsModel.RefMap<T>;
   protected _root: Content<T>;
   protected _sortStates: SortStates<T>;
 
@@ -152,4 +184,6 @@ export namespace ContentsModel {
      */
     doRefetch: boolean;
   }
+
+  export type RefMap<T extends IContentRow> = WeakMap<T, T>;
 }
