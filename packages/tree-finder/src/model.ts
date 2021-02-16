@@ -71,9 +71,6 @@ export class ContentsModel<T extends IContentRow> {
     this.initColumns();
 
     await this._root.expand(this._options.doRefetch);
-    for (const c of this._root.children!) {
-      this._parentMap.set(c.row, this._root.row);
-    }
 
     // sort the root's contents and display
     await this.sort();
