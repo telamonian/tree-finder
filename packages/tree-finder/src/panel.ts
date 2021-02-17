@@ -75,6 +75,16 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
 
     this.shadowRoot!.innerHTML = Tag.html`
       <style>
+        :host {
+          display: flex;
+          flex-flow: column;
+        }
+        :host > div {
+          position: relative;
+        }
+        :host > .tf-panel-grid-container {
+          flex: 1;
+        }
       </style>
       <div class="tf-panel-breadcrumbs-container">
         ${breadcrumbsSlot}

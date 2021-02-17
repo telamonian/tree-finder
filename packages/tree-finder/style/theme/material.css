@@ -22,6 +22,7 @@
 }
 
 tree-finder .tf-panel-grid {
+  outline: none;
   padding-top: 12px;
   padding-left: 12px;
   padding-bottom: 0;

@@ -131,7 +131,7 @@ const getResolve = (dir) => { return {
     "node_modules",
     path.resolve(dir),
   ],
-  extensions: [".tsx", ".ts", ".jsx", ".js", ".less"],
+  extensions: [".tsx", ".ts", ".jsx", ".js", ".less", ".css"],
 };}
 
 module.exports = {
