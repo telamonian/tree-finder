@@ -4,6 +4,7 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
+import { ContentsModel } from "./model";
 import { Tag, Tree } from "./util";
 
 import "../style/breadcrumbs";
@@ -23,7 +24,15 @@ export class TreeFinderBreadcrumbsElement extends HTMLElement {
     }
   }
 
-  async init(path: string[]) {
+  init(model: ContentsModel<any>) {
+    this.model = model;
+
+    this.model.crumbs.crumbNamesSub.subscribe({
+      next: x => this._onCrumbUpdate(x),
+    });
+  }
+
+  protected async _onCrumbUpdate(path: string[]) {
     this.innerHTML = Tree.breadcrumbsSpans(path);
   }
 
@@ -52,10 +61,17 @@ export class TreeFinderBreadcrumbsElement extends HTMLElement {
       return;
     }
 
-    console.log(event);
-    console.log(event.target);
+    const target = event.target as HTMLElement;
+
+    console.log(target);
+    console.log(target.dataset.crumbix);
+
+    if (target.dataset.crumbix) {
+      this.model.crumbs.revert(parseInt(target.dataset.crumbix));
+    }
   }
 
+  protected model: ContentsModel<any>;
   protected shadowSheet: StyleSheet;
   protected top: HTMLElement;
 

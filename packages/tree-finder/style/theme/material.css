@@ -10,13 +10,16 @@
 
 :root {
   --tf-background: #fff;
-  --tf-icon-font: "Material Icons";
+
+  --tf-breadcrumb-hover-color: #ccc;
+
   --tf-row-hover-background: #eee;
   --tf-row-hover-color: #333;
 
   --tf-select-background: #2196ee;
   --tf-select-color: #eee;
 
+  --tf-icon-font: "Material Icons";
   --tf-font-family: "Open Sans";
   --tf-font-size: 12px;
 }
