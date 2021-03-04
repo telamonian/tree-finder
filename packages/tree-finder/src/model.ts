@@ -13,7 +13,7 @@ import {
   filterSortContentRoot,
   sortContentRoot,
   SortStates
-} from "./sort";
+} from "./filtersort";
 
 class CrumbModel<T extends IContentRow> {
   constructor() {
