@@ -5,10 +5,12 @@
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
 import { IContentRow } from "./content";
-import { TreeFinderBreadcrumbsElement } from "./breadcrumbs";
-import { TreeFinderFilterElement } from "./filter";
-import { TreeFinderGridElement } from "./grid";
-import { TreeFinderPanelElement } from "./panel";
+import {
+  TreeFinderBreadcrumbsElement,
+  TreeFinderFilterElement,
+  TreeFinderGridElement,
+  TreeFinderPanelElement,
+} from "./element";
 
 declare global {
   interface Document {
@@ -26,11 +28,8 @@ declare global {
   }
 }
 
-export * from "./breadcrumbs";
 export * from "./content";
-export * from "./filter";
+export * from "./element";
 export * from "./filtersort";
-export * from "./grid";
 export * from "./model";
-export * from "./panel";
 export * from "./util";

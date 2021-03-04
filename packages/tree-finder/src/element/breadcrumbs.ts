@@ -4,10 +4,10 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
-import { ContentsModel } from "./model";
-import { Tag, Tree } from "./util";
+import { ContentsModel } from "../model";
+import { Tag, Tree } from "../util";
 
-import "../style/breadcrumbs";
+import "../../style/breadcrumbs";
 
 export class TreeFinderBreadcrumbsElement extends HTMLElement {
   connectedCallback() {

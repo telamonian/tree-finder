@@ -6,11 +6,11 @@
  */
 import * as rt from "regular-table";
 
-import { IContentRow } from "./content";
-import { ContentsModel } from "./model";
-import { RegularTable, Tree } from "./util";
+import { IContentRow } from "../content";
+import { ContentsModel } from "../model";
+import { RegularTable, Tree } from "../util";
 
-import "../style/grid";
+import "../../style/grid";
 
 // await customElements.whenDefined('regular-table');
 if (document.createElement("regular-table").constructor === HTMLElement) {
