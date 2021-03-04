@@ -12,7 +12,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 // To improve build times for large projects enable fork-ts-checker-webpack-plugin
 // const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
-const { dependencySrcMapRules, stylingRules, svgUrlRules, getOptimization, getResolve } = require("../../webpack.rules");
+const { dependencySrcMapRules, stylingRules, svgUrlRules, getOptimization, getResolve, tsRules } = require("../../webpack.rules");
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -29,21 +29,11 @@ const simpleExampleConfig = {
 
   module: {
     rules: [
-      {
-        test: /\.tsx?$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "ts-loader",
-          options: {
-            transpileOnly: false, // Set to true if you are using fork-ts-checker-webpack-plugin
-            projectReferences: true
-          }
-        }
-      },
       ...dependencySrcMapRules,
       ...stylingRules,
       ...svgUrlRules,
-    ]
+      ...tsRules,
+    ],
   },
 
   resolve: {

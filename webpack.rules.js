@@ -109,6 +109,20 @@ const svgUrlRules = [
   },
 ];
 
+const tsRules = [
+  {
+    test: /\.tsx?$/,
+    exclude: /node_modules/,
+    use: {
+      loader: "ts-loader",
+      options: {
+        transpileOnly: false, // Set to true if you are using fork-ts-checker-webpack-plugin
+        projectReferences: true
+      },
+    },
+  },
+]
+
 const getOptimization = () => { return {
   minimizer: [
     // "...",
@@ -139,6 +153,7 @@ module.exports = {
   dependencySrcMapRules,
   stylingRules,
   svgUrlRules,
+  tsRules,
   getOptimization,
   getResolve,
 };

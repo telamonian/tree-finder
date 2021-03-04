@@ -8,7 +8,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 const RemoveEmptyScriptsPlugin = require("webpack-remove-empty-scripts");
 
-const { dependencySrcMapRules, stylingRules, svgUrlRules, getOptimization, getResolve } = require("../../webpack.rules");
+const { dependencySrcMapRules, stylingRules, svgUrlRules, getOptimization, getResolve, tsRules } = require("../../webpack.rules");
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -32,14 +32,10 @@ const treeFinderConfig = {
 
   module: {
     rules: [
-      {
-        test: /\.tsx?$/,
-        use: "ts-loader",
-        exclude: /node_modules/,
-      },
       ...dependencySrcMapRules,
       ...stylingRules,
       ...svgUrlRules,
+      ...tsRules,
     ],
   },
 
@@ -87,14 +83,10 @@ const themeConfig = {
 
   module: {
     rules: [
-      {
-        test: /\.tsx?$/,
-        use: "ts-loader",
-        exclude: /node_modules/,
-      },
       ...dependencySrcMapRules,
       ...stylingRules,
       ...svgUrlRules,
+      ...tsRules,
     ],
   },
 
