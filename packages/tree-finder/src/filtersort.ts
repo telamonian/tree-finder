@@ -80,6 +80,12 @@ export class SortStates<T extends IContentRow> {
   readonly states: ISortStateFull<T>[];
 }
 
+function contentsFiltererClosure<T extends IContentRow>(filterPatterns: FilterPatterns<T>) {
+  return function contentsFilterer(content: Content<T>): boolean {
+    return Object.entries(filterPatterns.patterns).every(([col, pattern]) => (col === "path" ? content.row[col].join("/") : content.row[col as keyof T] as any as string).includes(pattern!));
+  };
+}
+
 function contentsSorterClosure<T extends IContentRow>(sortStates: SortStates<T>) {
   return function contentsSorter(l: Content<T>, r: Content<T>): number {
     for (const {col, sign} of sortStates.states) {
@@ -104,12 +110,6 @@ function contentsSorterClosure<T extends IContentRow>(sortStates: SortStates<T>)
       }
     }
     return 0;
-  };
-}
-
-function contentsFiltererClosure<T extends IContentRow>(filterPatterns: FilterPatterns<T>) {
-  return function contentsFilterer(content: Content<T>): boolean {
-    return Object.entries(filterPatterns.patterns).every(([col, pattern]) => pattern && (content.row[col as keyof T] as any as string).includes(pattern));
   };
 }
 

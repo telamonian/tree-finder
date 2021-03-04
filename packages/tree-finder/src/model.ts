@@ -126,6 +126,8 @@ export class ContentsModel<T extends IContentRow> {
     await this._root.expand(this._options.doRefetch);
 
     this._contents = filterContentRoot({root: this._root, filterPatterns: this._filterPatterns});
+
+    this.drawSub.next(true);
   }
 
   onFilterInput(fpat: {col: keyof T, pattern: string}) {
