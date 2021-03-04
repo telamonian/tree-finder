@@ -81,8 +81,23 @@ export class SortStates<T extends IContentRow> {
 }
 
 function contentsFiltererClosure<T extends IContentRow>(filterPatterns: FilterPatterns<T>) {
+  // return function contentsFilterer(content: Content<T>): boolean {
+  //   return Object.entries(filterPatterns.patterns).every(([col, pattern]) => (col === "path" ? content.row[col].join("/") : content.row[col as keyof T] as any as string).includes(pattern!));
+  // };
+
   return function contentsFilterer(content: Content<T>): boolean {
-    return Object.entries(filterPatterns.patterns).every(([col, pattern]) => (col === "path" ? content.row[col].join("/") : content.row[col as keyof T] as any as string).includes(pattern!));
+    for (const key of Object.keys(filterPatterns.patterns)) {
+      if (key === "path") {
+        if (!content.row[key].join("/").includes(filterPatterns.patterns[key])) {
+          return false;
+        }
+      } else {
+        if (!(content.row[key as keyof T] as any as string).includes(filterPatterns.patterns[key as keyof T])) {
+          return false;
+        }
+      }
+    }
+    return true;
   };
 }
 
@@ -145,13 +160,32 @@ function _flattenContents<T extends IContentRow>(content: Content<T>, filterer?:
     return contentsFlat;
   }
 
+  // which version of the following is more correct in terms of behavior?
+
+  // if (content.children) {
+  //   let children;
+  //   if (filterer && sorter) {
+  //     children = content.children.filter(filterer).sort(sorter);
+  //   } else if (filterer && !sorter) {
+  //     children = content.children.filter(filterer);
+  //   } else if (!filterer && sorter) {
+  //     children = content.children.sort(sorter);
+  //   } else {
+  //     children = content.children;
+  //   }
+
+  //   for (const child of children) {
+  //     contentsFlat.push(child);
+  //     if (child.isExpand) {
+  //       _flattenContents(child, filterer, sorter, contentsFlat);
+  //     }
+  //   }
+  // }
+  // return contentsFlat;
+
   if (content.children) {
     let children;
-    if (filterer && sorter) {
-      children = content.children.filter(filterer).sort(sorter);
-    } else if (filterer && !sorter) {
-      children = content.children.filter(filterer);
-    } else if (!filterer && sorter) {
+    if (sorter) {
       children = content.children.sort(sorter);
     } else {
       children = content.children;
@@ -165,7 +199,11 @@ function _flattenContents<T extends IContentRow>(content: Content<T>, filterer?:
     }
   }
 
-  return contentsFlat;
+  if (filterer) {
+    return contentsFlat.filter(filterer);
+  } else {
+    return contentsFlat;
+  }
 }
 
 export function filterContentRoot<T extends IContentRow>({root, filterPatterns}: {root: Content<T>, filterPatterns: FilterPatterns<T>}): Content<T>[] {
