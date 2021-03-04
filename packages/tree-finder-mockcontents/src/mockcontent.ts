@@ -4,43 +4,20 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
-import { Path, IContentRow } from "./content";
-import { Random } from "./util";
+// import * as faker from "faker";
 
-const DIR_NAMES = [
-  "able",
-  "baker",
-  "charlie",
-  "dog",
-  "easy",
-  "fox",
-  "george",
-  "how",
-  "item",
-  "jig",
-  "king",
-  "love",
-  "mike",
-  "nan",
-  "oboe",
-  "peter",
-  "queen",
-  "roger",
-  "sugar",
-  "tare",
-  "uncle",
-  "victor",
-  "william",
-  "xray",
-  "yoke",
-  "zebra",
-];
+import { Path, IContentRow } from "tree-finder";
+
+import { ALLIED_PHONETIC, Random } from "./util";
+
 
 interface IMockContentRow extends IContentRow {
   modified: Date;
 
   writable: boolean;
 }
+
+const _mockCache: {[key: string]: IMockContentRow[]} = {};
 
 let mockFileIx = 0;
 let modDaysIx = -1;
@@ -59,8 +36,14 @@ export function mockContent(props: {path: Path, kind: string, modDays?: number, 
       modified,
       writable,
       getChildren: async () => {
+        const pathstr = path.join('/');
+
+        if (pathstr in _mockCache) {
+          return _mockCache[pathstr];
+        }
+
         const children = [];
-        const dirNames = randomize ? Random.shuffle(DIR_NAMES) : DIR_NAMES;
+        const dirNames = randomize ? Random.shuffle(ALLIED_PHONETIC) : ALLIED_PHONETIC;
 
         for (let i = 0; i < nchildren; i++) {
           children.push(mockContent({
@@ -71,6 +54,8 @@ export function mockContent(props: {path: Path, kind: string, modDays?: number, 
             randomize,
           }));
         }
+
+        _mockCache[pathstr] = children;
         return children;
       },
     };

@@ -2,17 +2,14 @@
   "$schema": "http://json.schemastore.org/tsconfig",
   "extends": "../../tsconfigbase",
   "compilerOptions": {
-    "baseUrl": ".",
+    // "baseUrl": ".",
     "outDir": "lib",
     "rootDir": "src"
   },
   "include": ["src/**/*"],
   "references": [
     {
-      "path": "../../packages/tree-finder"
-    },
-    {
-      "path": "../../packages/tree-finder-mockcontents"
+      "path": "../tree-finder"
     }
   ]
 }

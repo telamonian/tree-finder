@@ -26,7 +26,6 @@ declare global {
 export * from "./breadcrumbs";
 export * from "./content";
 export * from "./grid";
-export * from "./mockcontent";
 export * from "./model";
 export * from "./panel";
 export * from "./sort";
