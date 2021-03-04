@@ -4,18 +4,18 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
-import { TreeFinderBreadcrumbsElement } from "./breadcrumbs"
-import { TreeFinderFilterElement } from "./filter";
-import { TreeFinderGridElement } from "./grid";
-
 import { IContentRow } from "../content";
 import { ContentsModel } from "../model";
 import { Tag } from "../util";
 
+import { TreeFinderBreadcrumbsElement } from "./breadcrumbs";
+import { TreeFinderFiltersElement } from "./filters";
+import { TreeFinderGridElement } from "./grid";
+
 import "../../style/panel";
 
 TreeFinderBreadcrumbsElement.get();
-TreeFinderFilterElement.get();
+TreeFinderFiltersElement.get();
 TreeFinderGridElement.get();
 
 export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
@@ -29,13 +29,11 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   clear() {
     this.innerHTML = Tag.html`
       <tree-finder-breadcrumbs class="tf-panel-breadcrumbs" slot="breadcrumbs"></tree-finder-breadcrumbs>
-      ${`<tree-finder-filter class="tf-panel-filter" slot="filter"></tree-finder-filter>`.repeat(4)}
+      <tree-finder-filters class="tf-panel-filters" slot="filters"></tree-finder-filters>
       <tree-finder-grid class="tf-panel-grid" slot="grid"></tree-finder-grid>
     `;
 
-    this.breadcrumbs = this.children[0] as TreeFinderBreadcrumbsElement;
-    this.filters = [this.children[1], this.children[2], this.children[3], this.children[4]] as TreeFinderFilterElement[];
-    this.grid = this.children[this.children.length - 1] as TreeFinderGridElement<T>;
+    [this.breadcrumbs, this.filters, this.grid] = this.children as any as [TreeFinderBreadcrumbsElement, TreeFinderFiltersElement, TreeFinderGridElement<T>];
   }
 
   async init(root: T, options: Partial<TreeFinderPanelElement.IOptions<T> & ContentsModel.IOptions<T> & TreeFinderGridElement.IOptions<T>> = {}) {
@@ -60,11 +58,11 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
     this.model = new ContentsModel(root, modelOptions);
 
     this.breadcrumbs.init(this.model);
-    this.filters.forEach(f => f.init(this.model));
+    this.filters.init(this.model);
     this.model.columnWidthsSub.subscribe(xs => {
-      this.filters[0].style.marginLeft = '12px';
+      this.filters.getChild(0).style.marginLeft = '12px';
       for (const ix in xs) {
-        (this.filters[ix].children[0] as HTMLInputElement).style.width = xs[ix];
+        this.filters.getInput(ix).style.width = xs[ix];
       }
     });
     this.grid.init(this.model, gridOptions);
@@ -80,7 +78,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
     this.attachShadow({mode: "open"});
 
     const breadcrumbsSlot = `<slot name="breadcrumbs"></slot>`;
-    const filterSlot = `<slot name="filter"></slot>`;
+    const filterSlot = `<slot name="filters"></slot>`;
     const gridSlot = `<slot name="grid"></slot>`;
 
     this.shadowRoot!.innerHTML = Tag.html`
@@ -92,7 +90,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
         :host > div {
           position: relative;
         }
-        :host > .tf-panel-filter-container {
+        :host > .tf-panel-filters-container {
           display: inline-block;
         }
         :host > .tf-panel-grid-container {
@@ -102,7 +100,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
       <div class="tf-panel-breadcrumbs-container">
         ${breadcrumbsSlot}
       </div>
-      <div class="tf-panel-filter-container">
+      <div class="tf-panel-filters-container">
         ${filterSlot}
       </div>
       <div class="tf-panel-grid-container">
@@ -119,7 +117,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   protected gridContainer: HTMLElement;
 
   protected breadcrumbs: TreeFinderBreadcrumbsElement;
-  protected filters: TreeFinderFilterElement[];
+  protected filters: TreeFinderFiltersElement;
   protected grid: TreeFinderGridElement<T>;
 
   protected options: TreeFinderPanelElement.IOptions<T>;

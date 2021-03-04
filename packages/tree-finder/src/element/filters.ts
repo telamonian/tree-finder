@@ -13,7 +13,7 @@ TreeFinderFilterElement.get();
 
 export class TreeFinderFiltersElement extends HTMLElement {
   clear() {
-    this.innerHTML = `<tree-finder-filter"></tree-finder-filter>`.repeat(this.model.columns.length);
+    this.innerHTML = `<tree-finder-filter></tree-finder-filter>`.repeat(this.model.columns.length + 1);
 
     this.filters = this.children as any as [TreeFinderFilterElement];
   }
@@ -58,6 +58,13 @@ export class TreeFinderFiltersElement extends HTMLElement {
     [this.shadowSheet, this.top] = this.shadowRoot!.children as any as [StyleSheet, HTMLElement];
   }
 
+  getChild(ix: number | string): TreeFinderFilterElement {
+    return this.filters[ix as any];
+  }
+
+  getInput(ix: number | string): HTMLInputElement {
+    return this.filters[ix as any].children[0] as HTMLInputElement;
+  }
 
   protected filters: TreeFinderFilterElement[];
   protected model: ContentsModel<any>;
