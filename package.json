@@ -13,6 +13,7 @@
     "clean": "lerna run clean",
     "clean:slate": "lerna run clean:slate && rimraf node_modules",
     "webpack": "lerna run webpack",
+    "webpack:prod": "lerna run webpack:prod",
     "webpack:watch": "lerna run webpack:watch"
   },
   "devDependencies": {

@@ -63,9 +63,6 @@ export class TreeFinderBreadcrumbsElement extends HTMLElement {
 
     const target = event.target as HTMLElement;
 
-    console.log(target);
-    console.log(target.dataset.crumbix);
-
     if (target.dataset.crumbix) {
       this.model.crumbs.revert(parseInt(target.dataset.crumbix));
     }
