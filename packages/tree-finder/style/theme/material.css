@@ -10,19 +10,23 @@
 
 :root {
   --tf-background: #fff;
-  --tf-icon-font: "Material Icons";
+
+  --tf-breadcrumb-hover-color: #ccc;
+
   --tf-row-hover-background: #eee;
   --tf-row-hover-color: #333;
 
   --tf-select-background: #2196ee;
   --tf-select-color: #eee;
 
+  --tf-icon-font: "Material Icons";
   --tf-font-family: "Open Sans";
   --tf-font-size: 12px;
 }
 
 tree-finder .tf-panel-grid {
-  padding-top: 30px;
+  outline: none;
+  padding-top: 12px;
   padding-left: 12px;
   padding-bottom: 0;
   padding-right: 0;
@@ -127,7 +131,6 @@ tree-finder .tf-panel-grid table *,
 }
 tree-finder .tf-panel-grid table,
 :host table {
-  position: absolute;
   overflow: hidden;
   color: #666;
 }

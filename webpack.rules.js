@@ -6,6 +6,7 @@
  */
 const CssnanoPlugin = require("cssnano-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
 
 const cssLoader = () => {return {
@@ -125,10 +126,19 @@ const getOptimization = () => { return {
   ],
 };}
 
+const getResolve = (dir) => { return {
+  modules: [
+    "node_modules",
+    path.resolve(dir),
+  ],
+  extensions: [".tsx", ".ts", ".jsx", ".js", ".less", ".css"],
+};}
+
 module.exports = {
   bitmapRules,
   dependencySrcMapRules,
   stylingRules,
   svgUrlRules,
   getOptimization,
+  getResolve,
 };

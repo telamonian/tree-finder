@@ -8,16 +8,16 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 const RemoveEmptyScriptsPlugin = require("webpack-remove-empty-scripts");
 
-const { dependencySrcMapRules, stylingRules, svgUrlRules, getOptimization } = require("../../webpack.rules");
+const { dependencySrcMapRules, stylingRules, svgUrlRules, getOptimization, getResolve } = require("../../webpack.rules");
 
 const isProd = process.env.NODE_ENV === "production";
 
 const treeFinderConfig = {
   entry: {
-    "tree-finder": "./src/index.ts",
+    "tree-finder": "src/index.ts",
   },
-
   devtool: "source-map",
+  context: path.resolve(__dirname, "../.."),
 
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -44,7 +44,7 @@ const treeFinderConfig = {
   },
 
   resolve: {
-    extensions: [".tsx", ".ts", ".js"],
+    ...getResolve(__dirname),
   },
 
   plugins: [
@@ -75,10 +75,10 @@ const treeFinderConfig = {
 
 const themeConfig = {
   entry: {
-    "material": "./style/theme/material.css",
+    "material": "style/theme/material.css",
   },
-
   devtool: "source-map",
+  context: path.resolve(__dirname, "../.."),
 
   output: {
     path: path.resolve(__dirname, "dist/theme"),
@@ -99,7 +99,7 @@ const themeConfig = {
   },
 
   resolve: {
-    extensions: [".tsx", ".ts", ".js"],
+    ...getResolve(__dirname),
   },
 
   plugins: [

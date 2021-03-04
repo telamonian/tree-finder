@@ -104,7 +104,7 @@ function _flattenContents<T extends IContentRow>(content: Content<T>, sorter: (l
   if (content.children) {
     for (const child of sorter ? content.children?.sort(sorter) : content.children) {
       contentsFlat.push(child);
-      if (child.isOpen) {
+      if (child.isExpand) {
         _flattenContents(child, sorter, contentsFlat);
       }
     }

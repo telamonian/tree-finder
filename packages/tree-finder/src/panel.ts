@@ -10,7 +10,7 @@ import { ContentsModel } from "./model";
 import { TreeFinderGridElement } from "./grid";
 import { Tag } from "./util";
 
-// import panelCSS from "../style/grid/index.module.less";
+import "../style/panel";
 
 TreeFinderBreadcrumbsElement.get();
 TreeFinderGridElement.get();
@@ -54,9 +54,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
 
     this.model = new ContentsModel(root, modelOptions);
 
-    this.model.crumbSubject.subscribe({
-      next: x => this.breadcrumbs.init(x),
-    });
+    this.breadcrumbs.init(this.model);
     this.grid.init(this.model, gridOptions);
 
     await this.draw();
@@ -75,6 +73,16 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
 
     this.shadowRoot!.innerHTML = Tag.html`
       <style>
+        :host {
+          display: flex;
+          flex-flow: column;
+        }
+        :host > div {
+          position: relative;
+        }
+        :host > .tf-panel-grid-container {
+          flex: 1;
+        }
       </style>
       <div class="tf-panel-breadcrumbs-container">
         ${breadcrumbsSlot}

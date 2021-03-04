@@ -11,7 +11,7 @@ export type Path = string[];
 export interface IContentRow {
   path: Path;
   kind: string;
-  getChildren?: () => IContentRow[];
+  getChildren?: () => Promise<IContentRow[]>;
 }
 
 export class Content<T extends IContentRow> {
@@ -21,15 +21,39 @@ export class Content<T extends IContentRow> {
   }
 
   close() {
-    this._isOpen = false;
+    this._isExpand = false;
   }
 
-  fetchChildren(refresh: boolean = false) {
+  async getChild(name: string, refresh: boolean = false) {
+    await this.getChildren(refresh);
+    if (!this._children) {
+      return;
+    }
+
+    for (const c of this._children) {
+      if (name === c.name) {
+        return c;
+      }
+    }
+
+    return;
+  }
+
+  async getChildren(refresh: boolean = false) {
     if (!this.isDir || (!refresh && this._children)) {
       return;
     }
 
-    this._children = this.row.getChildren!().map((c: T) => new Content<T>(c));
+    // this._children = new Map<string, Content<T>>();
+    // for (const c of await this.row.getChildren!()) {
+    //   this._children.set(c.path.join(""), new Content(c as T));
+    // }
+
+    // this._children = new Map((await this.row.getChildren!()).map((c: T) => [c.path.join(""), new Content<T>(c)]));
+
+    this._children = (await this.row.getChildren!()).map((c: T) => new Content<T>(c));
+
+    return this._children;
   }
 
   getPathAtDepth(depth = 0, fill?: string) {
@@ -42,26 +66,34 @@ export class Content<T extends IContentRow> {
     }
   }
 
-  open(refresh: boolean = false) {
-    this.fetchChildren(refresh)
-    this._isOpen = true;
-  }
-
   get children() {
     return this._children;
+    // return this._children?.values();
   }
 
-  get isOpen() {
-    return this._isOpen;
+  get isExpand() {
+    return this._isExpand;
+  }
+
+  get nchildren() {
+    return this._children?.length ?? 0;
+    // return this._children?.size ?? 0;
+  }
+
+  async expand(refresh: boolean = false) {
+    await this.getChildren(refresh);
+    this._isExpand = true;
   }
 
   get name() {
     return (this.row.path && this.row.path.length) ? this.row.path[this.row.path.length - 1] : "";
   }
 
+
   readonly isDir: boolean;
   readonly row: T;
 
+  // protected _children?: Map<string, Content<T>>;
   protected _children?: Content<T>[];
-  protected _isOpen: boolean = false;
+  protected _isExpand: boolean = false;
 }

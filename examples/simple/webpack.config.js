@@ -12,7 +12,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 // To improve build times for large projects enable fork-ts-checker-webpack-plugin
 // const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
-const { dependencySrcMapRules, stylingRules, svgUrlRules, optimization } = require("../../webpack.rules");
+const { dependencySrcMapRules, stylingRules, svgUrlRules, getOptimization, getResolve } = require("../../webpack.rules");
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -20,7 +20,7 @@ const simpleExampleConfig = {
   devtool: "source-map",
   entry: "src/index.ts",
   watch: false,
-  context: __dirname, // to automatically find tsconfig.json
+  context: path.resolve(__dirname, "../.."),
 
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -35,7 +35,7 @@ const simpleExampleConfig = {
         use: {
           loader: "ts-loader",
           options: {
-            transpileOnly: true, // Set to true if you are using fork-ts-checker-webpack-plugin
+            transpileOnly: false, // Set to true if you are using fork-ts-checker-webpack-plugin
             projectReferences: true
           }
         }
@@ -47,11 +47,7 @@ const simpleExampleConfig = {
   },
 
   resolve: {
-    modules: [
-      "node_modules",
-      path.resolve(__dirname)
-    ],
-    extensions: [".js", ".ts", ".tsx"],
+    ...getResolve(__dirname),
 
     // plugins: [
     //   new TsconfigPathsPlugin({})
@@ -83,7 +79,7 @@ const simpleExampleConfig = {
 
   optimization: {
     minimize: isProd,
-    ...isProd && optimization,
+    ...isProd && getOptimization(),
   },
 }
 

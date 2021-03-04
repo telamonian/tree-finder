@@ -5,13 +5,8 @@
 // the BSD 3 Clause license. The full license can be found in the LICENSE file.
 //
 
-tree-finder-breadcrumbs {
-  font-family: var(--tf-font-family);
-  font-size: var(--tf-font-size);
-}
-
 .tf-breadcrumbs-icon {
-  background-position: center;
+  background-position: left;
   background-repeat: no-repeat;
   background-size: 16px;
   content: "";
@@ -26,4 +21,8 @@ tree-finder-breadcrumbs {
 
 .tf-breadcrumbs-dir-icon {
   background-image: var(--tf-dir-icon);
+}
+
+.tf-breadcrumbs-crumb:hover {
+  background-color: var(--tf-breadcrumb-hover-color);
 }

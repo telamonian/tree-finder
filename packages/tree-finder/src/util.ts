@@ -126,9 +126,9 @@ export namespace Tree {
   }
 
   export function breadcrumbsSpans(path: string[]): string {
-    return `<div class="tf-breadcrumbs-home"><span class="tf-breadcrumbs-icon tf-breadcrumbs-dir-icon"></span><span>/</span></div>` + (
+    return `<div class="tf-breadcrumbs-home"><span class="tf-breadcrumbs-crumb tf-breadcrumbs-icon tf-breadcrumbs-dir-icon" data-crumbix="0">""</span><span>/</span></div>` + (
       [...path.slice(1),]
-      .map(x => `<span class="tf-breadcrumbs-crumb">${x}</span>`)
+      .map((x,i) => `<span class="tf-breadcrumbs-crumb" data-crumbix="${i+1}">${x}</span>`)
       .join(`<span class="tf-breadcrumbs-separator">/</span>`)
     );
   }

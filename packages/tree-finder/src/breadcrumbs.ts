@@ -4,19 +4,35 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
+import { ContentsModel } from "./model";
 import { Tag, Tree } from "./util";
 
-import "../style/breadcrumbs.less";
+import "../style/breadcrumbs";
 
 export class TreeFinderBreadcrumbsElement extends HTMLElement {
   connectedCallback() {
     if (!this._initialized) {
       this.create_shadow_dom();
+
       this._initialized = true;
+    }
+
+    if (!this._initializedListeners) {
+      this.addEventListener("mouseup", event => this.onClick(event));
+
+      this._initializedListeners = true;
     }
   }
 
-  async init(path: string[]) {
+  init(model: ContentsModel<any>) {
+    this.model = model;
+
+    this.model.crumbs.crumbNamesSub.subscribe({
+      next: x => this._onCrumbUpdate(x),
+    });
+  }
+
+  protected async _onCrumbUpdate(path: string[]) {
     this.innerHTML = Tree.breadcrumbsSpans(path);
   }
 
@@ -40,10 +56,27 @@ export class TreeFinderBreadcrumbsElement extends HTMLElement {
     [this.shadowSheet, this.top] = this.shadowRoot!.children as any as [StyleSheet,HTMLElement];
   }
 
+  async onClick(event: MouseEvent) {
+    if (event.button !== 0) {
+      return;
+    }
+
+    const target = event.target as HTMLElement;
+
+    console.log(target);
+    console.log(target.dataset.crumbix);
+
+    if (target.dataset.crumbix) {
+      this.model.crumbs.revert(parseInt(target.dataset.crumbix));
+    }
+  }
+
+  protected model: ContentsModel<any>;
   protected shadowSheet: StyleSheet;
   protected top: HTMLElement;
 
   private _initialized: boolean = false;
+  private _initializedListeners: boolean = false;
 }
 
 export namespace TreeFinderBreadcrumbsElement {
