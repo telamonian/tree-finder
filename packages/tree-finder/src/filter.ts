@@ -47,6 +47,7 @@ export class TreeFinderFilterElement extends HTMLElement {
       <style>
         :host > .tf-filter-top {
           display: inline-block;
+          padding: 8px 0px 4px 0px;
         }
       </style>
       <div class="tf-filter-top">
