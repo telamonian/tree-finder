@@ -53,6 +53,8 @@ export namespace RegularTable {
     if (rowHeaderClicked(metadata)) {
       console.log(`row header clicked`);
     }
+
+    console.log(metadata);
   }
 
   /*

@@ -16,7 +16,7 @@ export class TreeFinderFiltersElement<T extends IContentRow> extends HTMLElement
   clear() {
     this.innerHTML = `<tree-finder-filter></tree-finder-filter>`.repeat(this.model.columns.length + 1);
 
-    this.filters = this.children as any as [TreeFinderFilterElement<T>];
+    this.filters = [...this.children] as TreeFinderFilterElement<T>[];
   }
 
   connectedCallback() {
@@ -38,8 +38,8 @@ export class TreeFinderFiltersElement<T extends IContentRow> extends HTMLElement
 
     this.clear();
 
-    for (const filter of this.filters) {
-      filter.init(model);
+    for (const [index, element] of this.filters.entries()) {
+      element.init(model, index);
     }
   }
 
@@ -59,12 +59,16 @@ export class TreeFinderFiltersElement<T extends IContentRow> extends HTMLElement
     [this.shadowSheet, this.top] = this.shadowRoot!.children as any as [StyleSheet, HTMLElement];
   }
 
-  getChild(ix: number | string): TreeFinderFilterElement<T> {
-    return this.filters[ix as any];
+  entries() {
+    return this.filters.entries();
   }
 
-  getInput(ix: number | string): HTMLInputElement {
-    return this.filters[ix as any].children[0] as HTMLInputElement;
+  getChild(ix: number): TreeFinderFilterElement<T> {
+    return this.filters[ix];
+  }
+
+  getInput(ix: number): HTMLInputElement {
+    return this.getChild(ix).input;
   }
 
   protected filters: TreeFinderFilterElement<T>[];

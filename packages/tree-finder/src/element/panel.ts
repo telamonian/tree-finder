@@ -59,13 +59,18 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
 
     this.breadcrumbs.init(this.model);
     this.filters.init(this.model);
-    this.model.columnWidthsSub.subscribe(xs => {
+    this.grid.init(this.model, gridOptions);
+
+    this.model.columnWidthsSub.subscribe(widths => {
+      if (!widths.length) {
+        return;
+      }
+
       this.filters.getChild(0).style.marginLeft = '12px';
-      for (const ix in xs) {
-        this.filters.getInput(ix).style.width = xs[ix];
+      for (const [ix, width] of widths.entries()) {
+        this.filters.getInput(ix).style.width = width;
       }
     });
-    this.grid.init(this.model, gridOptions);
 
     await this.draw();
   }

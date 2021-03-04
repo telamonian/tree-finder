@@ -14,7 +14,7 @@ export class TreeFinderFilterElement<T extends IContentRow> extends HTMLElement 
   clear() {
     this.innerHTML = `<input class="tf-filter-input"></input>`;
 
-    [this.input] = this.children as any as [HTMLInputElement];
+    [this._input] = this.children as any as [HTMLInputElement];
   }
 
   connectedCallback() {
@@ -24,17 +24,23 @@ export class TreeFinderFilterElement<T extends IContentRow> extends HTMLElement 
       this._initialized = true;
     }
 
-    // if (!this._initializedListeners) {
-    //   this.addEventListener("mouseup", event => this.onClick(event));
+    if (!this._initializedListeners) {
+      this.addEventListener("input", event => this.onInput(event as InputEvent));
 
-    //   this._initializedListeners = true;
-    // }
+      this._initializedListeners = true;
+    }
   }
 
-  init(model: ContentsModel<T>) {
+  init(model: ContentsModel<T>, ix: number = 0) {
     this.model = model;
 
     this.clear();
+
+    if (ix === 0) {
+      this.col = "path";
+    } else {
+      this.col = this.model.columns[ix - 1];
+    }
   }
 
   create_shadow_dom() {
@@ -57,14 +63,24 @@ export class TreeFinderFilterElement<T extends IContentRow> extends HTMLElement 
     [this.shadowSheet, this.top] = this.shadowRoot!.children as any as [StyleSheet, HTMLElement];
   }
 
+  onInput(event: InputEvent) {
+    const fpat = {col: this.col, pattern: (event.target as HTMLInputElement).value};
+    this.model.onFilterInput(fpat);
+  }
 
+  get input() {
+    return this._input;
+  }
+
+  protected _input: HTMLInputElement;
+
+  protected col: keyof T;
   protected model: ContentsModel<T>;
   protected shadowSheet: StyleSheet;
   protected top: HTMLElement;
-  protected input: HTMLInputElement;
 
   private _initialized: boolean = false;
-  // private _initializedListeners: boolean = false;
+  private _initializedListeners: boolean = false;
 }
 
 export namespace TreeFinderFilterElement {

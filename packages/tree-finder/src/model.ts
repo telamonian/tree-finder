@@ -65,15 +65,6 @@ export class ContentsModel<T extends IContentRow> {
       }
     });
 
-    this.filterSub.subscribe(fpat => {
-      if (!fpat) {
-        return;
-      }
-
-      this._filterPatterns = fpat;
-      this.filter();
-    });
-
     this.open(root);
   }
 
@@ -137,6 +128,12 @@ export class ContentsModel<T extends IContentRow> {
     this._contents = filterContentRoot({root: this._root, filterPatterns: this._filterPatterns});
   }
 
+  onFilterInput(fpat: {col: keyof T, pattern: string}) {
+    this._filterPatterns.set(fpat);
+
+    this.filter();
+  }
+
   async sort(props: {col?: keyof T, multisort?: boolean} = {}) {
     const {col, multisort} = props;
     await this._root.expand(this._options.doRefetch);
@@ -190,7 +187,6 @@ export class ContentsModel<T extends IContentRow> {
   readonly columnWidthsSub = new BehaviorSubject<string[]>([]);
   readonly crumbs: CrumbModel<T>;
   readonly drawSub = new BehaviorSubject<boolean>(false);
-  readonly filterSub = new BehaviorSubject<FilterPatterns<T> | undefined>(undefined);
 
   // readonly colSizeObserver = new ResizeObserver(xs => {
   //   for (let x of xs) {

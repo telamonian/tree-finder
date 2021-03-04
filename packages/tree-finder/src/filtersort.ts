@@ -19,20 +19,40 @@ interface IFilterPattern<T extends IContentRow> {
 
 export class FilterPatterns<T extends IContentRow> {
   constructor(patterns?: IFilterPattern<T>[]) {
-    this.patterns = patterns ?? [];
+    if (!patterns) {
+      return;
+    }
+
+    for (const fpat of patterns) {
+      this.set(fpat);
+    }
+  }
+
+  set(fpat: IFilterPattern<T>) {
+    const {col, pattern} = fpat;
+
+    if (!pattern) {
+      delete this._patterns[col];
+    } else {
+      this._patterns[col] = pattern;
+    }
   }
 
   get any(): boolean {
-    return !!this.patterns.length;
+    return !!Object.keys(this.patterns).length;
   }
 
-  readonly patterns: IFilterPattern<T>[];
+  get patterns() {
+    return this._patterns;
+  }
+
+  protected _patterns: {[k in keyof T]: string} = {} as any;
 }
 
 interface ISortState<T extends IContentRow> {
-  order: SortOrder;
-
   col: keyof T;
+
+  order: SortOrder;
 }
 
 interface ISortStateFull<T extends IContentRow> extends ISortState<T> {
@@ -89,7 +109,7 @@ function contentsSorterClosure<T extends IContentRow>(sortStates: SortStates<T>)
 
 function contentsFiltererClosure<T extends IContentRow>(filterPatterns: FilterPatterns<T>) {
   return function contentsFilterer(content: Content<T>): boolean {
-    return filterPatterns.patterns.every(({col, pattern}) => (content.row[col] as any as string).includes(pattern));
+    return Object.entries(filterPatterns.patterns).every(([col, pattern]) => pattern && (content.row[col as keyof T] as any as string).includes(pattern));
   };
 }
 
