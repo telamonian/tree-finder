@@ -1,6 +1,6 @@
 {
   "name": "tree-finder",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "browser/tree widget implemented as a custom DOM element. Built on top of regular-table",
   "homepage": "https://github.com/telamonian/tree-finder",
   "bugs": {

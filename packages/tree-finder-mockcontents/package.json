@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "faker": "^5.4.0",
-    "tree-finder": "^0.0.7"
+    "tree-finder": "^0.0.8"
   },
   "devDependencies": {
     "@types/faker": "^5.1.7",

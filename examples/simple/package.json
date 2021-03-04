@@ -18,7 +18,7 @@
   "keywords": [],
   "license": "BSD-3-Clause",
   "dependencies": {
-    "tree-finder": "^0.0.7",
+    "tree-finder": "^0.0.8",
     "tree-finder-mockcontents": "^0.0.7"
   },
   "devDependencies": {
