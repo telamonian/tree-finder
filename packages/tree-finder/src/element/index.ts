@@ -6,5 +6,6 @@
  */
 export * from "./breadcrumbs";
 export * from "./filter";
+export * from "./filters";
 export * from "./grid";
 export * from "./panel";
