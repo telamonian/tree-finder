@@ -161,8 +161,18 @@ export class ContentsModel<T extends IContentRow> {
     return this._ixByColumn;
   }
 
+  readonly columnWidthsSub = new BehaviorSubject<string[]>([]);
   readonly crumbs: CrumbModel<T>;
   readonly drawSub = new BehaviorSubject<boolean>(false);
+
+  // readonly colSizeObserver = new ResizeObserver(xs => {
+  //   for (let x of xs) {
+  //     for (const th of x.target.querySelectorAll("thead tr:last-child th")) {
+  //       (th as HTMLElement).style.minWidth;
+  //     }
+  //   }
+  //   console.log('Size changed');
+  // });
 
   protected _columns: (keyof T)[];
   protected _contents: Content<T>[];

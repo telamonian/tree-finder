@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@types/react": "^17.0.0",
+    "@types/resize-observer-browser": "^0.1.5",
     "less": "^4.1.1",
     "rimraf": "^3.0.2",
     "shx": "^0.3.3",

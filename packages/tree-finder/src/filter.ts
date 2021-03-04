@@ -5,13 +5,13 @@
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
 import { ContentsModel } from "./model";
-import { Tag, Tree } from "./util";
+import { Tag } from "./util";
 
-import "../style/breadcrumbs";
+import "../style/filter";
 
 export class TreeFinderFilterElement extends HTMLElement {
   clear() {
-    this.innerHTML = `<input></input>`;
+    this.innerHTML = `<input class="tf-filter-input"></input>`;
 
     [this.input] = this.children as any as [HTMLInputElement];
   }
@@ -22,6 +22,8 @@ export class TreeFinderFilterElement extends HTMLElement {
 
       this._initialized = true;
     }
+
+    this.clear();
 
     // if (!this._initializedListeners) {
     //   this.addEventListener("mouseup", event => this.onClick(event));
@@ -36,10 +38,6 @@ export class TreeFinderFilterElement extends HTMLElement {
     this.clear();
   }
 
-  protected async _onCrumbUpdate(path: string[]) {
-    this.innerHTML = `<input></input>`;
-  }
-
   create_shadow_dom() {
     this.attachShadow({mode: "open"});
 
@@ -47,6 +45,9 @@ export class TreeFinderFilterElement extends HTMLElement {
 
     this.shadowRoot!.innerHTML = Tag.html`
       <style>
+        :host > .tf-filter-top {
+          display: inline-block;
+        }
       </style>
       <div class="tf-filter-top">
         ${inputSlot}

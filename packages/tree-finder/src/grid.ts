@@ -82,7 +82,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       num_rows: this.model.contents.length,
 
       // column/row_headers: string[] -> arrays of path parts that get displayed as the first value in each col/row. Length > 1 implies a tree structure
-      column_headers: this.model.columns.map(col => [col]),
+     column_headers: this.model.columns.map(col => [col]),
       row_headers: this.model.contents.slice(start_row, end_row).map(x => {
         return [Tree.rowHeaderSpan({
           isDir: x.isDir,
@@ -97,8 +97,11 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   }
 
   columnHeaderStyleListener() {
-    for (const th of this.querySelectorAll("thead tr:last-child th")) {
-      const {column_header, x} = this.getMeta(th as HTMLTableCellElement);
+    const columnWidths = [];
+
+    for (const elem of this.querySelectorAll("thead tr:last-child th")) {
+      const th = elem as HTMLTableCellElement;
+      const {column_header, x} = this.getMeta(th);
 
       const columnName: keyof T = column_header![column_header!.length - 1] as any;
       if (columnName) {
@@ -110,7 +113,15 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
       th.classList.toggle("tf-header", true);
       th.classList.toggle("tf-header-align-left", true);
+
+      if (th.style.minWidth && th.style.minWidth !== "0px") {
+        columnWidths.push(`calc(${th.style.minWidth} - 12px)`);
+      } else {
+        columnWidths.push(`${th.offsetWidth - 8}px`);
+      }
     }
+
+    this.model.columnWidthsSub.next(columnWidths);
   }
 
   rowStyleListener() {

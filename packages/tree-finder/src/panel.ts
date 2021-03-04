@@ -28,11 +28,13 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   clear() {
     this.innerHTML = Tag.html`
       <tree-finder-breadcrumbs class="tf-panel-breadcrumbs" slot="breadcrumbs"></tree-finder-breadcrumbs>
-      <tree-finder-filter class="tf-panel-filter" slot="filter"></tree-finder-filter>
+      ${`<tree-finder-filter class="tf-panel-filter" slot="filter"></tree-finder-filter>`.repeat(4)}
       <tree-finder-grid class="tf-panel-grid" slot="grid"></tree-finder-grid>
     `;
 
-    [this.breadcrumbs, this.filter, this.grid] = this.children as any as [TreeFinderBreadcrumbsElement, TreeFinderFilterElement, TreeFinderGridElement<T>];
+    this.breadcrumbs = this.children[0] as TreeFinderBreadcrumbsElement;
+    this.filters = [this.children[1], this.children[2], this.children[3], this.children[4]] as TreeFinderFilterElement[];
+    this.grid = this.children[this.children.length - 1] as TreeFinderGridElement<T>;
   }
 
   async init(root: T, options: Partial<TreeFinderPanelElement.IOptions<T> & ContentsModel.IOptions<T> & TreeFinderGridElement.IOptions<T>> = {}) {
@@ -57,7 +59,15 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
     this.model = new ContentsModel(root, modelOptions);
 
     this.breadcrumbs.init(this.model);
-    this.filter.init(this.model);
+    // this.filters.forEach(f => f.init(this.model));
+    this.model.columnWidthsSub.subscribe(xs => {
+      this.filters[0].style.marginLeft = '12px';
+      for (const ix in xs) {
+        (this.filters[ix].children[0] as HTMLInputElement).style.width = xs[ix];
+        // this.filters[ix].style.width = `calc(${xs[ix]} - 12px)`;
+        // (this.filters[ix].children[0] as HTMLInputElement).style.width = `calc(${xs[ix]} - 12px)`;
+      }
+    });
     this.grid.init(this.model, gridOptions);
 
     await this.draw();
@@ -83,6 +93,9 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
         :host > div {
           position: relative;
         }
+        :host > .tf-panel-filter-container {
+          display: inline-block;
+        }
         :host > .tf-panel-grid-container {
           flex: 1;
         }
@@ -107,7 +120,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   protected gridContainer: HTMLElement;
 
   protected breadcrumbs: TreeFinderBreadcrumbsElement;
-  protected filter: TreeFinderFilterElement;
+  protected filters: TreeFinderFilterElement[];
   protected grid: TreeFinderGridElement<T>;
 
   protected options: TreeFinderPanelElement.IOptions<T>;
