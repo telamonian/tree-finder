@@ -17,6 +17,8 @@ interface IMockContentRow extends IContentRow {
   writable: boolean;
 }
 
+const _mockCache: {[key: string]: IMockContentRow[]} = {};
+
 let mockFileIx = 0;
 let modDaysIx = -1;
 
@@ -34,6 +36,12 @@ export function mockContent(props: {path: Path, kind: string, modDays?: number, 
       modified,
       writable,
       getChildren: async () => {
+        const pathstr = path.join('/');
+
+        if (pathstr in _mockCache) {
+          return _mockCache[pathstr];
+        }
+
         const children = [];
         const dirNames = randomize ? Random.shuffle(ALLIED_PHONETIC) : ALLIED_PHONETIC;
 
@@ -46,6 +54,8 @@ export function mockContent(props: {path: Path, kind: string, modDays?: number, 
             randomize,
           }));
         }
+
+        _mockCache[pathstr] = children;
         return children;
       },
     };
