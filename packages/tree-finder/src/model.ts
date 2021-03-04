@@ -51,7 +51,12 @@ export class ContentsModel<T extends IContentRow> {
 
     this.options = options;
 
-    this.crumbs.revertedCrumbSub.subscribe(async x => {if (x) {await this.open(x)}});
+    this.crumbs.revertedCrumbSub.subscribe(async x => {
+      if (x) {
+        await this.open(x);
+        this.drawSub.next(true);
+      }
+    });
 
     this.open(root);
   }
@@ -157,6 +162,7 @@ export class ContentsModel<T extends IContentRow> {
   }
 
   readonly crumbs: CrumbModel<T>;
+  readonly drawSub = new BehaviorSubject<boolean>(false);
 
   protected _columns: (keyof T)[];
   protected _contents: Content<T>[];

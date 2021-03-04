@@ -32,6 +32,12 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     this.model = model;
     this.setDataListener((x0, y0, x1, y1) => this.dataListener(x0, y0, x1, y1) as any);
 
+    this.model.drawSub.subscribe(async x => {
+      if (x) {
+        await this.draw();
+      }
+    });
+
     // run listener initializations only once
     if (!this._initializedListeners) {
       this.addStyleListener(() => this.columnHeaderStyleListener())
