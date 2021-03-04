@@ -7,7 +7,13 @@
 import { BehaviorSubject } from "rxjs";
 
 import { Content, IContentRow } from "./content";
-import { SortStates, sortContentRoot} from "./sort";
+import {
+  filterContentRoot,
+  FilterPatterns,
+  filterSortContentRoot,
+  sortContentRoot,
+  SortStates
+} from "./filtersort";
 
 class CrumbModel<T extends IContentRow> {
   constructor() {
@@ -46,6 +52,7 @@ class CrumbModel<T extends IContentRow> {
 export class ContentsModel<T extends IContentRow> {
   constructor(root: T, options: Partial<ContentsModel.IOptions<T>> = {}) {
     this.crumbs = new CrumbModel<T>();
+    this._filterPatterns = new FilterPatterns();
     this._parentMap = new WeakMap();
     this._sortStates = new SortStates();
 
@@ -111,8 +118,22 @@ export class ContentsModel<T extends IContentRow> {
       this._parentMap.set(c.row, content.row);
     }
 
-    const [nodeContents, _] = sortContentRoot({root: this._contents[rix], sortStates: this._sortStates});
+    const [nodeContents, _] = filterSortContentRoot({root: this._contents[rix], filterPatterns: this._filterPatterns, sortStates: this._sortStates});
     this._contents.splice(rix + 1, 0, ...nodeContents);
+  }
+
+  async filter() {
+    await this._root.expand(this._options.doRefetch);
+
+    this._contents = filterContentRoot({root: this._root, filterPatterns: this._filterPatterns});
+
+    this.drawSub.next(true);
+  }
+
+  onFilterInput(fpat: {col: keyof T, pattern: string}) {
+    this._filterPatterns.set(fpat);
+
+    this.filter();
   }
 
   async sort(props: {col?: keyof T, multisort?: boolean} = {}) {
@@ -128,6 +149,10 @@ export class ContentsModel<T extends IContentRow> {
 
   get contents() {
     return this._contents;
+  }
+
+  get filterPatterns() {
+    return this._filterPatterns;
   }
 
   get pathDepth() {
@@ -161,11 +186,23 @@ export class ContentsModel<T extends IContentRow> {
     return this._ixByColumn;
   }
 
+  readonly columnWidthsSub = new BehaviorSubject<string[]>([]);
   readonly crumbs: CrumbModel<T>;
   readonly drawSub = new BehaviorSubject<boolean>(false);
 
+  // readonly colSizeObserver = new ResizeObserver(xs => {
+  //   for (let x of xs) {
+  //     for (const th of x.target.querySelectorAll("thead tr:last-child th")) {
+  //       (th as HTMLElement).style.minWidth;
+  //     }
+  //   }
+  //   console.log('Size changed');
+  // });
+
   protected _columns: (keyof T)[];
   protected _contents: Content<T>[];
+  protected _filterContents: Content<T>[];
+  protected _filterPatterns: FilterPatterns<T>;
   protected _parentMap: ContentsModel.RefMap<T>;
   protected _root: Content<T>;
   protected _sortStates: SortStates<T>;

@@ -4,15 +4,18 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
-import { IContentRow } from "./content";
-import { TreeFinderBreadcrumbsElement } from "./breadcrumbs"
-import { ContentsModel } from "./model";
-import { TreeFinderGridElement } from "./grid";
-import { Tag } from "./util";
+import { IContentRow } from "../content";
+import { ContentsModel } from "../model";
+import { Tag } from "../util";
 
-import "../style/panel";
+import { TreeFinderBreadcrumbsElement } from "./breadcrumbs";
+import { TreeFinderFiltersElement } from "./filters";
+import { TreeFinderGridElement } from "./grid";
+
+import "../../style/panel";
 
 TreeFinderBreadcrumbsElement.get();
+TreeFinderFiltersElement.get();
 TreeFinderGridElement.get();
 
 export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
@@ -26,11 +29,11 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   clear() {
     this.innerHTML = Tag.html`
       <tree-finder-breadcrumbs class="tf-panel-breadcrumbs" slot="breadcrumbs"></tree-finder-breadcrumbs>
-      <div class="tf-panel-filter" slot="filter"></div>
+      <tree-finder-filters class="tf-panel-filters" slot="filters"></tree-finder-filters>
       <tree-finder-grid class="tf-panel-grid" slot="grid"></tree-finder-grid>
     `;
 
-    [this.breadcrumbs, this.filter, this.grid] = this.children as any as [TreeFinderBreadcrumbsElement, HTMLElement, TreeFinderGridElement<T>];
+    [this.breadcrumbs, this.filters, this.grid] = this.children as any as [TreeFinderBreadcrumbsElement<T>, TreeFinderFiltersElement<T>, TreeFinderGridElement<T>];
   }
 
   async init(root: T, options: Partial<TreeFinderPanelElement.IOptions<T> & ContentsModel.IOptions<T> & TreeFinderGridElement.IOptions<T>> = {}) {
@@ -55,7 +58,19 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
     this.model = new ContentsModel(root, modelOptions);
 
     this.breadcrumbs.init(this.model);
+    this.filters.init(this.model);
     this.grid.init(this.model, gridOptions);
+
+    this.model.columnWidthsSub.subscribe(widths => {
+      if (!widths.length) {
+        return;
+      }
+
+      this.filters.getChild(0).style.marginLeft = '12px';
+      for (const [ix, width] of widths.entries()) {
+        this.filters.getInput(ix).style.width = width;
+      }
+    });
 
     await this.draw();
   }
@@ -68,7 +83,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
     this.attachShadow({mode: "open"});
 
     const breadcrumbsSlot = `<slot name="breadcrumbs"></slot>`;
-    const filterSlot = `<slot name="filter"></slot>`;
+    const filterSlot = `<slot name="filters"></slot>`;
     const gridSlot = `<slot name="grid"></slot>`;
 
     this.shadowRoot!.innerHTML = Tag.html`
@@ -80,6 +95,9 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
         :host > div {
           position: relative;
         }
+        :host > .tf-panel-filters-container {
+          display: inline-block;
+        }
         :host > .tf-panel-grid-container {
           flex: 1;
         }
@@ -87,7 +105,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
       <div class="tf-panel-breadcrumbs-container">
         ${breadcrumbsSlot}
       </div>
-      <div class="tf-panel-filter-container">
+      <div class="tf-panel-filters-container">
         ${filterSlot}
       </div>
       <div class="tf-panel-grid-container">
@@ -103,8 +121,8 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   protected filterContainer: HTMLElement;
   protected gridContainer: HTMLElement;
 
-  protected breadcrumbs: TreeFinderBreadcrumbsElement;
-  protected filter: HTMLElement;
+  protected breadcrumbs: TreeFinderBreadcrumbsElement<T>;
+  protected filters: TreeFinderFiltersElement<T>;
   protected grid: TreeFinderGridElement<T>;
 
   protected options: TreeFinderPanelElement.IOptions<T>;

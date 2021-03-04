@@ -6,11 +6,11 @@
  */
 import * as rt from "regular-table";
 
-import { IContentRow } from "./content";
-import { ContentsModel } from "./model";
-import { RegularTable, Tree } from "./util";
+import { IContentRow } from "../content";
+import { ContentsModel } from "../model";
+import { RegularTable, Tree } from "../util";
 
-import "../style/grid";
+import "../../style/grid";
 
 // await customElements.whenDefined('regular-table');
 if (document.createElement("regular-table").constructor === HTMLElement) {
@@ -97,8 +97,11 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   }
 
   columnHeaderStyleListener() {
-    for (const th of this.querySelectorAll("thead tr:last-child th")) {
-      const {column_header, x} = this.getMeta(th as HTMLTableCellElement);
+    const columnWidths = [];
+
+    for (const elem of this.querySelectorAll("thead tr:last-child th")) {
+      const th = elem as HTMLTableCellElement;
+      const {column_header, x} = this.getMeta(th);
 
       const columnName: keyof T = column_header![column_header!.length - 1] as any;
       if (columnName) {
@@ -110,7 +113,15 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
       th.classList.toggle("tf-header", true);
       th.classList.toggle("tf-header-align-left", true);
+
+      if (th.style.minWidth && th.style.minWidth !== "0px") {
+        columnWidths.push(`calc(${th.style.minWidth} - 12px)`);
+      } else {
+        columnWidths.push(`${th.offsetWidth - 8}px`);
+      }
     }
+
+    this.model.columnWidthsSub.next(columnWidths);
   }
 
   rowStyleListener() {
