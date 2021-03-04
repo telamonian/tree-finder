@@ -4,6 +4,7 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
+import { IContentRow } from "../content";
 import { ContentsModel } from "../model";
 import { Tag } from "../util";
 
@@ -11,11 +12,11 @@ import { TreeFinderFilterElement } from "./filter";
 
 TreeFinderFilterElement.get();
 
-export class TreeFinderFiltersElement extends HTMLElement {
+export class TreeFinderFiltersElement<T extends IContentRow> extends HTMLElement {
   clear() {
     this.innerHTML = `<tree-finder-filter></tree-finder-filter>`.repeat(this.model.columns.length + 1);
 
-    this.filters = this.children as any as [TreeFinderFilterElement];
+    this.filters = this.children as any as [TreeFinderFilterElement<T>];
   }
 
   connectedCallback() {
@@ -32,7 +33,7 @@ export class TreeFinderFiltersElement extends HTMLElement {
     // }
   }
 
-  init(model: ContentsModel<any>) {
+  init(model: ContentsModel<T>) {
     this.model = model;
 
     this.clear();
@@ -58,7 +59,7 @@ export class TreeFinderFiltersElement extends HTMLElement {
     [this.shadowSheet, this.top] = this.shadowRoot!.children as any as [StyleSheet, HTMLElement];
   }
 
-  getChild(ix: number | string): TreeFinderFilterElement {
+  getChild(ix: number | string): TreeFinderFilterElement<T> {
     return this.filters[ix as any];
   }
 
@@ -66,8 +67,8 @@ export class TreeFinderFiltersElement extends HTMLElement {
     return this.filters[ix as any].children[0] as HTMLInputElement;
   }
 
-  protected filters: TreeFinderFilterElement[];
-  protected model: ContentsModel<any>;
+  protected filters: TreeFinderFilterElement<T>[];
+  protected model: ContentsModel<T>;
   protected shadowSheet: StyleSheet;
   protected top: HTMLElement;
 

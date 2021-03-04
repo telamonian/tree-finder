@@ -4,12 +4,13 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
+import { IContentRow } from "../content";
 import { ContentsModel } from "../model";
 import { Tag, Tree } from "../util";
 
 import "../../style/breadcrumbs";
 
-export class TreeFinderBreadcrumbsElement extends HTMLElement {
+export class TreeFinderBreadcrumbsElement<T extends IContentRow> extends HTMLElement {
   connectedCallback() {
     if (!this._initialized) {
       this.create_shadow_dom();
@@ -24,7 +25,7 @@ export class TreeFinderBreadcrumbsElement extends HTMLElement {
     }
   }
 
-  init(model: ContentsModel<any>) {
+  init(model: ContentsModel<T>) {
     this.model = model;
 
     this.model.crumbs.crumbNamesSub.subscribe({
@@ -68,7 +69,7 @@ export class TreeFinderBreadcrumbsElement extends HTMLElement {
     }
   }
 
-  protected model: ContentsModel<any>;
+  protected model: ContentsModel<T>;
   protected shadowSheet: StyleSheet;
   protected top: HTMLElement;
 

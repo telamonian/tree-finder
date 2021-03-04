@@ -33,7 +33,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
       <tree-finder-grid class="tf-panel-grid" slot="grid"></tree-finder-grid>
     `;
 
-    [this.breadcrumbs, this.filters, this.grid] = this.children as any as [TreeFinderBreadcrumbsElement, TreeFinderFiltersElement, TreeFinderGridElement<T>];
+    [this.breadcrumbs, this.filters, this.grid] = this.children as any as [TreeFinderBreadcrumbsElement<T>, TreeFinderFiltersElement<T>, TreeFinderGridElement<T>];
   }
 
   async init(root: T, options: Partial<TreeFinderPanelElement.IOptions<T> & ContentsModel.IOptions<T> & TreeFinderGridElement.IOptions<T>> = {}) {
@@ -116,8 +116,8 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   protected filterContainer: HTMLElement;
   protected gridContainer: HTMLElement;
 
-  protected breadcrumbs: TreeFinderBreadcrumbsElement;
-  protected filters: TreeFinderFiltersElement;
+  protected breadcrumbs: TreeFinderBreadcrumbsElement<T>;
+  protected filters: TreeFinderFiltersElement<T>;
   protected grid: TreeFinderGridElement<T>;
 
   protected options: TreeFinderPanelElement.IOptions<T>;

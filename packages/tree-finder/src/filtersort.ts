@@ -4,7 +4,7 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
-import { DEFAULT_COL, Content, IContentRow } from "./content";
+import { Content, DEFAULT_COL, IContentRow } from "./content";
 
 const SORT_ORDERS = ["asc", "desc", null] as const;
 export type SortOrder = typeof SORT_ORDERS[number];

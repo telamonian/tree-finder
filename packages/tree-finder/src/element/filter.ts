@@ -4,12 +4,13 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
+import { IContentRow } from "../content";
 import { ContentsModel } from "../model";
 import { Tag } from "../util";
 
 import "../../style/filter";
 
-export class TreeFinderFilterElement extends HTMLElement {
+export class TreeFinderFilterElement<T extends IContentRow> extends HTMLElement {
   clear() {
     this.innerHTML = `<input class="tf-filter-input"></input>`;
 
@@ -30,7 +31,7 @@ export class TreeFinderFilterElement extends HTMLElement {
     // }
   }
 
-  init(model: ContentsModel<any>) {
+  init(model: ContentsModel<T>) {
     this.model = model;
 
     this.clear();
@@ -57,7 +58,7 @@ export class TreeFinderFilterElement extends HTMLElement {
   }
 
 
-  protected model: ContentsModel<any>;
+  protected model: ContentsModel<T>;
   protected shadowSheet: StyleSheet;
   protected top: HTMLElement;
   protected input: HTMLInputElement;
