@@ -7,7 +7,13 @@
 import { BehaviorSubject } from "rxjs";
 
 import { Content, IContentRow } from "./content";
-import { SortStates, sortContentRoot} from "./sort";
+import {
+  filterContentRoot,
+  FilterPatterns,
+  filterSortContentRoot,
+  sortContentRoot,
+  SortStates
+} from "./sort";
 
 class CrumbModel<T extends IContentRow> {
   constructor() {
@@ -46,6 +52,7 @@ class CrumbModel<T extends IContentRow> {
 export class ContentsModel<T extends IContentRow> {
   constructor(root: T, options: Partial<ContentsModel.IOptions<T>> = {}) {
     this.crumbs = new CrumbModel<T>();
+    this._filterPatterns = new FilterPatterns();
     this._parentMap = new WeakMap();
     this._sortStates = new SortStates();
 
@@ -56,6 +63,15 @@ export class ContentsModel<T extends IContentRow> {
         await this.open(x);
         this.drawSub.next(true);
       }
+    });
+
+    this.filterSub.subscribe(fpat => {
+      if (!fpat) {
+        return;
+      }
+
+      this._filterPatterns = fpat;
+      this.filter();
     });
 
     this.open(root);
@@ -111,8 +127,14 @@ export class ContentsModel<T extends IContentRow> {
       this._parentMap.set(c.row, content.row);
     }
 
-    const [nodeContents, _] = sortContentRoot({root: this._contents[rix], sortStates: this._sortStates});
+    const [nodeContents, _] = filterSortContentRoot({root: this._contents[rix], filterPatterns: this._filterPatterns, sortStates: this._sortStates});
     this._contents.splice(rix + 1, 0, ...nodeContents);
+  }
+
+  async filter() {
+    await this._root.expand(this._options.doRefetch);
+
+    this._contents = filterContentRoot({root: this._root, filterPatterns: this._filterPatterns});
   }
 
   async sort(props: {col?: keyof T, multisort?: boolean} = {}) {
@@ -128,6 +150,10 @@ export class ContentsModel<T extends IContentRow> {
 
   get contents() {
     return this._contents;
+  }
+
+  get filterPatterns() {
+    return this._filterPatterns;
   }
 
   get pathDepth() {
@@ -164,6 +190,7 @@ export class ContentsModel<T extends IContentRow> {
   readonly columnWidthsSub = new BehaviorSubject<string[]>([]);
   readonly crumbs: CrumbModel<T>;
   readonly drawSub = new BehaviorSubject<boolean>(false);
+  readonly filterSub = new BehaviorSubject<FilterPatterns<T> | undefined>(undefined);
 
   // readonly colSizeObserver = new ResizeObserver(xs => {
   //   for (let x of xs) {
@@ -176,6 +203,8 @@ export class ContentsModel<T extends IContentRow> {
 
   protected _columns: (keyof T)[];
   protected _contents: Content<T>[];
+  protected _filterContents: Content<T>[];
+  protected _filterPatterns: FilterPatterns<T>;
   protected _parentMap: ContentsModel.RefMap<T>;
   protected _root: Content<T>;
   protected _sortStates: SortStates<T>;

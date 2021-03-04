@@ -23,8 +23,6 @@ export class TreeFinderFilterElement extends HTMLElement {
       this._initialized = true;
     }
 
-    this.clear();
-
     // if (!this._initializedListeners) {
     //   this.addEventListener("mouseup", event => this.onClick(event));
 

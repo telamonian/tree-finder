@@ -11,6 +11,24 @@ export type SortOrder = typeof SORT_ORDERS[number];
 
 const DEFAULT_SORT_ORDER = SORT_ORDERS[0];
 
+interface IFilterPattern<T extends IContentRow> {
+  col: keyof T;
+
+  pattern: string;
+}
+
+export class FilterPatterns<T extends IContentRow> {
+  constructor(patterns?: IFilterPattern<T>[]) {
+    this.patterns = patterns ?? [];
+  }
+
+  get any(): boolean {
+    return !!this.patterns.length;
+  }
+
+  readonly patterns: IFilterPattern<T>[];
+}
+
 interface ISortState<T extends IContentRow> {
   order: SortOrder;
 
@@ -69,6 +87,12 @@ function contentsSorterClosure<T extends IContentRow>(sortStates: SortStates<T>)
   };
 }
 
+function contentsFiltererClosure<T extends IContentRow>(filterPatterns: FilterPatterns<T>) {
+  return function contentsFilterer(content: Content<T>): boolean {
+    return filterPatterns.patterns.every(({col, pattern}) => (content.row[col] as any as string).includes(pattern));
+  };
+}
+
 function updateSort<T extends IContentRow>(sortStates: SortStates<T>, col: keyof T, multisort: boolean = false): SortStates<T> {
   let newStates: ISortState<T>[] = [...sortStates.states];
 
@@ -95,22 +119,53 @@ function updateSort<T extends IContentRow>(sortStates: SortStates<T>, col: keyof
   return new SortStates(newStates);
 }
 
-function _flattenContents<T extends IContentRow>(content: Content<T>, sorter: (l: Content<T>, r: Content<T>) => number, contentsFlat: Content<T>[]) {
+function _flattenContents<T extends IContentRow>(content: Content<T>, filterer?: (c: Content<T>) => boolean, sorter?: (l: Content<T>, r: Content<T>) => number, contentsFlat: Content<T>[] = []) {
   if (!content) {
     // bail
     return contentsFlat;
   }
 
   if (content.children) {
-    for (const child of sorter ? content.children?.sort(sorter) : content.children) {
+    let children;
+    if (filterer && sorter) {
+      children = content.children.filter(filterer).sort(sorter);
+    } else if (filterer && !sorter) {
+      children = content.children.filter(filterer);
+    } else if (!filterer && sorter) {
+      children = content.children.sort(sorter);
+    } else {
+      children = content.children;
+    }
+
+    for (const child of children) {
       contentsFlat.push(child);
       if (child.isExpand) {
-        _flattenContents(child, sorter, contentsFlat);
+        _flattenContents(child, filterer, sorter, contentsFlat);
       }
     }
   }
 
   return contentsFlat;
+}
+
+export function filterContentRoot<T extends IContentRow>({root, filterPatterns}: {root: Content<T>, filterPatterns: FilterPatterns<T>}): Content<T>[] {
+  // get sorter then sort/flatten any expanded children of root
+  return _flattenContents(root, contentsFiltererClosure(filterPatterns), undefined, []);
+}
+
+export function filterSortContentRoot<T extends IContentRow>({root, filterPatterns, sortStates, col, multisort}: {root: Content<T>, filterPatterns: FilterPatterns<T>, sortStates: SortStates<T>, col?: keyof T, multisort?: boolean}): [Content<T>[], SortStates<T>] {
+  // update sort orders, if requested
+  if (col) {
+    sortStates = updateSort(sortStates, col, multisort);
+
+    if (!sortStates.states.length) {
+      // if empty, use default sortStates
+      sortStates = new SortStates();
+    }
+  }
+
+  // get sorter then sort/flatten any expanded children of root
+  return [_flattenContents(root, contentsFiltererClosure(filterPatterns), contentsSorterClosure(sortStates), []), sortStates];
 }
 
 export function sortContentRoot<T extends IContentRow>({root, sortStates, col, multisort}: {root: Content<T>, sortStates: SortStates<T>, col?: keyof T, multisort?: boolean}): [Content<T>[], SortStates<T>] {
@@ -125,5 +180,5 @@ export function sortContentRoot<T extends IContentRow>({root, sortStates, col, m
   }
 
   // get sorter then sort/flatten any expanded children of root
-  return [_flattenContents(root, contentsSorterClosure(sortStates), []), sortStates];
+  return [_flattenContents(root, undefined, contentsSorterClosure(sortStates), []), sortStates];
 }
