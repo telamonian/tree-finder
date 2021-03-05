@@ -24,36 +24,38 @@ export class Content<T extends IContentRow> {
     this._isExpand = false;
   }
 
-  async getChild(name: string, refresh: boolean = false) {
-    await this.getChildren(refresh);
-    if (!this._children) {
-      return;
-    }
-
-    for (const c of this._children) {
-      if (name === c.name) {
-        return c;
-      }
-    }
-
-    return;
+  async expand() {
+    await this.getChildren();
+    this._isExpand = true;
   }
 
-  async getChildren(refresh: boolean = false) {
-    if (!this.isDir || (!refresh && this._children)) {
+  async getChildren() {
+    if (!this.isDir) {
       return;
     }
 
-    // this._children = new Map<string, Content<T>>();
-    // for (const c of await this.row.getChildren!()) {
-    //   this._children.set(c.path.join(""), new Content(c as T));
-    // }
+    if (!this._dirty) {
+      return this._cache;
+    }
 
-    // this._children = new Map((await this.row.getChildren!()).map((c: T) => [c.path.join(""), new Content<T>(c)]));
+    if (this._dirtyChildren) {
+      this._cache = (await this.row.getChildren!()).map((c: T) => new Content<T>(c));
+      this._fullCache = [...this._cache];
 
-    this._children = (await this.row.getChildren!()).map((c: T) => new Content<T>(c));
+      this._dirtyChildren = false;
+      this._dirtyFilter = true;
+      this._dirtySort = true;
+    }
 
-    return this._children;
+    if (this._dirtyFilter && this._filterer) {
+      this.filter();
+    }
+    if (this._dirtySort && this._sorter) {
+      this.sort();
+    }
+
+    return this._cache;
+    // return this._children?.values();
   }
 
   getPathAtDepth(depth = 0, fill?: string) {
@@ -66,9 +68,41 @@ export class Content<T extends IContentRow> {
     }
   }
 
-  get children() {
-    return this._children;
-    // return this._children?.values();
+  filter(filterer?: Content.Filterer<T>) {
+    if (filterer) {
+      this._filterer = filterer;
+      this._dirtyFilter = true;
+    }
+
+    if (!this._filterer || !this._dirtyFilter || !this._cache) {
+      return;
+    }
+
+    if (!this._fullCache) {
+      this._fullCache = [...this._cache];
+    }
+    this._cache = [...this._fullCache];
+
+    this._cache.filter(this._filterer);
+    this._dirtyFilter = false;
+  }
+
+  invalidate() {
+    [this._dirtyChildren, this._dirtyFilter, this._dirtySort] = [true, true, true];
+  }
+
+  sort(sorter?: Content.Sorter<T>) {
+    if (sorter) {
+      this._sorter = sorter;
+      this._dirtySort = true;
+    }
+
+    if (!this._sorter || !this._dirtySort || !this._cache) {
+      return;
+    }
+
+    this._cache.sort(this._sorter);
+    this._dirtySort = false;
   }
 
   get isExpand() {
@@ -76,23 +110,35 @@ export class Content<T extends IContentRow> {
   }
 
   get nchildren() {
-    return this._children?.length ?? 0;
+    return this._cache?.length ?? 0;
     // return this._children?.size ?? 0;
-  }
-
-  async expand(refresh: boolean = false) {
-    await this.getChildren(refresh);
-    this._isExpand = true;
   }
 
   get name() {
     return (this.row.path && this.row.path.length) ? this.row.path[this.row.path.length - 1] : "";
   }
 
+  protected get _dirty() {
+    return this._dirtyChildren || this._dirtyFilter || this._dirtySort;
+  }
+
   readonly isDir: boolean;
   readonly row: T;
 
-  // protected _children?: Map<string, Content<T>>;
-  protected _children?: Content<T>[];
   protected _isExpand: boolean = false;
+
+  protected _cache?: Content<T>[];
+  protected _fullCache?: Content<T>[];
+
+  protected _dirtyChildren: boolean = true;
+  protected _dirtyFilter: boolean = true;
+  protected _dirtySort: boolean = true;
+
+  protected _filterer?: Content.Filterer<T>;
+  protected _sorter?: Content.Sorter<T>;
+}
+
+export namespace Content {
+  export type Filterer<T extends IContentRow> = (c: Content<T>) => boolean;
+  export type Sorter<T extends IContentRow> = (l: Content<T>, r: Content<T>) => number;
 }
