@@ -76,6 +76,22 @@ export namespace RegularTable {
   }
 }
 
+export namespace String {
+  /**
+   * remove all back/slashes from string
+   */
+  export function trimSlash(x: string) {
+    return x.replace(/[\/\\]/g, "");
+  }
+
+  /**
+   * remove all back/slashes, then add a trailing slash if requested to a string
+   */
+  export function normSlash(x: string, trailing: boolean) {
+    return String.trimSlash(x) + (trailing ? "/" : "");
+  }
+}
+
 export namespace Tag {
   export const html = (strings: TemplateStringsArray, ...args: any[]) => strings
     .map((str, i) => [str, args[i]])
@@ -101,7 +117,7 @@ export namespace Tree {
   export function rowHeaderSpan({isDir, isOpen, path}: {isDir: boolean, isOpen: boolean, path: string[]}): HTMLSpanElement {
     const tree_levels = rowHeaderLevelsHtml({isDir, isOpen, path});
     const header_classes = !isDir ? "rt-group-name rt-group-leaf" : "rt-group-name";
-    const header_text = path.length === 0 ? "TOTAL" : path[path.length - 1];
+    const header_text = path.length === 0 ? "path" : String.normSlash(path[path.length - 1], isDir);
 
     treeTemplate.innerHTML = `<span class="rt-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
     return treeTemplate.content.firstChild as HTMLSpanElement;
