@@ -103,7 +103,7 @@ export namespace Tag {
 export namespace Tree {
   const treeTemplate = document.createElement("template");
 
-  function rowHeaderLevelsHtml({isDir, isOpen, path}: {isDir: boolean, isOpen: boolean, path: string[]}) {
+  function rowHeaderLevelsHtml({isDir, isOpen, path = []}: {isDir: boolean, isOpen: boolean, path?: string[]}) {
     const tree_levels = path.slice(1).map(() => '<span class="rt-tree-group"></span>');
     if (isDir) {
       const group_icon = isOpen ? "remove" : "add";
@@ -114,10 +114,11 @@ export namespace Tree {
     return tree_levels.join("");
   }
 
-  export function rowHeaderSpan({isDir, isOpen, path}: {isDir: boolean, isOpen: boolean, path: string[]}): HTMLSpanElement {
-    const tree_levels = rowHeaderLevelsHtml({isDir, isOpen, path});
+  export function rowHeaderSpan({isDir, isOpen, path, relative = false}: {isDir: boolean, isOpen: boolean, path: string[], relative?: boolean}): HTMLSpanElement {
+    const tree_levels = rowHeaderLevelsHtml({isDir, isOpen, path: relative ? [] : path});
     const header_classes = !isDir ? "rt-group-name rt-group-leaf" : "rt-group-name";
-    const header_text = path.length === 0 ? "path" : String.normSlash(path[path.length - 1], isDir);
+    const path_parts = relative ? path : [path[path.length - 1]];
+    const header_text = path_parts.map((x, ix) => String.normSlash(x, ix < (path_parts.length - 1) ? true : isDir)).join("");
 
     treeTemplate.innerHTML = `<span class="rt-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
     return treeTemplate.content.firstChild as HTMLSpanElement;

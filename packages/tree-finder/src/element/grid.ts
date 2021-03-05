@@ -88,6 +88,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
           isDir: x.isDir,
           isOpen: x.isExpand,
           path: x.getPathAtDepth(this.model.pathDepth),
+          relative: this.model.filterPatterns.any,
         })];
       }),
 
