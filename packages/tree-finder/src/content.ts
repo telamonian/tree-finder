@@ -14,6 +14,12 @@ export interface IContentRow {
   getChildren?: () => Promise<IContentRow[]>;
 }
 
+interface IContentDirRow {
+  path: Path;
+  kind: "dir";
+  getChildren: () => Promise<IContentRow[]>;
+}
+
 export class Content<T extends IContentRow> {
   constructor(row: T) {
     this.isDir = row.kind === "dir";
@@ -30,7 +36,7 @@ export class Content<T extends IContentRow> {
   }
 
   async getChildren() {
-    if (!this.isDir) {
+    if (!Content.isContentDirRow(this.row)) {
       return;
     }
 
@@ -39,7 +45,7 @@ export class Content<T extends IContentRow> {
     }
 
     if (this._dirtyChildren) {
-      this._cache = (await this.row.getChildren!()).map((c: T) => new Content<T>(c)) ?? [];
+      this._cache = (await this.row.getChildren()).map((c: T) => new Content<T>(c)) ?? [];
 
       this._dirtyChildren = false;
       this._dirtyFilter = true;
@@ -148,4 +154,8 @@ export class Content<T extends IContentRow> {
 export namespace Content {
   export type Filterer<T extends IContentRow> = (c: Content<T>) => boolean;
   export type Sorter<T extends IContentRow> = (l: Content<T>, r: Content<T>) => number;
+
+  export function isContentDirRow<T extends IContentRow, U extends IContentDirRow>(x: T | U): x is U {
+    return x.kind === "dir";
+  }
 }
