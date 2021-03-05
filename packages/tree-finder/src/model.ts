@@ -118,7 +118,7 @@ export class ContentsModel<T extends IContentRow> {
       this._parentMap.set(c.row, content.row);
     }
 
-    const [nodeContents, _] = filterSortContentRoot({root: this._contents[rix], filterPatterns: this._filterPatterns, sortStates: this._sortStates});
+    const [nodeContents, _] = filterSortContentRoot({root: content, filterPatterns: this._filterPatterns, sortStates: this._sortStates, pathDepth: this.pathDepth});
     this._contents.splice(rix + 1, 0, ...nodeContents);
   }
 
@@ -140,7 +140,9 @@ export class ContentsModel<T extends IContentRow> {
     const {col, multisort} = props;
     await this._root.expand(this._options.doRefetch);
 
-    [this._contents, this._sortStates] = sortContentRoot({root: this._root, sortStates: this._sortStates, col, multisort});
+    [this._contents, this._sortStates] = filterSortContentRoot({root: this._root, filterPatterns: this._filterPatterns, sortStates: this._sortStates, col, multisort});
+
+    this.drawSub.next(true);
   }
 
   get columns() {
