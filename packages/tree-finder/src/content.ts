@@ -39,8 +39,7 @@ export class Content<T extends IContentRow> {
     }
 
     if (this._dirtyChildren) {
-      this._cache = (await this.row.getChildren!()).map((c: T) => new Content<T>(c));
-      this._fullCache = [...this._cache];
+      this._cache = (await this.row.getChildren!()).map((c: T) => new Content<T>(c)) ?? [];
 
       this._dirtyChildren = false;
       this._dirtyFilter = true;
@@ -48,13 +47,15 @@ export class Content<T extends IContentRow> {
     }
 
     if (this._dirtyFilter && this._filterer) {
-      this.filter();
+      this._view = this._cache?.filter(this._filterer);
+      this._dirtyFilter = false;
     }
     if (this._dirtySort && this._sorter) {
-      this.sort();
+      this._view = this.view?.sort(this._sorter);
+      this._dirtySort = false;
     }
 
-    return this._cache;
+    return this.view;
     // return this._children?.values();
   }
 
@@ -68,41 +69,29 @@ export class Content<T extends IContentRow> {
     }
   }
 
-  filter(filterer?: Content.Filterer<T>) {
-    if (filterer) {
-      this._filterer = filterer;
-      this._dirtyFilter = true;
+  async getTree(_flat: Content<T>[] = []) {
+    if (this.isExpand) {
+      for (const child of await this.getChildren() ?? []) {
+        if (child.isExpand) {
+          child.getTree(_flat);
+        }
+
+        _flat.push(child);
+      }
     }
 
-    if (!this._filterer || !this._dirtyFilter || !this._cache) {
-      return;
-    }
-
-    if (!this._fullCache) {
-      this._fullCache = [...this._cache];
-    }
-    this._cache = [...this._fullCache];
-
-    this._cache.filter(this._filterer);
-    this._dirtyFilter = false;
+    return _flat;
   }
 
   invalidate() {
     [this._dirtyChildren, this._dirtyFilter, this._dirtySort] = [true, true, true];
   }
 
-  sort(sorter?: Content.Sorter<T>) {
-    if (sorter) {
-      this._sorter = sorter;
-      this._dirtySort = true;
-    }
-
-    if (!this._sorter || !this._dirtySort || !this._cache) {
-      return;
-    }
-
-    this._cache.sort(this._sorter);
-    this._dirtySort = false;
+  /**
+   * returns the raw children array fetched by getChildren
+   */
+  get cache() {
+    return this._cache;
   }
 
   get isExpand() {
@@ -118,8 +107,25 @@ export class Content<T extends IContentRow> {
     return (this.row.path && this.row.path.length) ? this.row.path[this.row.path.length - 1] : "";
   }
 
+  /**
+   * like cache but filtered, sorted, etc
+   */
+  get view() {
+    return this._view ?? this._cache;
+  }
+
   protected get _dirty() {
     return this._dirtyChildren || this._dirtyFilter || this._dirtySort;
+  }
+
+  set filterer(filterer: Content.Filterer<T> | undefined) {
+    this._filterer = filterer;
+    this._dirtyFilter = true;
+  }
+
+  set sorter(sorter: Content.Sorter<T> | undefined) {
+      this._sorter = sorter;
+      this._dirtySort = true;
   }
 
   readonly isDir: boolean;
@@ -128,7 +134,8 @@ export class Content<T extends IContentRow> {
   protected _isExpand: boolean = false;
 
   protected _cache?: Content<T>[];
-  protected _fullCache?: Content<T>[];
+  protected _view?: Content<T>[];
+  protected _viewTree?: Content<T>[];
 
   protected _dirtyChildren: boolean = true;
   protected _dirtyFilter: boolean = true;

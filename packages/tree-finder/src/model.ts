@@ -82,7 +82,7 @@ export class ContentsModel<T extends IContentRow> {
 
     this.initColumns();
 
-    await this._root.expand(this._options.doRefetch);
+    await this._root.expand();
 
     // sort the root's contents and display
     await this.sort();
@@ -100,7 +100,7 @@ export class ContentsModel<T extends IContentRow> {
   async collapse(rix: number) {
     const content = this._contents[rix];
 
-    let npop = content.children?.length ?? 0;
+    let npop = content.nchildren;
     let check_ix = rix + 1 + npop;
     while (this._contents[check_ix++].row.path.length > content.row.path.length) {
       npop++;
@@ -113,19 +113,19 @@ export class ContentsModel<T extends IContentRow> {
   async expand(rix: number) {
     const content = this._contents[rix];
 
-    await content.expand(this._options.doRefetch);
-    for (const c of content.children!) {
-      this._parentMap.set(c.row, content.row);
+    content.expand();
+    for (const child of await content?.getChildren() ?? []) {
+      this._parentMap.set(child.row, content.row);
     }
 
-    const [nodeContents, _] = filterSortContentRoot({root: content, filterPatterns: this._filterPatterns, sortStates: this._sortStates, pathDepth: this.pathDepth});
+    const [nodeContents, _] = await filterSortContentRoot({root: content, filterPatterns: this._filterPatterns, sortStates: this._sortStates, pathDepth: this.pathDepth});
     this._contents.splice(rix + 1, 0, ...nodeContents);
   }
 
   async filter() {
-    await this._root.expand(this._options.doRefetch);
+    await this._root.expand();
 
-    this._contents = filterContentRoot({root: this._root, filterPatterns: this._filterPatterns});
+    this._contents = await filterContentRoot({root: this._root, filterPatterns: this._filterPatterns});
 
     this.drawSub.next(true);
   }
@@ -138,9 +138,9 @@ export class ContentsModel<T extends IContentRow> {
 
   async sort(props: {col?: keyof T, multisort?: boolean} = {}) {
     const {col, multisort} = props;
-    await this._root.expand(this._options.doRefetch);
+    await this._root.expand();
 
-    [this._contents, this._sortStates] = filterSortContentRoot({root: this._root, filterPatterns: this._filterPatterns, sortStates: this._sortStates, col, multisort});
+    [this._contents, this._sortStates] = await filterSortContentRoot({root: this._root, filterPatterns: this._filterPatterns, sortStates: this._sortStates, col, multisort});
 
     this.drawSub.next(true);
   }
