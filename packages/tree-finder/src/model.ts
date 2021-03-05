@@ -100,13 +100,15 @@ export class ContentsModel<T extends IContentRow> {
   async collapse(rix: number) {
     const content = this._contents[rix];
 
-    let npop = content.nchildren;
-    let check_ix = rix + 1 + npop;
-    while (this._contents[check_ix++].row.path.length > content.row.path.length) {
+    let check_ix = rix + 1;
+    let npop = 0;
+
+    while (this._contents[check_ix] && this._contents[check_ix].row.path.length > content.row.path.length) {
+      check_ix++;
       npop++;
     }
-    this._contents.splice(rix + 1, npop);
 
+    this._contents.splice(rix + 1, npop);
     content.close();
   }
 
