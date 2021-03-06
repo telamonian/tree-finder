@@ -68,7 +68,7 @@ export class TreeFinderFiltersElement<T extends IContentRow> extends HTMLElement
   }
 
   getInput(ix: number): HTMLInputElement {
-    return this.getChild(ix).input;
+    return this.getChild(ix)?.input;
   }
 
   protected filters: TreeFinderFilterElement<T>[];

@@ -48,6 +48,8 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
 
     const gridOptions: Partial<TreeFinderGridElement.IOptions<T>> = {
       doWindowReize: options.doWindowReize,
+      pathRender: options.pathRender,
+      pathRenderOnFilter: options.pathRenderOnFilter,
     }
 
     const modelOptions: Partial<ContentsModel.IOptions<T>> = {
@@ -68,7 +70,10 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
 
       this.filters.getChild(0).style.marginLeft = '12px';
       for (const [ix, width] of widths.entries()) {
-        this.filters.getInput(ix).style.width = width;
+        const input = this.filters.getInput(ix);
+        if (input) {
+          input.style.width = width;
+        }
       }
     });
 

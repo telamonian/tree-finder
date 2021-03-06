@@ -24,9 +24,13 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   async init(model: ContentsModel<T>, options: Partial<TreeFinderGridElement.IOptions<T>> = {}) {
     const {
       doWindowReize = false,
+      pathRender = "tree",
+      pathRenderOnFilter = "relative",
     } = options;
     this.options = {
       doWindowReize,
+      pathRender,
+      pathRenderOnFilter,
     }
 
     this.model = model;
@@ -84,12 +88,12 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       // column/row_headers: string[] -> arrays of path parts that get displayed as the first value in each col/row. Length > 1 implies a tree structure
       column_headers: this.model.columns.map(col => [col]),
       row_headers: this.model.contents.slice(start_row, end_row).map(x => {
-        return [Tree.rowHeaderSpan({
+        return Tree.rowHeaderSpan({
           isDir: x.isDir,
           isOpen: x.isExpand,
           path: x.getPathAtDepth(this.model.pathDepth),
-          relative: this.model.filterPatterns.any,
-        })];
+          pathRender: this._pathRender,
+        });
       }),
 
       // data: object[][] -> array of arrays, each subarray containing all of the visible values for one column
@@ -136,6 +140,20 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
         span.classList.add("tf-grid-filetype-icon", `tf-grid-${kind}-icon`);
       }
     }
+
+    // if (this._pathRender === "regular") {
+    //   const hovElem = this.querySelector("tbody tr:hover th")  as HTMLTableCellElement;
+    //   const meta = RegularTable.metadataFromElement(hovElem, this)!;
+    //   const regularPath = meta.row_header![0] as any as string;
+
+    //   for (const th of this.querySelectorAll("tbody th[rowspan]") as any as HTMLTableCellElement[]) {
+    //     if (th.textContent === regularPath) {
+    //       th.style.background = "var(--tf-row-hover-background)";
+    //       th.style.color = "var(--tf-row-hover-color)";
+    //       th.style.opacity = "1";
+    //     }
+    //   }
+    // }
   }
 
   async onSortClick(event: MouseEvent) {
@@ -212,6 +230,14 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     }
   }
 
+  protected get _pathRender() {
+    if (this.model.filterPatterns.any) {
+      return this.options.pathRenderOnFilter;
+    } else {
+      return this.options.pathRender;
+    }
+  }
+
   protected options: TreeFinderGridElement.IOptions<T>;
   protected model: ContentsModel<T>;
 
@@ -224,6 +250,16 @@ export namespace TreeFinderGridElement {
      * if true, redraw the tree-finder element on window resize events
      */
     doWindowReize: boolean;
+
+    /**
+     * select from different strategies for rendcering the paths
+     */
+     pathRender: "regular" | "relative" | "tree";
+
+    /**
+     * if not null, the rendering of paths will change when any filter is set
+     */
+    pathRenderOnFilter: "regular" | "relative" | "tree";
   }
 
   export function get() {

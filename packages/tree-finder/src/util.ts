@@ -114,14 +114,20 @@ export namespace Tree {
     return tree_levels.join("");
   }
 
-  export function rowHeaderSpan({isDir, isOpen, path, relative = false}: {isDir: boolean, isOpen: boolean, path: string[], relative?: boolean}): HTMLSpanElement {
-    const tree_levels = rowHeaderLevelsHtml({isDir, isOpen, path: relative ? [] : path});
+  export function rowHeaderSpan({isDir, isOpen, path, pathRender = "tree"}: {isDir: boolean, isOpen: boolean, path: string[], pathRender?: "regular" | "relative" | "tree"}): (string | HTMLSpanElement)[] {
+    path = path.map((x, ix) => String.normSlash(x, ix < (path.length - 1) ? true : isDir));
+
     const header_classes = !isDir ? "rt-group-name rt-group-leaf" : "rt-group-name";
-    const path_parts = relative ? path : [path[path.length - 1]];
-    const header_text = path_parts.map((x, ix) => String.normSlash(x, ix < (path_parts.length - 1) ? true : isDir)).join("");
+    const header_text = pathRender === "relative" ? path.join("") : path.slice(-1).join("");
+    const tree_levels = rowHeaderLevelsHtml({isDir, isOpen, path: pathRender === "tree" ? path : []})
 
     treeTemplate.innerHTML = `<span class="rt-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
-    return treeTemplate.content.firstChild as HTMLSpanElement;
+
+    if (pathRender === "regular") {
+      return [path.slice(0, -1).join(""), treeTemplate.content.firstChild] as [string, HTMLSpanElement];
+    } else {
+      return [treeTemplate.content.firstChild] as HTMLSpanElement[];
+    }
   }
 
   export function breadcrumbsSpans(path: string[]): string {
