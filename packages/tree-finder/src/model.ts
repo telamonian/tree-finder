@@ -11,7 +11,6 @@ import {
   filterContentRoot,
   FilterPatterns,
   filterSortContentRoot,
-  sortContentRoot,
   SortStates
 } from "./filtersort";
 
@@ -61,7 +60,7 @@ export class ContentsModel<T extends IContentRow> {
     this.crumbs.revertedCrumbSub.subscribe(async x => {
       if (x) {
         await this.open(x);
-        this.drawSub.next(true);
+        this.requestDraw(true);
       }
     });
 
@@ -85,7 +84,7 @@ export class ContentsModel<T extends IContentRow> {
     await this._root.expand();
 
     // sort the root's contents and display
-    await this.sort();
+    await this.sort({autosize: true});
   }
 
   initColumns() {
@@ -110,6 +109,8 @@ export class ContentsModel<T extends IContentRow> {
 
     this._contents.splice(rix + 1, npop);
     content.close();
+
+    this.requestDraw(true);
   }
 
   async expand(rix: number) {
@@ -122,14 +123,17 @@ export class ContentsModel<T extends IContentRow> {
 
     const [nodeContents, _] = await filterSortContentRoot({root: content, filterPatterns: this._filterPatterns, sortStates: this._sortStates, pathDepth: this.pathDepth});
     this._contents.splice(rix + 1, 0, ...nodeContents);
+
+    this.requestDraw();
   }
 
-  async filter() {
+  async filter(props: {autosize?: boolean} = {}) {
+    const {autosize = true} = props;
     await this._root.expand();
 
     this._contents = await filterContentRoot({root: this._root, filterPatterns: this._filterPatterns});
 
-    this.drawSub.next(true);
+    this.requestDraw(autosize);
   }
 
   onFilterInput(fpat: {col: keyof T, pattern: string}) {
@@ -138,13 +142,17 @@ export class ContentsModel<T extends IContentRow> {
     this.filter();
   }
 
-  async sort(props: {col?: keyof T, multisort?: boolean} = {}) {
-    const {col, multisort} = props;
+  requestDraw(autosize = false) {
+    this.drawSub.next(autosize);
+  }
+
+  async sort(props: {col?: keyof T, multisort?: boolean, autosize?: boolean} = {}) {
+    const {col, multisort, autosize = false} = props;
     await this._root.expand();
 
     [this._contents, this._sortStates] = await filterSortContentRoot({root: this._root, filterPatterns: this._filterPatterns, sortStates: this._sortStates, col, multisort});
 
-    this.drawSub.next(true);
+    this.requestDraw(autosize);
   }
 
   get columns() {

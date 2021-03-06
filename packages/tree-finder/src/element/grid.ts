@@ -25,7 +25,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     const {
       doWindowReize = false,
       pathRender = "tree",
-      pathRenderOnFilter = "relative",
+      pathRenderOnFilter = "regular",
     } = options;
     this.options = {
       doWindowReize,
@@ -38,8 +38,12 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
     this.model.drawSub.subscribe(async x => {
       if (x) {
-        await this.draw();
+        (this as any)._resetAutoSize();
       }
+
+      await this.draw();
+      // correct handling of autowidth seems to frequently require the second draw
+      await this.draw();
     });
 
     // run listener initializations only once
@@ -65,7 +69,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       this._initializedListeners = true;
     }
 
-    await this.draw();
+    this.model.requestDraw();
   }
 
   async dataListener(start_col: number, start_row: number, end_col: number, end_row: number) {
@@ -102,8 +106,6 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   }
 
   columnHeaderStyleListener() {
-    const columnWidths = [];
-
     for (const elem of this.querySelectorAll("thead tr:last-child th")) {
       const th = elem as HTMLTableCellElement;
       const {column_header, x} = this.getMeta(th);
@@ -118,15 +120,14 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
       th.classList.toggle("tf-header", true);
       th.classList.toggle("tf-header-align-left", true);
-
-      if (th.style.minWidth && th.style.minWidth !== "0px") {
-        columnWidths.push(`calc(${th.style.minWidth} - 12px)`);
-      } else {
-        columnWidths.push(`${th.offsetWidth - 8}px`);
-      }
     }
 
-    this.model.columnWidthsSub.next(columnWidths);
+    // complete and accurate autowidth for the tree-finder-filter input elems
+    let pxs = [...(this as any)._column_sizes.indices];
+    if (this._pathRender === "regular" && pxs.length > 0) {
+      pxs = [pxs[0] + pxs[1], ...pxs.slice(2)];
+    }
+    this.model.columnWidthsSub.next(pxs.map(px => `calc(${px}px - 12px)`));
   }
 
   rowStyleListener() {
@@ -176,8 +177,6 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       col: metadata.value as any as keyof T || this.model.sortStates.defaultColumn,
       multisort: event.shiftKey,
     });
-
-    this.draw();
   }
 
   async onTreeClick(event: MouseEvent) {
@@ -200,8 +199,8 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       await this.model.expand(metadata.y!);
     }
 
-    (this as any)._resetAutoSize();
-    this.draw();
+    // (this as any)._resetAutoSize();
+    // this.draw();
   }
 
   async onRowDoubleClick(event: MouseEvent) {
@@ -232,9 +231,9 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
   protected get _pathRender() {
     if (this.model.filterPatterns.any) {
-      return this.options.pathRenderOnFilter;
+      return this.options?.pathRenderOnFilter || "tree";
     } else {
-      return this.options.pathRender;
+      return this.options?.pathRender || "tree";
     }
   }
 
