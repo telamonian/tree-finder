@@ -306,7 +306,7 @@ export namespace SelectionModel {
         range.push(vals[i]);
       }
     } else {
-      for (let i = pivotIx; i <= endIx; i++) {
+      for (let i = pivotIx + 1; i <= endIx; i++) {
         range.push(vals[i]);
       }
     }
