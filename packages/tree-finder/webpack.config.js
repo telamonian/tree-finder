@@ -24,7 +24,7 @@ const treeFinderConfig = {
     publicPath: "/dist/",
 
     // filename: "[name].js",
-    // libraryTarget: "umd",
+    libraryTarget: "umd",
 
     // use a unique name for each chunk
     // filename: "[name].[chunkhash].js",

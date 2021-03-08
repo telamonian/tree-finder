@@ -18,12 +18,6 @@
     "style/**/*.{css,eot,gif,html,jpg,json,less,png,scss,svg,ttf,woff2}"
   ],
   "main": "lib/index.js",
-  "sideEffects": [
-    "src/breadcrumbs.ts",
-    "src/grid.ts",
-    "src/panel.ts",
-    "style/**/*"
-  ],
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc --build",

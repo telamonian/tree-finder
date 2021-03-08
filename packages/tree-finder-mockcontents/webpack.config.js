@@ -20,6 +20,7 @@ const treeFinderMockcontentsConfig = {
   output: {
     path: path.resolve(__dirname, "dist"),
     publicPath: "/dist/",
+    libraryTarget: "umd",
   },
 
   module: {
