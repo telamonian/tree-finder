@@ -1,7 +1,7 @@
 {
   "name": "simple",
   "private": true,
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "An example app built using tree-finder.",
   "scripts": {
     "build": "tsc --build",
@@ -18,7 +18,7 @@
   "keywords": [],
   "license": "BSD-3-Clause",
   "dependencies": {
-    "tree-finder": "^0.0.8",
+    "tree-finder": "^0.0.9",
     "tree-finder-mockcontents": "^0.0.8"
   },
   "devDependencies": {
