@@ -252,6 +252,17 @@ export class SelectionModel<T extends IContentRow> {
     this.selection = new Set<string>();
   }
 
+  get(contents: Content<T>[]) {
+    const selected: Content<T>[] = [];
+    for (const content of contents) {
+      if (this.has(content)) {
+        selected.push(content);
+      }
+    }
+
+    return selected;
+  }
+
   has(content: Content<T>) {
     return this.selection.has(content.row.path.join("/"));
   }
