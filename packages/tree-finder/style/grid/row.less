@@ -31,7 +31,8 @@ tr:hover:not(.tf-mod-select) {
   opacity: 1;
 }
 
-tr.tf-mod-select {
+tr.tf-mod-select > th:not(.tf-mod-select-not),
+tr.tf-mod-select > td {
   background: var(--tf-select-background);
   color: var(--tf-select-color);
 }

@@ -69,7 +69,7 @@ export namespace RegularTable {
    * general metadata-related functions
    */
 
-  export function metadataFromElement(target: HTMLElement, rt: RegularTableElement, recursive = true): MetaData | undefined {
+  export function metadataFromElement(target: Element, rt: RegularTableElement, recursive = true): MetaData | undefined {
     if (target.tagName === TOP_LEVEL_TAGNAME) {
       return;
     }

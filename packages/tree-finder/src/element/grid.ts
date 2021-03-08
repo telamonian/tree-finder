@@ -141,26 +141,26 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
         span.classList.add("tf-grid-filetype-icon", `tf-grid-${content.row.kind}-icon`);
 
-        let tr = span.parentElement?.parentElement?.parentElement;
-        if (tr && tr.tagName === "TR") {
-          tr.classList.toggle("tf-mod-select", this.model.selection.has(content));
+        this.rowStyleSelect();
+      }
+    }
+  }
+
+  rowStyleSelect() {
+    const colCount = this.model.columns.length + 1;
+    for (let tr of (this as any).table_model.body.rows as HTMLElement[]) {
+      const {y} = RegularTable.metadataFromElement(tr.firstElementChild!, this)!;
+
+      if (tr && tr.tagName === "TR") {
+        tr.classList.toggle("tf-mod-select", this.model.selection.has(this.model.contents[y!]));
+
+        if (this._pathRender === "regular") {
+          for (let i = 0; i < tr.children.length - colCount; i++) {
+            tr.children[0].classList.toggle("tf-mod-select-not", true);
+          }
         }
       }
     }
-
-    // if (this._pathRender === "regular") {
-    //   const hovElem = this.querySelector("tbody tr:hover th")  as HTMLTableCellElement;
-    //   const meta = RegularTable.metadataFromElement(hovElem, this)!;
-    //   const regularPath = meta.row_header![0] as any as string;
-
-    //   for (const th of this.querySelectorAll("tbody th[rowspan]") as any as HTMLTableCellElement[]) {
-    //     if (th.textContent === regularPath) {
-    //       th.style.background = "var(--tf-row-hover-background)";
-    //       th.style.color = "var(--tf-row-hover-color)";
-    //       th.style.opacity = "1";
-    //     }
-    //   }
-    // }
   }
 
   async onMouseover(event: MouseEvent) {
@@ -169,9 +169,11 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       const metadata = RegularTable.metadataFromElement(element, this);
       const rowHeader = metadata?.row_header?.[0] as any as string;
 
-      for (let th of this.querySelectorAll("tbody th + th") as any as Element[]) {
-        th = th.previousElementSibling!;
-        th.classList.toggle("tf-mod-hover", th.textContent === rowHeader);
+      for (let tr of (this as any).table_model.body.rows as HTMLElement[]) {
+        if (tr.childElementCount > (this.model.columns.length + 1)) {
+          const th = tr.children[0];
+          th.classList.toggle("tf-mod-hover", th.textContent === rowHeader);
+        }
       }
     }
   }
@@ -199,7 +201,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       this.model.selection.select(content, event.ctrlKey || event.metaKey);
     }
 
-    this.rowStyleListener();
+    this.rowStyleSelect();
 
     // can't call draw directly or indirectly, breaks any subsequent doubleClick event
     // setTimeout(() => this.model.requestDraw(), 200);
