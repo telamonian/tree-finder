@@ -84,7 +84,7 @@ export class SortStates<T extends IContentRow> {
 function contentsFiltererClosure<T extends IContentRow>(filterPatterns: FilterPatterns<T>, pathDepth: number = 0) {
   return function contentsFilterer(content: Content<T>): boolean {
     for (const [key, pattern] of Object.entries(filterPatterns.patterns) as [keyof T, string][]) {
-      if (key === "foo") {
+      if (key === "path") {
         // treat as path
         return content.getPathAtDepth(pathDepth).join("/").includes(pattern);
       } else {
