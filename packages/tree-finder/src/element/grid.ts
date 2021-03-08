@@ -8,7 +8,7 @@ import * as rt from "regular-table";
 
 import { IContentRow } from "../content";
 import { ContentsModel } from "../model";
-import { RegularTable, Tree } from "../util";
+import { DateCmp, RegularTable, Tree } from "../util";
 
 import "../../style/grid";
 
@@ -17,8 +17,6 @@ if (document.createElement("regular-table").constructor === HTMLElement) {
   window.customElements.define("regular-table", rt.RegularTableElement);
 }
 const RegularTableElement = customElements.get('regular-table');
-
-const DATE_FORMATTER = new Intl.DateTimeFormat("en-us");
 
 export class TreeFinderGridElement<T extends IContentRow> extends RegularTableElement {
   async init(model: ContentsModel<T>, options: Partial<TreeFinderGridElement.IOptions<T>> = {}) {
@@ -81,7 +79,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       data.push(
         this.model.contents.slice(start_row, end_row).map(content => {
           const val = content.row[column];
-          return val instanceof Date ? DATE_FORMATTER.format(val) : val;
+          return val instanceof Date ? DateCmp.DATE_FORMATTER.format(val) : val;
         })
       );
     }

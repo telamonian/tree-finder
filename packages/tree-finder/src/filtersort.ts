@@ -5,6 +5,7 @@
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
 import { Content, DEFAULT_COL, IContentRow } from "./content";
+import { DateCmp } from "./util";
 
 const SORT_ORDERS = ["asc", "desc", null] as const;
 export type SortOrder = typeof SORT_ORDERS[number];
@@ -46,7 +47,7 @@ export class FilterPatterns<T extends IContentRow> {
     return this._patterns;
   }
 
-  protected _patterns: {[k in keyof T]: string} = {} as any;
+  protected _patterns = {} as {[k in keyof T]: string};
 }
 
 interface ISortState<T extends IContentRow> {
@@ -82,14 +83,26 @@ export class SortStates<T extends IContentRow> {
 
 function contentsFiltererClosure<T extends IContentRow>(filterPatterns: FilterPatterns<T>, pathDepth: number = 0) {
   return function contentsFilterer(content: Content<T>): boolean {
-    for (const key of Object.keys(filterPatterns.patterns)) {
-      if (key === "path") {
-        if (!content.getPathAtDepth(pathDepth).join("/").includes(filterPatterns.patterns[key])) {
-          return false;
-        }
+    for (const [key, pattern] of Object.entries(filterPatterns.patterns) as [keyof T, string][]) {
+      if (key === "foo") {
+        // treat as path
+        return content.getPathAtDepth(pathDepth).join("/").includes(pattern);
       } else {
-        if (!(content.row[key as keyof T] as any as string).includes(filterPatterns.patterns[key as keyof T])) {
-          return false;
+        const val = content.row[key as keyof T];
+
+        if (typeof val === "string") {
+          // treat as string
+          return val.includes(pattern);
+        } else if (val instanceof Date) {
+          // treat as date
+          return DateCmp.toStr(val, pattern);
+        } else if (typeof val === "boolean") {
+          // treat as boolean
+          const num = Number(pattern);
+          return (!Number.isNaN(num) && val === !!num) || (val ? "true" : "false").includes(pattern);
+        } else {
+          // treat as number
+          return val as any == Number(pattern);
         }
       }
     }

@@ -6,6 +6,14 @@
  */
 import { MetaData, RegularTableElement } from "regular-table";
 
+export namespace DateCmp {
+  export const DATE_FORMATTER = new Intl.DateTimeFormat("en-us");
+
+  export function toStr(date: Date, str: string) {
+    return DATE_FORMATTER.format(date).includes(str);
+  }
+}
+
 export namespace RegularTable {
   const TOP_LEVEL_TAGNAME = "TREE-FINDER";
 
