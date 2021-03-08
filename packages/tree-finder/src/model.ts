@@ -201,6 +201,7 @@ export class ContentsModel<T extends IContentRow> {
   readonly columnWidthsSub = new BehaviorSubject<string[]>([]);
   readonly crumbs: CrumbModel<T>;
   readonly drawSub = new BehaviorSubject<boolean>(false);
+  readonly selection = new SelectionModel();
 
   // readonly colSizeObserver = new ResizeObserver(xs => {
   //   for (let x of xs) {
@@ -251,8 +252,12 @@ export class SelectionModel<T extends IContentRow> {
     this.selection = new Set<string>();
   }
 
-  select(content: Content<T>, clear: boolean = true) {
-    if (clear) {
+  has(content: Content<T>) {
+    return this.selection.has(content.row.path.join("/"));
+  }
+
+  select(content: Content<T>, add: boolean = false) {
+    if (!add) {
       this.clear();
     } else {
       this.range = [];

@@ -51,6 +51,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       this.addStyleListener(() => this.columnHeaderStyleListener())
       this.addStyleListener(() => this.rowStyleListener());
 
+      this.addEventListener("mouseup", event => this.onRowClick(event));
       this.addEventListener("mouseup", event => this.onSortClick(event));
       this.addEventListener("mouseup", event => this.onTreeClick(event));
       this.addEventListener("dblclick", event => this.onRowDoubleClick(event));
@@ -137,8 +138,14 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       const {y, value} = RegularTable.metadataFromElement(span as HTMLTableCellElement, this)!;
 
       if (value) {
-        const kind = this.model.contents[y!].row.kind;
-        span.classList.add("tf-grid-filetype-icon", `tf-grid-${kind}-icon`);
+        const content = this.model.contents[y!];
+
+        span.classList.add("tf-grid-filetype-icon", `tf-grid-${content.row.kind}-icon`);
+
+        let tr = span.parentElement?.parentElement?.parentElement;
+        if (tr && tr.tagName === "TR") {
+          tr.classList.toggle("tf-mod-select", this.model.selection.has(content));
+        }
       }
     }
 
@@ -155,6 +162,35 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     //     }
     //   }
     // }
+  }
+
+  async onRowClick(event: MouseEvent) {
+    if (event.button !== 0) {
+      return;
+    }
+
+    const element = event.target as HTMLTableCellElement;
+    if (element.classList.contains("rt-row-header-icon")) {
+      // if open/close icon is clicked, don't select
+      return;
+    }
+    const metadata = RegularTable.metadataFromElement(element, this);
+    if (!metadata || !RegularTable.rowClicked(metadata)) {
+      return;
+    }
+
+    const content = this.model.contents[metadata.y!];
+
+    if (event.shiftKey) {
+      this.model.selection.selectRange(content, this.model.contents);
+    } else {
+      this.model.selection.select(content, event.ctrlKey || event.metaKey);
+    }
+
+    this.rowStyleListener();
+
+    // can't call draw directly or indirectly, breaks any subsequent doubleClick event
+    // setTimeout(() => this.model.requestDraw(), 200);
   }
 
   async onSortClick(event: MouseEvent) {
