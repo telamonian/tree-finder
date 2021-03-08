@@ -51,10 +51,11 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       this.addStyleListener(() => this.columnHeaderStyleListener())
       this.addStyleListener(() => this.rowStyleListener());
 
+      this.addEventListener("dblclick", event => this.onRowDoubleClick(event));
+      this.addEventListener("mouseover", event => this.onMouseover(event));
       this.addEventListener("mouseup", event => this.onRowClick(event));
       this.addEventListener("mouseup", event => this.onSortClick(event));
       this.addEventListener("mouseup", event => this.onTreeClick(event));
-      this.addEventListener("dblclick", event => this.onRowDoubleClick(event));
       // this.addEventListener("scroll", () => (this as any)._resetAutoSize());
 
       // click debug listener
@@ -162,6 +163,19 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     //     }
     //   }
     // }
+  }
+
+  async onMouseover(event: MouseEvent) {
+    if (this._pathRender === "regular") {
+      const element = event.target as HTMLTableCellElement;
+      const metadata = RegularTable.metadataFromElement(element, this);
+      const rowHeader = metadata?.row_header?.[0] as any as string;
+
+      for (let th of this.querySelectorAll("tbody th + th") as any as Element[]) {
+        th = th.previousElementSibling!;
+        th.classList.toggle("tf-mod-hover", th.textContent === rowHeader);
+      }
+    }
   }
 
   async onRowClick(event: MouseEvent) {
