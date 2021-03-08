@@ -65,7 +65,7 @@
             children.push(mockContent({
               kind: i < modDays + N_DIRECTORIES ? "dir" : "text",
               path: [...path, i < modDays + N_DIRECTORIES ? `dir_${ipad}` : `file_${ipad}.txt`],
-              modDays: modDays + i,
+              modDays: i + 1,
             }));
           }
           return children;
@@ -86,7 +86,6 @@
       const treeFinder = document.getElementsByTagName("tree-finder")[0];
       await treeFinder.init(root, {
         doWindowReize: true,
-        doRefetch: false,
       });
     });
   </script>
