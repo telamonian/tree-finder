@@ -6,7 +6,7 @@
  */
 import { BehaviorSubject } from "rxjs";
 
-import { Content, IContentRow } from "./content";
+import { Content, IContentRow, Path } from "./content";
 import {
   filterContentRoot,
   FilterPatterns,
@@ -238,4 +238,74 @@ export namespace ContentsModel {
   }
 
   export type RefMap<T extends IContentRow> = WeakMap<T, T>;
+}
+
+export class SelectionModel<T extends IContentRow> {
+  constructor() {
+    this.clear();
+  }
+
+  clear() {
+    this.pivot = null;
+    this.range = [];
+    this.selection = new Set<string>();
+  }
+
+  select(content: Content<T>, clear: boolean = true) {
+    if (clear) {
+      this.clear();
+    } else {
+      this.range = [];
+    }
+
+    const pathstr = content.row.path.join("/")
+
+    if (this.selection.has(pathstr)) {
+      this.selection.delete(pathstr);
+    } else {
+      this.selection.add(pathstr);
+    }
+
+    this.pivot = this.selection.size > 0 ? pathstr : null;
+  }
+
+  selectRange(end: Content<T>, contents: Content<T>[]) {
+    for (const pathstr of this.range) {
+      // pivot around any existing range
+      this.selection.delete(pathstr);
+    }
+
+    this.range = SelectionModel.findRange(this.pivot, end.row.path.join("/"), contents.map(c => c.row.path.join("/")));
+    for (const pathstr of this.range) {
+      this.selection.add(pathstr);
+    }
+  }
+
+  protected range: string[];
+  protected pivot: string | null;
+  protected selection: Set<string>;
+}
+
+export namespace SelectionModel {
+  export function findRange(start: string | null, end: string, vals: string[]) {
+    if (start === end) {
+      return [];
+    }
+
+    const pivotIx = start !== null ? vals.indexOf(start) : -1;
+    const endIx = vals.indexOf(end);
+
+    const range = [];
+    if (pivotIx > endIx) {
+      for (let i = endIx; i < pivotIx; i++) {
+        range.push(vals[i]);
+      }
+    } else {
+      for (let i = pivotIx; i <= endIx; i++) {
+        range.push(vals[i]);
+      }
+    }
+
+    return range;
+  }
 }
