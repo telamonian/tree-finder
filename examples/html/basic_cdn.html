@@ -57,12 +57,14 @@
       if (kind === "dir") {
         const getChildren = () => {
           const children = [];
-          for (let i = 0; i < N_CHILDREN; i++) {
+          const start = modDays;
+          const end = modDays + N_CHILDREN
+          for (let i = start; i < end; i++) {
             const ipad = `${i}`.padStart(3, "0");
 
             children.push(mockContent({
-              kind: i < N_DIRECTORIES ? "dir" : "text",
-              path: [...path, i < N_DIRECTORIES ? `dir_${ipad}` : `file_${ipad}.txt`],
+              kind: i < modDays + N_DIRECTORIES ? "dir" : "text",
+              path: [...path, i < modDays + N_DIRECTORIES ? `dir_${ipad}` : `file_${ipad}.txt`],
               modDays: modDays + i,
             }));
           }
