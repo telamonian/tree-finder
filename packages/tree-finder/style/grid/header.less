@@ -26,9 +26,7 @@
   border-right: 1px solid #ddd;
   display: inline-grid;
   grid-template-columns: auto 16px;
-  grid-template-rows: 19px 19px;
   grid-template-areas:
-    "input input"
     "name sort";
   width: 100%;
 }
@@ -53,10 +51,10 @@
   grid-area: sort;
 }
 
-.tf-header-sort-desc:after {
+.tf-header-sort-desc {
   background-image: var(--tf-caret-down);
 }
 
-.tf-header-sort-asc:after {
+.tf-header-sort-asc {
   background-image: var(--tf-caret-up);
 }

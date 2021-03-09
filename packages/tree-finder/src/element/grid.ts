@@ -84,18 +84,13 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       );
     }
 
-    const cols = this.model.columns.map(x => {
-      this._template.innerHTML = `<div class="tf-header"><input class="tf-header-input"></input><span class="tf-header-name">${x}</span><span class="tf-header-sort"></span></div>`;
-      return [this._template.content.firstChild];
-    })
-
     return {
       // num_columns/rows: number -> count of cols/rows
       num_columns: this.model.columns.length,
       num_rows: this.model.contents.length,
 
       // column/row_headers: string[] -> arrays of path parts that get displayed as the first value in each col/row. Length > 1 implies a tree structure
-      column_headers: cols,  //this.model.columns.map(col => [col]),
+      column_headers: this.model.columns.map(x => Tree.colHeaderSpans(x as string)),
       row_headers: this.model.contents.slice(start_row, end_row).map(x => {
         return Tree.rowHeaderSpan({
           isDir: x.isDir,
@@ -111,17 +106,20 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   }
 
   columnHeaderStyleListener() {
+    this.cornerHeaderStyleListener();
+
     for (const elem of this.querySelectorAll("thead tr:last-child th")) {
       const th = elem as HTMLTableCellElement;
-      const {column_header, x} = this.getMeta(th);
+      const meta = this.getMeta(th);
+      const colHead = meta.column_header![meta.column_header!.length - 1];
+      const columnName: keyof T = (colHead instanceof HTMLElement ? colHead.textContent : colHead) as any;
 
-      const columnName: keyof T = column_header![column_header!.length - 1] as any;
       if (columnName) {
         const sortOrder = this.model.sortStates.byColumn[columnName === "0" ? "path" : columnName]?.order;
-        th.classList.toggle(`tf-header-sort-${sortOrder}`, !!sortOrder);
+        th.querySelector(".tf-header-sort")?.classList.toggle(`tf-header-sort-${sortOrder}`, !!sortOrder);
       }
 
-      th.classList.toggle("tf-header-corner", typeof x === "undefined");
+      th.classList.toggle("tf-header-corner", typeof meta.x === "undefined");
 
       // th.classList.toggle("tf-header", true);
       th.classList.toggle("tf-header-align-left", true);
@@ -135,6 +133,16 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     this.model.columnWidthsSub.next(pxs.map(px => `calc(${px}px - 12px)`));
   }
 
+  cornerHeaderStyleListener() {
+    const initSpans = this.querySelectorAll(`thead tr > th:first-child > span:first-child:not([class])`);
+    if (initSpans.length) {
+      const [inputSpan, nameSpan] = initSpans;
+      const [inputSpanNew, nameSpanNew] = Tree.colHeaderSpans("path");
+      inputSpan.replaceWith(inputSpanNew);
+      nameSpan.replaceWith(nameSpanNew);
+    }
+  }
+
   rowStyleListener() {
     const spans = this.querySelectorAll("tbody th .rt-group-name");
     for (const span of spans) {
@@ -146,12 +154,12 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
         span.classList.add("tf-grid-filetype-icon", `tf-grid-${content.row.kind}-icon`);
 
-        this.rowStyleSelect();
+        this.rowSelectStyleListener();
       }
     }
   }
 
-  rowStyleSelect() {
+  rowSelectStyleListener() {
     const colCount = this.model.columns.length + 1;
     for (let tr of (this as any).table_model.body.rows as HTMLElement[]) {
       const {y} = RegularTable.metadataFromElement(tr.firstElementChild!, this)!;
@@ -206,7 +214,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       this.model.selection.select(content, event.ctrlKey || event.metaKey);
     }
 
-    this.rowStyleSelect();
+    this.rowSelectStyleListener();
 
     // can't call draw directly or indirectly, breaks any subsequent doubleClick event
     // setTimeout(() => this.model.requestDraw(), 200);

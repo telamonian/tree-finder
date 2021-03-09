@@ -110,6 +110,22 @@ export namespace Tag {
 
 export namespace Tree {
   const treeTemplate = document.createElement("template");
+  const inputSpanTemplate = document.createElement("template");
+  const nameSpanTemplate = document.createElement("template");
+
+  export function breadcrumbsSpans(path: string[]): string {
+    return `<div class="tf-breadcrumbs-home"><span class="tf-breadcrumbs-crumb tf-breadcrumbs-icon tf-breadcrumbs-dir-icon" data-crumbix="0">""</span><span>/</span></div>` + (
+      [...path.slice(1),]
+      .map((x,i) => `<span class="tf-breadcrumbs-crumb" data-crumbix="${i+1}">${x}</span>`)
+      .join(`<span class="tf-breadcrumbs-separator">/</span>`)
+    );
+  }
+
+  export function colHeaderSpans(name: string) {
+    inputSpanTemplate.innerHTML = `<input class="tf-header-input"></input>`;
+    nameSpanTemplate.innerHTML = `<div class="tf-header"><span class="tf-header-name">${name}</span><span class="tf-header-sort"></span></div>`;
+    return [inputSpanTemplate.content.firstChild!, nameSpanTemplate.content.firstChild!];
+  }
 
   function rowHeaderLevelsHtml({isDir, isOpen, path = []}: {isDir: boolean, isOpen: boolean, path?: string[]}) {
     const tree_levels = path.slice(1).map(() => '<span class="rt-tree-group"></span>');
@@ -136,13 +152,5 @@ export namespace Tree {
     } else {
       return [treeTemplate.content.firstChild] as HTMLSpanElement[];
     }
-  }
-
-  export function breadcrumbsSpans(path: string[]): string {
-    return `<div class="tf-breadcrumbs-home"><span class="tf-breadcrumbs-crumb tf-breadcrumbs-icon tf-breadcrumbs-dir-icon" data-crumbix="0">""</span><span>/</span></div>` + (
-      [...path.slice(1),]
-      .map((x,i) => `<span class="tf-breadcrumbs-crumb" data-crumbix="${i+1}">${x}</span>`)
-      .join(`<span class="tf-breadcrumbs-separator">/</span>`)
-    );
   }
 }
