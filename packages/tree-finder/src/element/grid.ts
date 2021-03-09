@@ -116,8 +116,6 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       const th = elem as HTMLTableCellElement;
       const meta = this.getMeta(th);
       const col = RegularTable.colNameFromMeta(meta) as keyof T;
-      // const col: keyof T = (value instanceof HTMLElement ? value.textContent : value ? value : column_header) as any;
-      // const col: keyof T = (value instanceof HTMLElement ? value.textContent : value) as any;
 
       if (col) {
         const sortOrder = this.model.sortStates.byColumn[col === "0" ? "path" : col]?.order;
@@ -237,7 +235,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     }
 
     const meta = RegularTable.metadataFromElement(element, this);
-    if (!meta || !RegularTable.columnHeaderClicked(meta)) {
+    if (!meta || !RegularTable.columnHeaderClicked(meta) || meta.column_header_y! < (this as any).table_model.header.rows.length - 1) {
       return;
     }
 
