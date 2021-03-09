@@ -84,13 +84,18 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       );
     }
 
+    const cols = this.model.columns.map(x => {
+      this._template.innerHTML = `<div class="tf-header"><input class="tf-header-input"></input><span class="tf-header-name">${x}</span><span class="tf-header-sort"></span></div>`;
+      return [this._template.content.firstChild];
+    })
+
     return {
       // num_columns/rows: number -> count of cols/rows
       num_columns: this.model.columns.length,
       num_rows: this.model.contents.length,
 
       // column/row_headers: string[] -> arrays of path parts that get displayed as the first value in each col/row. Length > 1 implies a tree structure
-      column_headers: this.model.columns.map(col => [col]),
+      column_headers: cols,  //this.model.columns.map(col => [col]),
       row_headers: this.model.contents.slice(start_row, end_row).map(x => {
         return Tree.rowHeaderSpan({
           isDir: x.isDir,
@@ -118,7 +123,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
       th.classList.toggle("tf-header-corner", typeof x === "undefined");
 
-      th.classList.toggle("tf-header", true);
+      // th.classList.toggle("tf-header", true);
       th.classList.toggle("tf-header-align-left", true);
     }
 
@@ -223,8 +228,12 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       return;
     }
 
+    const {value} = metadata;
+
     await this.model.sort({
-      col: metadata.value as any as keyof T || this.model.sortStates.defaultColumn,
+      // col: ((metadata.value instanceof HTMLElement && metadata.value.textContent) || metadata.value || this.model.sortStates.defaultColumn) as any as keyof T,
+      col: ((value as Element)?.textContent || value || this.model.sortStates.defaultColumn) as any as keyof T,
+      // col: metadata.value as any as keyof T || this.model.sortStates.defaultColumn,
       multisort: event.shiftKey,
     });
   }
@@ -291,6 +300,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   protected model: ContentsModel<T>;
 
   private _initializedListeners: boolean = false;
+  private _template = document.createElement("template");
 }
 
 export namespace TreeFinderGridElement {
