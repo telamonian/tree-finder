@@ -140,11 +140,9 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
   cornerHeaderStyleListener() {
     const initSpans = this.querySelectorAll(`thead tr > th:first-child > span:first-child:not([class])`);
-    if (initSpans.length) {
-      const [inputSpan, nameSpan] = initSpans;
-      const [inputSpanNew, nameSpanNew] = Tree.colHeaderSpans("path", this.options.showFilter);
-      inputSpan.replaceWith(inputSpanNew);
-      nameSpan.replaceWith(nameSpanNew);
+    const newSpans = Tree.colHeaderSpans("path", this.options.showFilter);
+    for (let i = 0; i < initSpans.length; i++) {
+      initSpans[i].replaceWith(newSpans[i]);
     }
   }
 
@@ -167,7 +165,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   rowSelectStyleListener() {
     const colCount = this.model.columns.length + 1;
     for (let tr of (this as any).table_model.body.rows as HTMLElement[]) {
-      const {y} = RegularTable.metadataFromElement(tr.firstElementChild!, this)!;
+      const {y} = RegularTable.metadataFromElement(tr.children[0]!, this)!;
 
       if (tr && tr.tagName === "TR") {
         tr.classList.toggle("tf-mod-select", this.model.selection.has(this.model.contents[y!]));

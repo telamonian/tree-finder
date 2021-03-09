@@ -50,6 +50,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
       doWindowReize: options.doWindowReize,
       pathRender: options.pathRender,
       pathRenderOnFilter: options.pathRenderOnFilter,
+      showFilter: options.showFilter,
     }
 
     const modelOptions: Partial<ContentsModel.IOptions<T>> = {

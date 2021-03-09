@@ -127,7 +127,7 @@ export namespace Tree {
   }
 
   export function colHeaderSpans(name: string, filter: boolean = false) {
-    nameSpanTemplate.innerHTML = `<div class="tf-header"><span class="tf-header-name">${name}</span><span class="tf-header-sort"></span></div>`;
+    nameSpanTemplate.innerHTML = `<span class="tf-header"><span class="tf-header-name">${name}</span><span class="tf-header-sort"></span></span>`;
 
     if (filter) {
       inputSpanTemplate.innerHTML = `<input class="tf-header-input"></input>`;

@@ -32,7 +32,7 @@ window.addEventListener("load", async () => {
   await treeFinder.init(
     root,
     {
-      doWindowReize: true,
+      doWindowReize: true
     }
   );
 });
