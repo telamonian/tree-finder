@@ -10,6 +10,8 @@ import { IContentRow } from "../content";
 import { ContentsModel } from "../model";
 import { DateCmp, RegularTable, Tree } from "../util";
 
+import { TreeFinderFiltersElement } from "./filters";
+
 import "../../style/grid";
 
 // await customElements.whenDefined('regular-table');
@@ -20,8 +22,8 @@ const RegularTableElement = customElements.get('regular-table');
 
 export class TreeFinderGridElement<T extends IContentRow> extends RegularTableElement {
   async init(model: ContentsModel<T>, options: TreeFinderGridElement.IOptions<T> = {}) {
-    this.options = options;
     this.model = model;
+    this.options = options;
     this.setDataListener((x0, y0, x1, y1) => this.dataListener(x0, y0, x1, y1) as any);
 
     this.model.drawSub.subscribe(async x => {
@@ -87,7 +89,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       num_rows: this.model.contents.length,
 
       // column/row_headers: string[] -> arrays of path parts that get displayed as the first value in each col/row. Length > 1 implies a tree structure
-      column_headers: this.model.columns.map(x => Tree.colHeaderSpans(x as string, this.options.showFilter)),
+      column_headers: this.model.columns.map((x, i) => this.options.showFilter ? [this.filters!.getChild(i + 1), ...Tree.colHeaderSpans(x as string)] : Tree.colHeaderSpans(x as string)),
       row_headers: this.model.contents.slice(start_row, end_row).map(x => {
         return Tree.rowHeaderSpan({
           isDir: x.isDir,
@@ -104,6 +106,10 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
   columnHeaderStyleListener() {
     this.cornerHeaderStyleListener();
+
+    for (const elem of this.querySelectorAll("thead tr:first-child input")) {
+      elem.classList.toggle("tf-header-input", true);
+    }
 
     for (const elem of this.querySelectorAll("thead tr:last-child th")) {
       const th = elem as HTMLTableCellElement;
@@ -137,7 +143,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
   cornerHeaderStyleListener() {
     const initSpans = this.querySelectorAll(`thead tr > th:first-child > span:first-child:not([class])`);
-    const newSpans = Tree.colHeaderSpans("path", this.options.showFilter);
+    const newSpans = this.options.showFilter ? [this.filters!.getChild(0), ...Tree.colHeaderSpans("path")] : Tree.colHeaderSpans("path");
     for (let i = 0; i < initSpans.length; i++) {
       initSpans[i].replaceWith(newSpans[i]);
     }
@@ -309,6 +315,19 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       pathRenderOnFilter,
       showFilter,
     }
+
+    this.showFilter = this._options.showFilter!;
+  }
+
+  set showFilter(flag: boolean) {
+    if (flag) {
+      this.filters = document.createElement("tree-finder-filters");
+      this.filters.init(this.model);
+    } else {
+      delete this.filters;
+    }
+
+    this._options.showFilter = flag;
   }
 
   protected get _pathRender() {
@@ -320,6 +339,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   }
 
   protected _options: TreeFinderGridElement.IOptions<T>;
+  protected filters?: TreeFinderFiltersElement<T>;
   protected model: ContentsModel<T>;
 
   private _initializedListeners: boolean = false;

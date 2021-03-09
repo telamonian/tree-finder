@@ -88,7 +88,7 @@ export class ContentsModel<T extends IContentRow> {
   }
 
   initColumns() {
-    const columns = this.options.columnNames ?? Object.keys(this._root.row) as (keyof T)[];
+    const columns = (this.options.columnNames ?? Object.keys(this._root.row)) as (keyof T)[];
     this._columns = columns.filter(x => !["path", "getChildren"].includes(x as string));
 
     // build a columnName -> columnIx table; add 1 to account for leading "path" column
@@ -124,7 +124,7 @@ export class ContentsModel<T extends IContentRow> {
     const [nodeContents, _] = await filterSortContentRoot({root: content, filterPatterns: this._filterPatterns, sortStates: this._sortStates, pathDepth: this.pathDepth});
     this._contents.splice(rix + 1, 0, ...nodeContents);
 
-    this.requestDraw();
+    this.requestDraw(true);
   }
 
   async filter(props: {autosize?: boolean} = {}) {

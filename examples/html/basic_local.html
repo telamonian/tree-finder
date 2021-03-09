@@ -84,8 +84,12 @@
       });
 
       const treeFinder = document.getElementsByTagName("tree-finder")[0];
-      await treeFinder.init(root, {
-        doWindowReize: true,
+      await treeFinder.init({
+        root,
+        gridOptions: {
+          doWindowReize: true,
+          showFilter: true,
+        }
       });
     });
   </script>

@@ -32,7 +32,8 @@ window.addEventListener("load", async () => {
   await treeFinder.init({
     root,
     gridOptions: {
-      doWindowReize: true
-    }
+      doWindowReize: true,
+      showFilter: true,
+    },
   });
 });

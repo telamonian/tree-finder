@@ -69,9 +69,9 @@ export namespace RegularTable {
    * general metadata-related functions
    */
 
-  export function colNameFromMeta(meta: MetaData) {
+  export function colNameFromMeta(meta: MetaData): string {
     const {column_header, value} = meta;
-    return value instanceof HTMLElement ? value.textContent : column_header as any === "0" ? "path" : value;
+    return (value instanceof HTMLElement ? value.textContent : column_header as any === "0" ? "path" : value)! as string;
   }
 
   export function metadataFromElement(target: Element, rt: RegularTableElement, recursive = true): MetaData | undefined {
@@ -111,6 +111,10 @@ export namespace Tag {
     .flat()
     .filter((a) => !!a)
     .join("");
+}
+
+export namespace Trait {
+  export type Keyof<T> = Exclude<keyof T, number>;
 }
 
 export namespace Tree {

@@ -53,6 +53,7 @@ export class TreeFinderFilterElement<T extends IContentRow> extends HTMLElement 
         :host > .tf-filter-top {
           display: inline-block;
           padding: 8px 0px 4px 0px;
+          width: 100%;
         }
       </style>
       <div class="tf-filter-top">

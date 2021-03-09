@@ -34,6 +34,12 @@ export class TreeFinderFiltersElement<T extends IContentRow> extends HTMLElement
   }
 
   init(model: ContentsModel<T>) {
+    if (!this._initialized) {
+      this.create_shadow_dom();
+
+      this._initialized = true;
+    }
+
     this.model = model;
 
     this.clear();
