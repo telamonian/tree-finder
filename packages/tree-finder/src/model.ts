@@ -49,7 +49,7 @@ class CrumbModel<T extends IContentRow> {
 }
 
 export class ContentsModel<T extends IContentRow> {
-  constructor(root: T, options: Partial<ContentsModel.IOptions<T>> = {}) {
+  constructor(root: T, options: ContentsModel.IOptions<T> = {}) {
     this.crumbs = new CrumbModel<T>();
     this._filterPatterns = new FilterPatterns();
     this._parentMap = new WeakMap();
@@ -88,7 +88,7 @@ export class ContentsModel<T extends IContentRow> {
   }
 
   initColumns() {
-    const columns = this.options.columnNames ?? Object.keys(this._root.row) as (keyof T)[];
+    const columns = (this.options.columnNames ?? Object.keys(this._root.row)) as (keyof T)[];
     this._columns = columns.filter(x => !["path", "getChildren"].includes(x as string));
 
     // build a columnName -> columnIx table; add 1 to account for leading "path" column
@@ -124,7 +124,7 @@ export class ContentsModel<T extends IContentRow> {
     const [nodeContents, _] = await filterSortContentRoot({root: content, filterPatterns: this._filterPatterns, sortStates: this._sortStates, pathDepth: this.pathDepth});
     this._contents.splice(rix + 1, 0, ...nodeContents);
 
-    this.requestDraw();
+    this.requestDraw(true);
   }
 
   async filter(props: {autosize?: boolean} = {}) {
@@ -160,6 +160,11 @@ export class ContentsModel<T extends IContentRow> {
   }
 
   get contents() {
+    if (!this._contents.length && this._columns.length) {
+      // return a content with a blank row as a fallback
+      return [Content.blank(["path", ...this._columns])];
+    }
+
     return this._contents;
   }
 
@@ -183,20 +188,24 @@ export class ContentsModel<T extends IContentRow> {
     return {...this._options};
   }
 
-  set options(options: Partial<ContentsModel.IOptions<T>>) {
+  set options(options: ContentsModel.IOptions<T>) {
     const {
       columnNames,
       doRefetch = false,
+      needsWidths = false,
     } = options;
     this._options = {
-      columnNames: columnNames!,
+      columnNames,
       doRefetch,
+      needsWidths,
     }
   }
 
   get ixByColumn() {
     return this._ixByColumn;
   }
+
+  filterCol?: keyof T;
 
   readonly columnWidthsSub = new BehaviorSubject<string[]>([]);
   readonly crumbs: CrumbModel<T>;
@@ -230,12 +239,17 @@ export namespace ContentsModel {
     /**
      * optionally specify the visible columns, and the order they appear in
      */
-    columnNames: (keyof T)[];
+    columnNames?: (keyof T)[];
 
     /**
      * if true, always (re)fetch children when opening a dir
      */
-    doRefetch: boolean;
+    doRefetch?: boolean;
+
+    /**
+     * if true, the columnWidthsSub will emit the auto column widths on each draw cycle
+     */
+    needsWidths?: boolean;
   }
 
   export type RefMap<T extends IContentRow> = WeakMap<T, T>;

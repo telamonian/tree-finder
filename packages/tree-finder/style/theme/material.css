@@ -220,3 +220,12 @@ tree-finder .tf-panel-grid:hover::-webkit-scrollbar-thumb,
 :host:hover::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.3);
 }
+
+/*
+ * experimenting with filter input styling
+ */
+ tree-finder .tf-panel-grid th,
+ :host th {
+   padding-right: 5px;
+   padding-left: 5px;
+ }

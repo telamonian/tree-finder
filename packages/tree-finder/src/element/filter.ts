@@ -37,9 +37,9 @@ export class TreeFinderFilterElement<T extends IContentRow> extends HTMLElement 
     this.clear();
 
     if (ix === 0) {
-      this.col = "path";
+      this._col = "path";
     } else {
-      this.col = this.model.columns[ix - 1];
+      this._col = this.model.columns[ix - 1];
     }
   }
 
@@ -53,6 +53,7 @@ export class TreeFinderFilterElement<T extends IContentRow> extends HTMLElement 
         :host > .tf-filter-top {
           display: inline-block;
           padding: 8px 0px 4px 0px;
+          width: 100%;
         }
       </style>
       <div class="tf-filter-top">
@@ -64,17 +65,22 @@ export class TreeFinderFilterElement<T extends IContentRow> extends HTMLElement 
   }
 
   onInput(event: InputEvent) {
-    const fpat = {col: this.col, pattern: (event.target as HTMLInputElement).value};
+    const fpat = {col: this._col, pattern: (event.target as HTMLInputElement).value};
+    this.model.filterCol = this._col;
     this.model.onFilterInput(fpat);
+  }
+
+  get col() {
+    return this._col;
   }
 
   get input() {
     return this._input;
   }
 
+  protected _col: keyof T;
   protected _input: HTMLInputElement;
 
-  protected col: keyof T;
   protected model: ContentsModel<T>;
   protected shadowSheet: StyleSheet;
   protected top: HTMLElement;

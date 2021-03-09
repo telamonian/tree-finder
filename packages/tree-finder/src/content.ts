@@ -155,6 +155,17 @@ export namespace Content {
   export type Filterer<T extends IContentRow> = (c: Content<T>) => boolean;
   export type Sorter<T extends IContentRow> = (l: Content<T>, r: Content<T>) => number;
 
+  export function blank<T extends IContentRow>(cols: (keyof T)[]) {
+    return new Content(cols.reduce((x, col) => {
+      if(col === "path") {
+        x["path"] = [];
+      } else {
+        x[col] = "" as any;
+      }
+      return x;
+    }, {} as T));
+  }
+
   export function isContentDirRow<T extends IContentRow, U extends IContentDirRow>(x: T | U): x is U {
     return x.kind === "dir";
   }

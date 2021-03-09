@@ -10,6 +10,9 @@ import { IContentRow } from "../content";
 import { ContentsModel } from "../model";
 import { DateCmp, RegularTable, Tree } from "../util";
 
+import { TreeFinderFilterElement } from "./filter";
+import { TreeFinderFiltersElement } from "./filters";
+
 import "../../style/grid";
 
 // await customElements.whenDefined('regular-table');
@@ -19,19 +22,9 @@ if (document.createElement("regular-table").constructor === HTMLElement) {
 const RegularTableElement = customElements.get('regular-table');
 
 export class TreeFinderGridElement<T extends IContentRow> extends RegularTableElement {
-  async init(model: ContentsModel<T>, options: Partial<TreeFinderGridElement.IOptions<T>> = {}) {
-    const {
-      doWindowReize = false,
-      pathRender = "tree",
-      pathRenderOnFilter = "regular",
-    } = options;
-    this.options = {
-      doWindowReize,
-      pathRender,
-      pathRenderOnFilter,
-    }
-
+  async init(model: ContentsModel<T>, options: TreeFinderGridElement.IOptions<T> = {}) {
     this.model = model;
+    this.options = options;
     this.setDataListener((x0, y0, x1, y1) => this.dataListener(x0, y0, x1, y1) as any);
 
     this.model.drawSub.subscribe(async x => {
@@ -40,20 +33,27 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       }
 
       await this.draw();
-      // correct handling of autowidth seems to frequently require the second draw
-      await this.draw();
+
+      if (this.model.options.needsWidths) {
+        // correct handling of autowidth seems to frequently require the second draw
+        await this.draw();
+      }
     });
 
     // run listener initializations only once
     if (!this._initializedListeners) {
+      const [thead, tbody] = [(this as any).table_model.header.table, (this as any).table_model.body.table] as HTMLTableSectionElement[];
+
       this.addStyleListener(() => this.columnHeaderStyleListener())
       this.addStyleListener(() => this.rowStyleListener());
 
-      this.addEventListener("dblclick", event => this.onRowDoubleClick(event));
       this.addEventListener("mouseover", event => this.onMouseover(event));
-      this.addEventListener("mouseup", event => this.onRowClick(event));
-      this.addEventListener("mouseup", event => this.onSortClick(event));
-      this.addEventListener("mouseup", event => this.onTreeClick(event));
+
+      thead.addEventListener("mouseup", event => this.onSortClick(event));
+
+      tbody.addEventListener("dblclick", event => this.onRowDoubleClick(event));
+      tbody.addEventListener("mouseup", event => this.onRowClick(event));
+      tbody.addEventListener("mouseup", event => this.onTreeClick(event));
       // this.addEventListener("scroll", () => (this as any)._resetAutoSize());
 
       // click debug listener
@@ -90,7 +90,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       num_rows: this.model.contents.length,
 
       // column/row_headers: string[] -> arrays of path parts that get displayed as the first value in each col/row. Length > 1 implies a tree structure
-      column_headers: this.model.columns.map(col => [col]),
+      column_headers: this.model.columns.map((x, i) => this.options.showFilter ? [this.filters!.getChild(i + 1), ...Tree.colHeaderSpans(x as string)] : Tree.colHeaderSpans(x as string)),
       row_headers: this.model.contents.slice(start_row, end_row).map(x => {
         return Tree.rowHeaderSpan({
           isDir: x.isDir,
@@ -106,22 +106,38 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   }
 
   columnHeaderStyleListener() {
+    this.cornerHeaderStyleListener();
+
+    for (const filter of (this.querySelectorAll("thead tr:first-child tree-finder-filter") as any as TreeFinderFilterElement<T>[])) {
+      filter.input.classList.toggle("tf-header-input", true);
+      if (this.model.filterCol === filter.col) {
+        filter.input.focus();
+        delete this.model.filterCol;
+      }
+    }
+
     for (const elem of this.querySelectorAll("thead tr:last-child th")) {
       const th = elem as HTMLTableCellElement;
-      const {column_header, x} = this.getMeta(th);
+      const meta = this.getMeta(th);
+      const col = RegularTable.colNameFromMeta(meta) as keyof T;
 
-      const columnName: keyof T = column_header![column_header!.length - 1] as any;
-      if (columnName) {
-        const sortOrder = this.model.sortStates.byColumn[columnName === "0" ? "path" : columnName]?.order;
-        th.classList.toggle(`tf-header-sort-${sortOrder}`, !!sortOrder);
+      if (col) {
+        const sortOrder = this.model.sortStates.byColumn[col === "0" ? "path" : col]?.order;
+        th.querySelector(".tf-header-sort")?.classList.toggle(`tf-header-sort-${sortOrder}`, !!sortOrder);
       }
 
-      th.classList.toggle("tf-header-corner", typeof x === "undefined");
+      th.classList.toggle("tf-header-corner", typeof meta.x === "undefined");
 
-      th.classList.toggle("tf-header", true);
+      // th.classList.toggle("tf-header", true);
       th.classList.toggle("tf-header-align-left", true);
     }
 
+    if (this.model.options.needsWidths) {
+      this.columnWidthStyleListener();
+    }
+  }
+
+  columnWidthStyleListener() {
     // complete and accurate autowidth for the tree-finder-filter input elems
     let pxs = [...(this as any)._column_sizes.indices];
     if (this._pathRender === "regular" && pxs.length > 0) {
@@ -130,26 +146,34 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     this.model.columnWidthsSub.next(pxs.map(px => `calc(${px}px - 12px)`));
   }
 
+  cornerHeaderStyleListener() {
+    const initSpans = this.querySelectorAll(`thead tr > th:first-child > span:first-child:not([class])`);
+    const newSpans = this.options.showFilter ? [this.filters!.getChild(0), ...Tree.colHeaderSpans("path")] : Tree.colHeaderSpans("path");
+    for (let i = 0; i < initSpans.length; i++) {
+      initSpans[i].replaceWith(newSpans[i]);
+    }
+  }
+
   rowStyleListener() {
     const spans = this.querySelectorAll("tbody th .rt-group-name");
     for (const span of spans) {
       // style the browser's filetype icons
-      const {y, value} = RegularTable.metadataFromElement(span as HTMLTableCellElement, this)!;
+      const {value, y} = RegularTable.metadataFromElement(span as HTMLTableCellElement, this)!;
 
       if (value) {
         const content = this.model.contents[y!];
 
         span.classList.add("tf-grid-filetype-icon", `tf-grid-${content.row.kind}-icon`);
 
-        this.rowStyleSelect();
+        this.rowSelectStyleListener();
       }
     }
   }
 
-  rowStyleSelect() {
+  rowSelectStyleListener() {
     const colCount = this.model.columns.length + 1;
     for (let tr of (this as any).table_model.body.rows as HTMLElement[]) {
-      const {y} = RegularTable.metadataFromElement(tr.firstElementChild!, this)!;
+      const {y} = RegularTable.metadataFromElement(tr.children[0]!, this)!;
 
       if (tr && tr.tagName === "TR") {
         tr.classList.toggle("tf-mod-select", this.model.selection.has(this.model.contents[y!]));
@@ -201,7 +225,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       this.model.selection.select(content, event.ctrlKey || event.metaKey);
     }
 
-    this.rowStyleSelect();
+    this.rowSelectStyleListener();
 
     // can't call draw directly or indirectly, breaks any subsequent doubleClick event
     // setTimeout(() => this.model.requestDraw(), 200);
@@ -218,13 +242,13 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       return;
     }
 
-    const metadata = RegularTable.metadataFromElement(element, this);
-    if (!metadata || !RegularTable.columnHeaderClicked(metadata)) {
+    const meta = RegularTable.metadataFromElement(element, this);
+    if (!meta || !RegularTable.columnHeaderClicked(meta) || meta.column_header_y! < (this as any).table_model.header.rows.length - 1) {
       return;
     }
 
     await this.model.sort({
-      col: metadata.value as any as keyof T || this.model.sortStates.defaultColumn,
+      col: RegularTable.colNameFromMeta(meta) as keyof T,
       multisort: event.shiftKey,
     });
   }
@@ -279,6 +303,38 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     }
   }
 
+  get options() {
+    return {...this._options};
+  }
+
+  set options(options: TreeFinderGridElement.IOptions<T>) {
+    const {
+      doWindowReize = false,
+      pathRender = "tree",
+      pathRenderOnFilter = "regular",
+      showFilter = false,
+    } = options;
+    this._options = {
+      doWindowReize,
+      pathRender,
+      pathRenderOnFilter,
+      showFilter,
+    }
+
+    this.showFilter = this._options.showFilter!;
+  }
+
+  set showFilter(flag: boolean) {
+    if (flag) {
+      this.filters = document.createElement("tree-finder-filters");
+      this.filters.init(this.model);
+    } else {
+      delete this.filters;
+    }
+
+    this._options.showFilter = flag;
+  }
+
   protected get _pathRender() {
     if (this.model.filterPatterns.any) {
       return this.options?.pathRenderOnFilter || "tree";
@@ -287,10 +343,12 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     }
   }
 
-  protected options: TreeFinderGridElement.IOptions<T>;
+  protected _options: TreeFinderGridElement.IOptions<T>;
+  protected filters?: TreeFinderFiltersElement<T>;
   protected model: ContentsModel<T>;
 
   private _initializedListeners: boolean = false;
+  private _template = document.createElement("template");
 }
 
 export namespace TreeFinderGridElement {
@@ -298,17 +356,22 @@ export namespace TreeFinderGridElement {
     /**
      * if true, redraw the tree-finder element on window resize events
      */
-    doWindowReize: boolean;
+    doWindowReize?: boolean;
 
     /**
      * select from different strategies for rendcering the paths
      */
-     pathRender: "regular" | "relative" | "tree";
+    pathRender?: "regular" | "relative" | "tree";
 
     /**
      * if not null, the rendering of paths will change when any filter is set
      */
-    pathRenderOnFilter: "regular" | "relative" | "tree";
+    pathRenderOnFilter?: "regular" | "relative" | "tree";
+
+    /**
+     * if true, add filter inputs to top of each colum
+     */
+     showFilter?: boolean;
   }
 
   export function get() {

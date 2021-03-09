@@ -5,6 +5,16 @@
 // the BSD 3 Clause license. The full license can be found in the LICENSE file.
 //
 
+// thead th {
+//   height: 40px;
+// }
+
+thead tr:last-child th:hover {
+  background: var(--tf-row-hover-background);
+  color: var(--tf-row-hover-color);
+  opacity: 1;
+}
+
 .tf-header-align-left {
   text-align: left;
 }
@@ -13,16 +23,31 @@
   text-align: right;
 }
 
-thead th.tf-header-corner:first-child:before {
-  content: "path";
-  float: left;
-}
+// thead th.tf-header-corner:first-child:before {
+//   content: "path";
+//   float: left;
+// }
 
 .tf-header {
   border-right: 1px solid #ddd;
+  display: inline-grid;
+  grid-template-columns: auto 20px;
+  grid-template-areas:
+    "name sort";
+  width: 100%;
 }
 
-.tf-header:after {
+.tf-header-input {
+  grid-area: input;
+  width: 98%;
+  margin-left: -5px;
+}
+
+.tf-header-name {
+  grid-area: name;
+}
+
+.tf-header-sort {
   background-position: center;
   background-repeat: no-repeat;
   background-size: 10px;
@@ -30,13 +55,13 @@ thead th.tf-header-corner:first-child:before {
   min-height: 16px;
   color: var(--tf-background);
   content: "";
-  float: right;
+  grid-area: sort;
 }
 
-.tf-header-sort-desc:after {
+.tf-header-sort-desc {
   background-image: var(--tf-caret-down);
 }
 
-.tf-header-sort-asc:after {
+.tf-header-sort-asc {
   background-image: var(--tf-caret-up);
 }
