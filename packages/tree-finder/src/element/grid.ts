@@ -19,20 +19,8 @@ if (document.createElement("regular-table").constructor === HTMLElement) {
 const RegularTableElement = customElements.get('regular-table');
 
 export class TreeFinderGridElement<T extends IContentRow> extends RegularTableElement {
-  async init(model: ContentsModel<T>, options: Partial<TreeFinderGridElement.IOptions<T>> = {}) {
-    const {
-      doWindowReize = false,
-      pathRender = "tree",
-      pathRenderOnFilter = "regular",
-      showFilter = false,
-    } = options;
-    this.options = {
-      doWindowReize,
-      pathRender,
-      pathRenderOnFilter,
-      showFilter,
-    }
-
+  async init(model: ContentsModel<T>, options: TreeFinderGridElement.IOptions<T> = {}) {
+    this.options = options;
     this.model = model;
     this.setDataListener((x0, y0, x1, y1) => this.dataListener(x0, y0, x1, y1) as any);
 
@@ -42,8 +30,11 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       }
 
       await this.draw();
-      // correct handling of autowidth seems to frequently require the second draw
-      await this.draw();
+
+      if (this.model.options.needsWidths) {
+        // correct handling of autowidth seems to frequently require the second draw
+        await this.draw();
+      }
     });
 
     // run listener initializations only once
@@ -130,6 +121,12 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       th.classList.toggle("tf-header-align-left", true);
     }
 
+    if (this.model.options.needsWidths) {
+      this.columnWidthStyleListener();
+    }
+  }
+
+  columnWidthStyleListener() {
     // complete and accurate autowidth for the tree-finder-filter input elems
     let pxs = [...(this as any)._column_sizes.indices];
     if (this._pathRender === "regular" && pxs.length > 0) {
@@ -295,6 +292,25 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     }
   }
 
+  get options() {
+    return {...this._options};
+  }
+
+  set options(options: TreeFinderGridElement.IOptions<T>) {
+    const {
+      doWindowReize = false,
+      pathRender = "tree",
+      pathRenderOnFilter = "regular",
+      showFilter = false,
+    } = options;
+    this._options = {
+      doWindowReize,
+      pathRender,
+      pathRenderOnFilter,
+      showFilter,
+    }
+  }
+
   protected get _pathRender() {
     if (this.model.filterPatterns.any) {
       return this.options?.pathRenderOnFilter || "tree";
@@ -303,7 +319,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     }
   }
 
-  protected options: TreeFinderGridElement.IOptions<T>;
+  protected _options: TreeFinderGridElement.IOptions<T>;
   protected model: ContentsModel<T>;
 
   private _initializedListeners: boolean = false;
@@ -315,22 +331,22 @@ export namespace TreeFinderGridElement {
     /**
      * if true, redraw the tree-finder element on window resize events
      */
-    doWindowReize: boolean;
+    doWindowReize?: boolean;
 
     /**
      * select from different strategies for rendcering the paths
      */
-    pathRender: "regular" | "relative" | "tree";
+    pathRender?: "regular" | "relative" | "tree";
 
     /**
      * if not null, the rendering of paths will change when any filter is set
      */
-    pathRenderOnFilter: "regular" | "relative" | "tree";
+    pathRenderOnFilter?: "regular" | "relative" | "tree";
 
     /**
      * if true, add filter inputs to top of each colum
      */
-     showFilter: boolean;
+     showFilter?: boolean;
   }
 
   export function get() {

@@ -36,28 +36,14 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
     [this.breadcrumbs, this.filters, this.grid] = this.children as any as [TreeFinderBreadcrumbsElement<T>, TreeFinderFiltersElement<T>, TreeFinderGridElement<T>];
   }
 
-  async init(root: T, options: Partial<TreeFinderPanelElement.IOptions<T> & ContentsModel.IOptions<T> & TreeFinderGridElement.IOptions<T>> = {}) {
-    // const {
-    //   openChildren = true,
-    // } = options;
-    // this.options = {
-    //   openChildren,
-    // }
+  async init({root, options = {}, modelOptions = {}, gridOptions = {}}: {root: T, options?: TreeFinderPanelElement.IOptions<T>, modelOptions?: ContentsModel.IOptions<T>, gridOptions?: TreeFinderGridElement.IOptions<T>}) {
+    this.options = options;
 
     this.clear();
 
-    const gridOptions: Partial<TreeFinderGridElement.IOptions<T>> = {
-      doWindowReize: options.doWindowReize,
-      pathRender: options.pathRender,
-      pathRenderOnFilter: options.pathRenderOnFilter,
-      showFilter: options.showFilter,
+    if (this._options.showFilter) {
+      modelOptions.needsWidths = true;
     }
-
-    const modelOptions: Partial<ContentsModel.IOptions<T>> = {
-      columnNames: options.columnNames,
-      doRefetch: options.doRefetch,
-    }
-
     this.model = new ContentsModel(root, modelOptions);
 
     this.breadcrumbs.init(this.model);
@@ -122,6 +108,19 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
     [this.shadowSheet, this.breadcrumbsContainer, this.filterContainer, this.gridContainer] = this.shadowRoot!.children as any as [StyleSheet, HTMLElement, HTMLElement, HTMLElement];
   }
 
+  get options() {
+    return {...this._options};
+  }
+
+  set options(options: TreeFinderPanelElement.IOptions<T>) {
+    const {
+      showFilter = true,
+    } = options;
+    this._options = {
+      showFilter
+    }
+  }
+
   protected shadowSheet: StyleSheet;
   protected breadcrumbsContainer: HTMLElement;
   protected filterContainer: HTMLElement;
@@ -131,7 +130,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   protected filters: TreeFinderFiltersElement<T>;
   protected grid: TreeFinderGridElement<T>;
 
-  protected options: TreeFinderPanelElement.IOptions<T>;
+  protected _options: TreeFinderPanelElement.IOptions<T>;
   protected model: ContentsModel<T>;
 
   private _initialized: boolean = false;
@@ -139,7 +138,10 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
 
 export namespace TreeFinderPanelElement {
   export interface IOptions<T extends IContentRow> {
-    openChildren: boolean;
+    /**
+     * if true, add filter inputs in a separate widget above the tree-finder-grid
+     */
+     showFilter?: boolean;
   }
 
   export function get() {

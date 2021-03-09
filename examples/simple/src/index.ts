@@ -29,10 +29,10 @@ window.addEventListener("load", async () => {
   // const treeFinder = new TreeFinderPanelElement();
   document.body.append(treeFinder);
 
-  await treeFinder.init(
+  await treeFinder.init({
     root,
-    {
+    gridOptions: {
       doWindowReize: true
     }
-  );
+  });
 });

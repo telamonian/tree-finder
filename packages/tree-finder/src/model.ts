@@ -49,7 +49,7 @@ class CrumbModel<T extends IContentRow> {
 }
 
 export class ContentsModel<T extends IContentRow> {
-  constructor(root: T, options: Partial<ContentsModel.IOptions<T>> = {}) {
+  constructor(root: T, options: ContentsModel.IOptions<T> = {}) {
     this.crumbs = new CrumbModel<T>();
     this._filterPatterns = new FilterPatterns();
     this._parentMap = new WeakMap();
@@ -183,14 +183,16 @@ export class ContentsModel<T extends IContentRow> {
     return {...this._options};
   }
 
-  set options(options: Partial<ContentsModel.IOptions<T>>) {
+  set options(options: ContentsModel.IOptions<T>) {
     const {
       columnNames,
       doRefetch = false,
+      needsWidths = false,
     } = options;
     this._options = {
-      columnNames: columnNames!,
+      columnNames,
       doRefetch,
+      needsWidths,
     }
   }
 
@@ -230,12 +232,17 @@ export namespace ContentsModel {
     /**
      * optionally specify the visible columns, and the order they appear in
      */
-    columnNames: (keyof T)[];
+    columnNames?: (keyof T)[];
 
     /**
      * if true, always (re)fetch children when opening a dir
      */
-    doRefetch: boolean;
+    doRefetch?: boolean;
+
+    /**
+     * if true, the columnWidthsSub will emit the auto column widths on each draw cycle
+     */
+    needsWidths?: boolean;
   }
 
   export type RefMap<T extends IContentRow> = WeakMap<T, T>;
