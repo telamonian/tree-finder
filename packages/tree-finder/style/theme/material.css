@@ -226,6 +226,6 @@ tree-finder .tf-panel-grid:hover::-webkit-scrollbar-thumb,
  */
  tree-finder .tf-panel-grid th,
  :host th {
-   padding-right: 0px;
-   padding-left: 0px;
+   padding-right: 5px;
+   padding-left: 5px;
  }

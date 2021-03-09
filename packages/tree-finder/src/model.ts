@@ -160,6 +160,11 @@ export class ContentsModel<T extends IContentRow> {
   }
 
   get contents() {
+    if (!this._contents.length && this._columns.length) {
+      // return a content with a blank row as a fallback
+      return [Content.blank(["path", ...this._columns])];
+    }
+
     return this._contents;
   }
 
