@@ -24,11 +24,13 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       doWindowReize = false,
       pathRender = "tree",
       pathRenderOnFilter = "regular",
+      showFilter = false,
     } = options;
     this.options = {
       doWindowReize,
       pathRender,
       pathRenderOnFilter,
+      showFilter,
     }
 
     this.model = model;
@@ -94,7 +96,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       num_rows: this.model.contents.length,
 
       // column/row_headers: string[] -> arrays of path parts that get displayed as the first value in each col/row. Length > 1 implies a tree structure
-      column_headers: this.model.columns.map(x => Tree.colHeaderSpans(x as string)),
+      column_headers: this.model.columns.map(x => Tree.colHeaderSpans(x as string, this.options.showFilter)),
       row_headers: this.model.contents.slice(start_row, end_row).map(x => {
         return Tree.rowHeaderSpan({
           isDir: x.isDir,
@@ -140,7 +142,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     const initSpans = this.querySelectorAll(`thead tr > th:first-child > span:first-child:not([class])`);
     if (initSpans.length) {
       const [inputSpan, nameSpan] = initSpans;
-      const [inputSpanNew, nameSpanNew] = Tree.colHeaderSpans("path");
+      const [inputSpanNew, nameSpanNew] = Tree.colHeaderSpans("path", this.options.showFilter);
       inputSpan.replaceWith(inputSpanNew);
       nameSpan.replaceWith(nameSpanNew);
     }
@@ -320,12 +322,17 @@ export namespace TreeFinderGridElement {
     /**
      * select from different strategies for rendcering the paths
      */
-     pathRender: "regular" | "relative" | "tree";
+    pathRender: "regular" | "relative" | "tree";
 
     /**
      * if not null, the rendering of paths will change when any filter is set
      */
     pathRenderOnFilter: "regular" | "relative" | "tree";
+
+    /**
+     * if true, add filter inputs to top of each colum
+     */
+     showFilter: boolean;
   }
 
   export function get() {

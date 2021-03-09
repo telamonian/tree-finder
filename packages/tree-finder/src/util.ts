@@ -126,10 +126,15 @@ export namespace Tree {
     );
   }
 
-  export function colHeaderSpans(name: string) {
-    inputSpanTemplate.innerHTML = `<input class="tf-header-input"></input>`;
+  export function colHeaderSpans(name: string, filter: boolean = false) {
     nameSpanTemplate.innerHTML = `<div class="tf-header"><span class="tf-header-name">${name}</span><span class="tf-header-sort"></span></div>`;
-    return [inputSpanTemplate.content.firstChild!, nameSpanTemplate.content.firstChild!];
+
+    if (filter) {
+      inputSpanTemplate.innerHTML = `<input class="tf-header-input"></input>`;
+      return [inputSpanTemplate.content.firstChild!, nameSpanTemplate.content.firstChild!];
+    } else {
+      return [nameSpanTemplate.content.firstChild!];
+    }
   }
 
   function rowHeaderLevelsHtml({isDir, isOpen, path = []}: {isDir: boolean, isOpen: boolean, path?: string[]}) {
@@ -153,9 +158,9 @@ export namespace Tree {
     treeTemplate.innerHTML = `<span class="rt-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
 
     if (pathRender === "regular") {
-      return [path.slice(0, -1).join(""), treeTemplate.content.firstChild] as [string, HTMLSpanElement];
+      return [path.slice(0, -1).join(""), treeTemplate.content.firstChild!] as [string, HTMLSpanElement];
     } else {
-      return [treeTemplate.content.firstChild] as HTMLSpanElement[];
+      return [treeTemplate.content.firstChild!] as HTMLSpanElement[];
     }
   }
 }
