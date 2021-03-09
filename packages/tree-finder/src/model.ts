@@ -200,6 +200,8 @@ export class ContentsModel<T extends IContentRow> {
     return this._ixByColumn;
   }
 
+  filterCol?: keyof T;
+
   readonly columnWidthsSub = new BehaviorSubject<string[]>([]);
   readonly crumbs: CrumbModel<T>;
   readonly drawSub = new BehaviorSubject<boolean>(false);

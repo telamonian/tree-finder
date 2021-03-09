@@ -10,6 +10,7 @@ import { IContentRow } from "../content";
 import { ContentsModel } from "../model";
 import { DateCmp, RegularTable, Tree } from "../util";
 
+import { TreeFinderFilterElement } from "./filter";
 import { TreeFinderFiltersElement } from "./filters";
 
 import "../../style/grid";
@@ -107,8 +108,12 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   columnHeaderStyleListener() {
     this.cornerHeaderStyleListener();
 
-    for (const elem of this.querySelectorAll("thead tr:first-child input")) {
-      elem.classList.toggle("tf-header-input", true);
+    for (const filter of (this.querySelectorAll("thead tr:first-child tree-finder-filter") as any as TreeFinderFilterElement<T>[])) {
+      filter.input.classList.toggle("tf-header-input", true);
+      if (this.model.filterCol === filter.col) {
+        filter.input.focus();
+        delete this.model.filterCol;
+      }
     }
 
     for (const elem of this.querySelectorAll("thead tr:last-child th")) {
