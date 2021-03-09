@@ -29,7 +29,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   clear() {
     this.innerHTML = Tag.html`
       <tree-finder-breadcrumbs class="tf-panel-breadcrumbs" slot="breadcrumbs"></tree-finder-breadcrumbs>
-      <tree-finder-filters class="tf-panel-filters" slot="filters"></tree-finder-filters>
+      ${this.options.showFilter ? `<tree-finder-filters class="tf-panel-filters" slot="filters"></tree-finder-filters>` : `<div slot="filters"></div>`}
       <tree-finder-grid class="tf-panel-grid" slot="grid"></tree-finder-grid>
     `;
 
@@ -47,7 +47,9 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
     this.model = new ContentsModel(root, modelOptions);
 
     this.breadcrumbs.init(this.model);
-    this.filters.init(this.model);
+    if (this.options.showFilter) {
+      this.filters.init(this.model);
+    }
     this.grid.init(this.model, gridOptions);
 
     this.model.columnWidthsSub.subscribe(widths => {
@@ -114,7 +116,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
 
   set options(options: TreeFinderPanelElement.IOptions<T>) {
     const {
-      showFilter = true,
+      showFilter = false,
     } = options;
     this._options = {
       showFilter
