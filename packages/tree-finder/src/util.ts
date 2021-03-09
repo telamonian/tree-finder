@@ -69,6 +69,11 @@ export namespace RegularTable {
    * general metadata-related functions
    */
 
+  export function colNameFromMeta(meta: MetaData) {
+    const {column_header, value} = meta;
+    return value instanceof HTMLElement ? value.textContent : column_header as any === "0" ? "path" : value;
+  }
+
   export function metadataFromElement(target: Element, rt: RegularTableElement, recursive = true): MetaData | undefined {
     if (target.tagName === TOP_LEVEL_TAGNAME) {
       return;

@@ -46,14 +46,18 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
     // run listener initializations only once
     if (!this._initializedListeners) {
+      const [thead, tbody] = [(this as any).table_model.header.table, (this as any).table_model.body.table] as HTMLTableSectionElement[];
+
       this.addStyleListener(() => this.columnHeaderStyleListener())
       this.addStyleListener(() => this.rowStyleListener());
 
-      this.addEventListener("dblclick", event => this.onRowDoubleClick(event));
       this.addEventListener("mouseover", event => this.onMouseover(event));
-      this.addEventListener("mouseup", event => this.onRowClick(event));
-      this.addEventListener("mouseup", event => this.onSortClick(event));
-      this.addEventListener("mouseup", event => this.onTreeClick(event));
+
+      thead.addEventListener("mouseup", event => this.onSortClick(event));
+
+      tbody.addEventListener("dblclick", event => this.onRowDoubleClick(event));
+      tbody.addEventListener("mouseup", event => this.onRowClick(event));
+      tbody.addEventListener("mouseup", event => this.onTreeClick(event));
       // this.addEventListener("scroll", () => (this as any)._resetAutoSize());
 
       // click debug listener
@@ -111,11 +115,12 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     for (const elem of this.querySelectorAll("thead tr:last-child th")) {
       const th = elem as HTMLTableCellElement;
       const meta = this.getMeta(th);
-      const colHead = meta.column_header![meta.column_header!.length - 1];
-      const columnName: keyof T = (colHead instanceof HTMLElement ? colHead.textContent : colHead) as any;
+      const col = RegularTable.colNameFromMeta(meta) as keyof T;
+      // const col: keyof T = (value instanceof HTMLElement ? value.textContent : value ? value : column_header) as any;
+      // const col: keyof T = (value instanceof HTMLElement ? value.textContent : value) as any;
 
-      if (columnName) {
-        const sortOrder = this.model.sortStates.byColumn[columnName === "0" ? "path" : columnName]?.order;
+      if (col) {
+        const sortOrder = this.model.sortStates.byColumn[col === "0" ? "path" : col]?.order;
         th.querySelector(".tf-header-sort")?.classList.toggle(`tf-header-sort-${sortOrder}`, !!sortOrder);
       }
 
@@ -147,7 +152,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     const spans = this.querySelectorAll("tbody th .rt-group-name");
     for (const span of spans) {
       // style the browser's filetype icons
-      const {y, value} = RegularTable.metadataFromElement(span as HTMLTableCellElement, this)!;
+      const {value, y} = RegularTable.metadataFromElement(span as HTMLTableCellElement, this)!;
 
       if (value) {
         const content = this.model.contents[y!];
@@ -231,17 +236,13 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       return;
     }
 
-    const metadata = RegularTable.metadataFromElement(element, this);
-    if (!metadata || !RegularTable.columnHeaderClicked(metadata)) {
+    const meta = RegularTable.metadataFromElement(element, this);
+    if (!meta || !RegularTable.columnHeaderClicked(meta)) {
       return;
     }
 
-    const {value} = metadata;
-
     await this.model.sort({
-      // col: ((metadata.value instanceof HTMLElement && metadata.value.textContent) || metadata.value || this.model.sortStates.defaultColumn) as any as keyof T,
-      col: ((value as Element)?.textContent || value || this.model.sortStates.defaultColumn) as any as keyof T,
-      // col: metadata.value as any as keyof T || this.model.sortStates.defaultColumn,
+      col: RegularTable.colNameFromMeta(meta) as keyof T,
       multisort: event.shiftKey,
     });
   }
