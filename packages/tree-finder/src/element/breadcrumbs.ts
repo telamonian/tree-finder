@@ -77,14 +77,7 @@ export class TreeFinderBreadcrumbsElement<T extends IContentRow> extends HTMLEle
   private _initializedListeners: boolean = false;
 }
 
-export namespace TreeFinderBreadcrumbsElement {
-  export function get() {
-    if (document.createElement("tree-finder-breadcrumbs").constructor === HTMLElement) {
-      customElements.define("tree-finder-breadcrumbs", TreeFinderBreadcrumbsElement);
-    }
+// export namespace TreeFinderBreadcrumbsElement {
+// }
 
-    return customElements.get('tree-finder-breadcrumbs');
-  }
-}
-
-TreeFinderBreadcrumbsElement.get();
+customElements.define("tree-finder-breadcrumbs", TreeFinderBreadcrumbsElement);

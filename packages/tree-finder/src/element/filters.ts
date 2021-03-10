@@ -10,8 +10,6 @@ import { Tag } from "../util";
 
 import { TreeFinderFilterElement } from "./filter";
 
-TreeFinderFilterElement.get();
-
 export class TreeFinderFiltersElement<T extends IContentRow> extends HTMLElement {
   clear() {
     this.innerHTML = `<tree-finder-filter></tree-finder-filter>`.repeat(this.model.columns.length + 1);
@@ -86,14 +84,7 @@ export class TreeFinderFiltersElement<T extends IContentRow> extends HTMLElement
   // private _initializedListeners: boolean = false;
 }
 
-export namespace TreeFinderFiltersElement {
-  export function get() {
-    if (document.createElement("tree-finder-filters").constructor === HTMLElement) {
-      customElements.define("tree-finder-filters", TreeFinderFiltersElement);
-    }
+// export namespace TreeFinderFiltersElement {
+// }
 
-    return customElements.get('tree-finder-filters');
-  }
-}
-
-TreeFinderFiltersElement.get();
+customElements.define("tree-finder-filters", TreeFinderFiltersElement);

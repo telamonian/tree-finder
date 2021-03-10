@@ -348,7 +348,6 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   protected model: ContentsModel<T>;
 
   private _initializedListeners: boolean = false;
-  private _template = document.createElement("template");
 }
 
 export namespace TreeFinderGridElement {
@@ -373,14 +372,6 @@ export namespace TreeFinderGridElement {
      */
      showFilter?: boolean;
   }
-
-  export function get() {
-    if (document.createElement("tree-finder-grid").constructor === HTMLElement) {
-      customElements.define("tree-finder-grid", TreeFinderGridElement);
 }
 
-    return customElements.get('tree-finder-grid');
-  }
-}
-
-TreeFinderGridElement.get();
+customElements.define("tree-finder-grid", TreeFinderGridElement);
