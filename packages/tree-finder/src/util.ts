@@ -15,7 +15,7 @@ export namespace DateCmp {
 }
 
 export namespace RegularTable {
-  const TOP_LEVEL_TAGNAME = "TREE-FINDER";
+  const TOP_LEVEL_TAGNAME = "TREE-FINDER-GRID";
 
   /*
    * click-related functions

@@ -44,7 +44,7 @@ export class TreeFinderBreadcrumbsElement<T extends IContentRow> extends HTMLEle
 
     this.shadowRoot!.innerHTML = Tag.html`
       <style>
-        .tf-breadcrumbs-top {
+        :host > .tf-breadcrumbs-top {
           display: flex;
           align-items: flex-start;
         }

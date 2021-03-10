@@ -5,7 +5,6 @@
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
 import "tree-finder";
-// import { TreeFinderPanelElement } from "tree-finder";
 import { mockContent } from "tree-finder-mockcontents";
 
 import "tree-finder/style/theme/material.css";
@@ -18,7 +17,7 @@ const root = mockContent({
 });
 
 window.addEventListener("load", async () => {
-  const treeFinder = document.createElement<typeof root>("tree-finder");
+  const treeFinder = document.createElement<typeof root>("tree-finder-panel");
   // const treeFinder = new TreeFinderPanelElement();
   document.body.append(treeFinder);
 

@@ -143,4 +143,4 @@ export namespace TreeFinderPanelElement {
   }
 }
 
-customElements.define("tree-finder", TreeFinderPanelElement);
+customElements.define("tree-finder-panel", TreeFinderPanelElement);

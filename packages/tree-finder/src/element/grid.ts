@@ -353,7 +353,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 export namespace TreeFinderGridElement {
   export interface IOptions<T extends IContentRow> {
     /**
-     * if true, redraw the tree-finder element on window resize events
+     * if true, redraw the tree-finder-grid element on window resize events
      */
     doWindowReize?: boolean;
 
