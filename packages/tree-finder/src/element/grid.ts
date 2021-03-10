@@ -108,16 +108,20 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   columnHeaderStyleListener() {
     this.cornerHeaderStyleListener();
 
-    for (const filter of (this.querySelectorAll("thead tr:first-child tree-finder-filter") as any as TreeFinderFilterElement<T>[])) {
-      filter.input.classList.toggle("tf-header-input", true);
-      if (this.model.filterCol === filter.col) {
-        filter.input.focus();
-        delete this.model.filterCol;
+    for (const th of (this.querySelectorAll("thead tr:first-child th") as any as HTMLTableHeaderCellElement[])) {
+      th.classList.toggle("tf-header-align-left", true);
+
+      const filter = th.querySelector("tree-finder-filter") as TreeFinderFilterElement<T>;
+      if (filter) {
+        filter.input.classList.toggle("tf-header-input", true);
+        if (this.model.filterCol === filter.col) {
+          filter.input.focus();
+          delete this.model.filterCol;
+        }
       }
     }
 
-    for (const elem of this.querySelectorAll("thead tr:last-child th")) {
-      const th = elem as HTMLTableCellElement;
+    for (const th of (this.querySelectorAll("thead tr:last-child th") as any as HTMLTableHeaderCellElement[])) {
       const meta = this.getMeta(th);
       const col = RegularTable.colNameFromMeta(meta) as keyof T;
 
@@ -127,8 +131,6 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       }
 
       th.classList.toggle("tf-header-corner", typeof meta.x === "undefined");
-
-      // th.classList.toggle("tf-header", true);
       th.classList.toggle("tf-header-align-left", true);
     }
 
