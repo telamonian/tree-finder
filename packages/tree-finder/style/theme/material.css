@@ -224,8 +224,8 @@ tree-finder-grid:hover::-webkit-scrollbar-thumb,
 /*
  * experimenting with filter input styling
  */
- tree-finder-grid th,
- :host th {
+ tree-finder-grid thead tr:first-child th,
+ :host thead tr:first-child th {
    padding-right: 0px;
-   padding-left: 5px;
+   padding-left: 0px;
  }
