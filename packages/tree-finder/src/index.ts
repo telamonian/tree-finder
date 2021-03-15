@@ -15,19 +15,19 @@ import {
 
 declare global {
   interface Document {
-    createElement<T extends IContentRow>(tagName: "tree-finder", options?: ElementCreationOptions): TreeFinderPanelElement<T>;
     createElement<T extends IContentRow>(tagName: "tree-finder-breadcrumbs", options?: ElementCreationOptions): TreeFinderBreadcrumbsElement<T>;
     createElement<T extends IContentRow>(tagName: "tree-finder-filter", options?: ElementCreationOptions): TreeFinderFilterElement<T>;
     createElement<T extends IContentRow>(tagName: "tree-finder-filters", options?: ElementCreationOptions): TreeFinderFiltersElement<T>;
     createElement<T extends IContentRow>(tagName: "tree-finder-grid", options?: ElementCreationOptions): TreeFinderGridElement<T>;
+    createElement<T extends IContentRow>(tagName: "tree-finder-panel", options?: ElementCreationOptions): TreeFinderPanelElement<T>;
   }
 
   interface CustomElementRegistry {
-    get(name: "tree-finder"): typeof TreeFinderPanelElement;
     get(name: "tree-finder-breadcrumbs"): typeof TreeFinderBreadcrumbsElement;
     get(name: "tree-finder-filter"): typeof TreeFinderFilterElement;
     get(name: "tree-finder-filters"): typeof TreeFinderFiltersElement;
     get(name: "tree-finder-grid"): typeof TreeFinderGridElement;
+    get(name: "tree-finder-panel"): typeof TreeFinderPanelElement;
   }
 }
 

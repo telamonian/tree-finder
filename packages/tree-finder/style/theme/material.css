@@ -24,7 +24,7 @@
   --tf-font-size: 12px;
 }
 
-tree-finder .tf-panel-grid {
+tree-finder-grid {
   outline: none;
   padding-top: 12px;
   padding-left: 12px;
@@ -33,18 +33,18 @@ tree-finder .tf-panel-grid {
   scrollbar-color: transparent transparent;
   scrollbar-width: thin;
 }
-tree-finder .tf-panel-grid:hover {
+tree-finder-grid:hover {
   scrollbar-color: rgba(0, 0, 0, 0.3) transparent;
 }
-tree-finder .tf-panel-grid,
+tree-finder-grid,
 :host {
   font-family: "Open Sans";
 }
-tree-finder .tf-panel-grid div[tabindex],
+tree-finder-grid div[tabindex],
 :host div[tabindex] {
   outline: none;
 }
-tree-finder .tf-panel-grid > div,
+tree-finder-grid > div,
 :host > div {
   position: absolute;
   top: 0;
@@ -53,69 +53,69 @@ tree-finder .tf-panel-grid > div,
   bottom: 0;
   overflow: hidden;
 }
-tree-finder .tf-panel-grid th,
+tree-finder-grid th,
 :host th {
   text-align: center;
 }
-tree-finder .tf-panel-grid thead tr:not(:last-child) th,
+tree-finder-grid thead tr:not(:last-child) th,
 :host thead tr:not(:last-child) th {
   overflow: hidden;
   max-width: 0px;
 }
-tree-finder .tf-panel-grid thead tr:last-child .rt-float,
+tree-finder-grid thead tr:last-child .rt-float,
 :host thead tr:last-child .rt-float,
-tree-finder .tf-panel-grid tbody .rt-float,
+tree-finder-grid tbody .rt-float,
 :host tbody .rt-float {
   text-align: right;
 }
-tree-finder .tf-panel-grid thead .rt-integer,
+tree-finder-grid thead .rt-integer,
 :host thead .rt-integer,
-tree-finder .tf-panel-grid tbody .rt-integer,
+tree-finder-grid tbody .rt-integer,
 :host tbody .rt-integer {
   text-align: right;
 }
-tree-finder .tf-panel-grid tbody th,
+tree-finder-grid tbody th,
 :host tbody th {
   text-align: left;
 }
-tree-finder .tf-panel-grid span.rt-tree-container,
+tree-finder-grid span.rt-tree-container,
 :host span.rt-tree-container {
   display: flex;
   align-items: center;
   height: 100%;
 }
-tree-finder .tf-panel-grid thead .rt-string,
+tree-finder-grid thead .rt-string,
 :host thead .rt-string,
-tree-finder .tf-panel-grid tbody .rt-string,
+tree-finder-grid tbody .rt-string,
 :host tbody .rt-string,
-tree-finder .tf-panel-grid thead .rt-date,
+tree-finder-grid thead .rt-date,
 :host thead .rt-date,
-tree-finder .tf-panel-grid tbody .rt-date,
+tree-finder-grid tbody .rt-date,
 :host tbody .rt-date,
-tree-finder .tf-panel-grid thead .rt-datetime,
+tree-finder-grid thead .rt-datetime,
 :host thead .rt-datetime,
-tree-finder .tf-panel-grid tbody .rt-datetime,
+tree-finder-grid tbody .rt-datetime,
 :host tbody .rt-datetime {
   text-align: left;
 }
-tree-finder .tf-panel-grid thead tr:last-child th,
+tree-finder-grid thead tr:last-child th,
 :host thead tr:last-child th {
   border-bottom: 1px solid #ddd;
 }
-tree-finder .tf-panel-grid th,
+tree-finder-grid th,
 :host th {
   position: relative;
 }
-tree-finder .tf-panel-grid tr th span.rt-tree-group,
+tree-finder-grid tr th span.rt-tree-group,
 :host tr th span.rt-tree-group {
   margin-left: 5px;
   margin-right: 15px;
   border-left: 1px solid #eee;
   height: 100%;
 }
-tree-finder .tf-panel-grid td,
+tree-finder-grid td,
 :host td,
-tree-finder .tf-panel-grid th,
+tree-finder-grid th,
 :host th {
   white-space: nowrap;
   font-size: var(--tf-font-size);
@@ -125,22 +125,22 @@ tree-finder .tf-panel-grid th,
   padding-bottom: 0px;
   height: 19px;
 }
-tree-finder .tf-panel-grid table *,
+tree-finder-grid table *,
 :host table * {
   box-sizing: border-box;
 }
-tree-finder .tf-panel-grid table,
+tree-finder-grid table,
 :host table {
   overflow: hidden;
   color: #666;
 }
-tree-finder .tf-panel-grid span.rt-row-header-icon,
+tree-finder-grid span.rt-row-header-icon,
 :host span.rt-row-header-icon {
   color: #AAA;
   padding-right: 4px;
   font-family: "Material Icons";
 }
-tree-finder .tf-panel-grid span.rt-column-header-icon,
+tree-finder-grid span.rt-column-header-icon,
 :host span.rt-column-header-icon {
   font-size: 10px;
   padding-left: 3px;
@@ -148,23 +148,23 @@ tree-finder .tf-panel-grid span.rt-column-header-icon,
   width: 10px;
   font-family: "Material Icons";
 }
-tree-finder .tf-panel-grid span.rt-row-header-icon:hover,
+tree-finder-grid span.rt-row-header-icon:hover,
 :host span.rt-row-header-icon:hover {
   color: #1a7da1;
   text-shadow: 0px 0px 3px #1a7da1;
 }
-tree-finder .tf-panel-grid .rt-selected td,
+tree-finder-grid .rt-selected td,
 :host .rt-selected td {
   background-color: #eee;
 }
-tree-finder .tf-panel-grid .rt-cell-clip,
+tree-finder-grid .rt-cell-clip,
 :host .rt-cell-clip {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-tree-finder .tf-panel-grid td span.rt-group-name,
+tree-finder-grid td span.rt-group-name,
 :host td span.rt-group-name,
-tree-finder .tf-panel-grid th span.rt-group-name,
+tree-finder-grid th span.rt-group-name,
 :host th span.rt-group-name {
   margin-right: -5px;
   padding-right: 5px;
@@ -172,18 +172,18 @@ tree-finder .tf-panel-grid th span.rt-group-name,
   flex: 1;
   height: 100%;
 }
-tree-finder .tf-panel-grid th span.rt-group-name,
+tree-finder-grid th span.rt-group-name,
 :host th span.rt-group-name {
   text-align: left;
 }
-tree-finder .tf-panel-grid td th span.rt-group-leaf,
+tree-finder-grid td th span.rt-group-leaf,
 :host td th span.rt-group-leaf,
-tree-finder .tf-panel-grid th span.rt-group-leaf,
+tree-finder-grid th span.rt-group-leaf,
 :host th span.rt-group-leaf {
   margin-left: 16px;
   height: 100%;
 }
-tree-finder .tf-panel-grid .rt-column-resize,
+tree-finder-grid .rt-column-resize,
 :host .rt-column-resize {
   height: 100%;
   width: 10px;
@@ -192,31 +192,31 @@ tree-finder .tf-panel-grid .rt-column-resize,
   right: 0;
   cursor: col-resize;
 }
-tree-finder .tf-panel-grid::-webkit-scrollbar,
+tree-finder-grid::-webkit-scrollbar,
 :host::-webkit-scrollbar,
-tree-finder .tf-panel-grid::-webkit-scrollbar-corner,
+tree-finder-grid::-webkit-scrollbar-corner,
 :host::-webkit-scrollbar-corner {
   background-color: transparent;
   height: 12px;
   width: 12px;
 }
-tree-finder .tf-panel-grid::-webkit-scrollbar-thumb,
+tree-finder-grid::-webkit-scrollbar-thumb,
 :host::-webkit-scrollbar-thumb {
   background-clip: content-box;
   background-color: rgba(0, 0, 0, 0);
   border-radius: 5px;
 }
-tree-finder .tf-panel-grid::-webkit-scrollbar-thumb:horizontal,
+tree-finder-grid::-webkit-scrollbar-thumb:horizontal,
 :host::-webkit-scrollbar-thumb:horizontal {
   border-bottom: 2px solid transparent;
   border-top: 2px solid transparent;
 }
-tree-finder .tf-panel-grid::-webkit-scrollbar-thumb:vertical,
+tree-finder-grid::-webkit-scrollbar-thumb:vertical,
 :host::-webkit-scrollbar-thumb:vertical {
   border-left: 2px solid transparent;
   border-right: 2px solid transparent;
 }
-tree-finder .tf-panel-grid:hover::-webkit-scrollbar-thumb,
+tree-finder-grid:hover::-webkit-scrollbar-thumb,
 :host:hover::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.3);
 }
@@ -224,8 +224,8 @@ tree-finder .tf-panel-grid:hover::-webkit-scrollbar-thumb,
 /*
  * experimenting with filter input styling
  */
- tree-finder .tf-panel-grid th,
- :host th {
-   padding-right: 5px;
-   padding-left: 5px;
+ tree-finder-grid thead tr:first-child th,
+ :host thead tr:first-child th {
+   padding-right: 0px;
+   padding-left: 0px;
  }

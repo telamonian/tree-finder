@@ -14,10 +14,6 @@ import { TreeFinderGridElement } from "./grid";
 
 import "../../style/panel";
 
-TreeFinderBreadcrumbsElement.get();
-TreeFinderFiltersElement.get();
-TreeFinderGridElement.get();
-
 export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   connectedCallback() {
     if (!this._initialized) {
@@ -145,14 +141,6 @@ export namespace TreeFinderPanelElement {
      */
      showFilter?: boolean;
   }
-
-  export function get() {
-    if (document.createElement("tree-finder").constructor === HTMLElement) {
-      customElements.define("tree-finder", TreeFinderPanelElement);
-    }
-
-    return customElements.get('tree-finder');
-  }
 }
 
-TreeFinderPanelElement.get();
+customElements.define("tree-finder-panel", TreeFinderPanelElement);

@@ -23,6 +23,8 @@ thead tr:last-child th:hover {
   text-align: right;
 }
 
+// set path col header using pseudoelement
+//
 // thead th.tf-header-corner:first-child:before {
 //   content: "path";
 //   float: left;
@@ -39,8 +41,7 @@ thead tr:last-child th:hover {
 
 .tf-header-input {
   grid-area: input;
-  width: 98%;
-  margin-left: -5px;
+  width: calc(100% - 5px);
 }
 
 .tf-header-name {
