@@ -7,7 +7,6 @@
 import "tree-finder";
 import { mockContent } from "tree-finder-mockcontents";
 
-import "tree-finder/style/theme/material.css";
 import "../style";
 
 const root = mockContent({

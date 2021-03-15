@@ -8,8 +8,6 @@ import { IContentRow } from "../content";
 import { ContentsModel } from "../model";
 import { Tag, Tree } from "../util";
 
-import "../../style/breadcrumbs";
-
 export class TreeFinderBreadcrumbsElement<T extends IContentRow> extends HTMLElement {
   connectedCallback() {
     if (!this._initialized) {

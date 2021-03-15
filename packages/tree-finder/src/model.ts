@@ -6,7 +6,7 @@
  */
 import { BehaviorSubject } from "rxjs";
 
-import { Content, IContentRow, Path } from "./content";
+import { Content, IContentRow } from "./content";
 import {
   filterContentRoot,
   FilterPatterns,

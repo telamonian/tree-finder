@@ -8,8 +8,6 @@ import { IContentRow } from "../content";
 import { ContentsModel } from "../model";
 import { Tag } from "../util";
 
-import "../../style/filter";
-
 export class TreeFinderFilterElement<T extends IContentRow> extends HTMLElement {
   clear() {
     this.innerHTML = `<input class="tf-filter-input"></input>`;

@@ -12,8 +12,6 @@ import { TreeFinderBreadcrumbsElement } from "./breadcrumbs";
 import { TreeFinderFiltersElement } from "./filters";
 import { TreeFinderGridElement } from "./grid";
 
-import "../../style/panel";
-
 export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   connectedCallback() {
     if (!this._initialized) {

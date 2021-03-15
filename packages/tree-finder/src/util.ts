@@ -6,11 +6,75 @@
  */
 import { MetaData, RegularTableElement } from "regular-table";
 
-export namespace DateCmp {
+export namespace Format {
   export const DATE_FORMATTER = new Intl.DateTimeFormat("en-us");
 
-  export function toStr(date: Date, str: string) {
+  /**
+   * Format bytes as human-readable text.
+   * ref: https://stackoverflow.com/a/14919494
+   *
+   * @param bytes Number of bytes.
+   * @param si True to use metric (SI) units, aka powers of 1000. False to use
+   *           binary (IEC), aka powers of 1024.
+   * @param dp Number of decimal places to display.
+   *
+   * @return Formatted string.
+   */
+  export function bytesToHumanReadable(bytes: number, si=false, dp=1) {
+    if (!bytes) {
+      return "--";
+    }
+
+    const thresh = si ? 1000 : 1024;
+
+    if (Math.abs(bytes) < thresh) {
+      return bytes + " B";
+    }
+
+    const units = si
+      ? ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+      : ["KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
+    let u = -1;
+    const r = 10**dp;
+
+    do {
+      bytes /= thresh;
+      ++u;
+    } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
+
+
+    return bytes.toFixed(dp) + ' ' + units[u];
+  }
+
+  export function dateToStr(date: Date, str: string) {
     return DATE_FORMATTER.format(date).includes(str);
+  }
+
+  export function timeSince(date: Date | string) {
+    date = !(date instanceof Date) ? new Date(date) : date;
+    const seconds = Math.floor((Date.now() - date.valueOf())/1000);
+    let interval = seconds/31536000;
+
+    if (interval > 1) {
+      return Math.floor(interval) + " years";
+    }
+    interval = seconds/2592000;
+    if (interval > 1) {
+      return Math.floor(interval) + " months";
+    }
+    interval = seconds/86400;
+    if (interval > 1) {
+      return Math.floor(interval) + " days";
+    }
+    interval = seconds/3600;
+    if (interval > 1) {
+      return Math.floor(interval) + " hours";
+    }
+    interval = seconds/60;
+    if (interval > 1) {
+      return Math.floor(interval) + " minutes";
+    }
+    return Math.floor(seconds) + " seconds";
   }
 }
 
@@ -89,19 +153,36 @@ export namespace RegularTable {
   }
 }
 
-export namespace String {
-  /**
-   * remove all back/slashes from string
-   */
-  export function trimSlash(x: string) {
-    return x.replace(/[\/\\]/g, "");
+export namespace Path {
+  export type PathArray = string[];
+
+  export function fromarray(x: PathArray): string {
+    const [first, ...rest] = x;
+    const drive = first ? first + ":" : "";
+    const local = rest.join("/");
+
+    return `${drive}${local}`;
+  }
+
+  export function toarray(x: string): PathArray {
+    const splits = x.split(/:/g);
+    const [drive, local] = splits.length >= 2 ? splits : ["", x];
+
+    return [drive, ...(local ? local.split(/[\/\\]/g) : [])];
   }
 
   /**
    * remove all back/slashes, then add a trailing slash if requested to a string
    */
   export function normSlash(x: string, trailing: boolean) {
-    return String.trimSlash(x) + (trailing ? "/" : "");
+    return Path.trimSlash(x) + (trailing ? "/" : "");
+  }
+
+  /**
+   * remove all back/slashes from string
+   */
+  export function trimSlash(x: string) {
+    return x.replace(/[\/\\]/g, "");
   }
 }
 
@@ -123,7 +204,7 @@ export namespace Tree {
   const nameSpanTemplate = document.createElement("template");
 
   export function breadcrumbsSpans(path: string[]): string {
-    return `<div class="tf-breadcrumbs-home"><span class="tf-breadcrumbs-crumb tf-breadcrumbs-icon tf-breadcrumbs-dir-icon" data-crumbix="0">""</span><span>/</span></div>` + (
+    return `<div class="tf-breadcrumbs-home"><span class="tf-breadcrumbs-crumb tf-breadcrumbs-icon tf-breadcrumbs-dir-icon" data-crumbix="0"></span><span>/</span></div>` + (
       [...path.slice(1),]
       .map((x,i) => `<span class="tf-breadcrumbs-crumb" data-crumbix="${i+1}">${x}</span>`)
       .join(`<span class="tf-breadcrumbs-separator">/</span>`)
@@ -153,7 +234,7 @@ export namespace Tree {
   }
 
   export function rowHeaderSpan({isDir, isOpen, path, pathRender = "tree"}: {isDir: boolean, isOpen: boolean, path: string[], pathRender?: "regular" | "relative" | "tree"}): (string | HTMLSpanElement)[] {
-    path = path.map((x, ix) => String.normSlash(x, ix < (path.length - 1) ? true : isDir));
+    path = path.map((x, ix) => Path.normSlash(x, ix < (path.length - 1) ? true : isDir));
 
     const header_classes = !isDir ? "rt-group-name rt-group-leaf" : "rt-group-name";
     const header_text = pathRender === "relative" ? path.join("") : path.slice(-1).join("");

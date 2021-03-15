@@ -6,7 +6,7 @@
  */
 // import * as faker from "faker";
 
-import { Path, IContentRow } from "tree-finder";
+import { IContentRow, Path } from "tree-finder";
 
 import { ALLIED_PHONETIC, Random } from "./util";
 
@@ -22,7 +22,7 @@ const _mockCache: {[key: string]: IMockContentRow[]} = {};
 let mockFileIx = 0;
 let modDaysIx = -1;
 
-export function mockContent(props: {path: Path, kind: string, modDays?: number, nchildren?: number, ndirectories?: number, randomize?: boolean}): IMockContentRow {
+export function mockContent(props: {path: Path.PathArray, kind: string, modDays?: number, nchildren?: number, ndirectories?: number, randomize?: boolean}): IMockContentRow {
   // infinite recursive mock contents
   const {path, kind, modDays = modDaysIx++, nchildren = 100, ndirectories = 10, randomize = false} = props;
   const modified = new Date(modDays * 24 * 60 * 60 * 1000);
