@@ -4,18 +4,18 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
+import { Path } from "./util";
+
 export const DEFAULT_COL = "path";
 
-export type Path = string[];
-
 export interface IContentRow {
-  path: Path;
-  kind: string;
+  path: Path.PathArray;
+  kind: "dir" | string;
   getChildren?: () => Promise<IContentRow[]>;
 }
 
 interface IContentDirRow {
-  path: Path;
+  path: Path.PathArray;
   kind: "dir";
   getChildren: () => Promise<IContentRow[]>;
 }

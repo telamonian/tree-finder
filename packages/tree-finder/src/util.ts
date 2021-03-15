@@ -89,19 +89,36 @@ export namespace RegularTable {
   }
 }
 
-export namespace String {
-  /**
-   * remove all back/slashes from string
-   */
-  export function trimSlash(x: string) {
-    return x.replace(/[\/\\]/g, "");
+export namespace Path {
+  export type PathArray = string[];
+
+  export function fromarray(x: PathArray): string {
+    const [first, ...rest] = x;
+    const drive = first ? first + ":" : "";
+    const local = rest.join("/");
+
+    return `${drive}${local}`;
+  }
+
+  export function toarray(x: string): PathArray {
+    const splits = x.split(/:/g);
+    const [drive, local] = splits.length >= 2 ? splits : ["", x];
+
+    return [drive, ...(local ? local.split(/[\/\\]/g) : [])];
   }
 
   /**
    * remove all back/slashes, then add a trailing slash if requested to a string
    */
   export function normSlash(x: string, trailing: boolean) {
-    return String.trimSlash(x) + (trailing ? "/" : "");
+    return Path.trimSlash(x) + (trailing ? "/" : "");
+  }
+
+  /**
+   * remove all back/slashes from string
+   */
+  export function trimSlash(x: string) {
+    return x.replace(/[\/\\]/g, "");
   }
 }
 
@@ -153,7 +170,7 @@ export namespace Tree {
   }
 
   export function rowHeaderSpan({isDir, isOpen, path, pathRender = "tree"}: {isDir: boolean, isOpen: boolean, path: string[], pathRender?: "regular" | "relative" | "tree"}): (string | HTMLSpanElement)[] {
-    path = path.map((x, ix) => String.normSlash(x, ix < (path.length - 1) ? true : isDir));
+    path = path.map((x, ix) => Path.normSlash(x, ix < (path.length - 1) ? true : isDir));
 
     const header_classes = !isDir ? "rt-group-name rt-group-leaf" : "rt-group-name";
     const header_text = pathRender === "relative" ? path.join("") : path.slice(-1).join("");
