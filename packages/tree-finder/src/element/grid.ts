@@ -13,8 +13,6 @@ import { DateCmp, RegularTable, Tree } from "../util";
 import { TreeFinderFilterElement } from "./filter";
 import { TreeFinderFiltersElement } from "./filters";
 
-import "../../style/grid";
-
 // await customElements.whenDefined('regular-table');
 if (document.createElement("regular-table").constructor === HTMLElement) {
   window.customElements.define("regular-table", rt.RegularTableElement);

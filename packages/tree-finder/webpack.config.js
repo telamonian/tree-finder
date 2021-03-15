@@ -69,7 +69,49 @@ const treeFinderConfig = {
   // },
 };
 
-const themeConfig = {
+const treeFinderStyleConfig = {
+  entry: {
+    "tree-finder": "style/index.less",
+  },
+  devtool: "source-map",
+  context: path.resolve(__dirname, "../.."),
+
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    publicPath: "/dist/",
+  },
+
+  module: {
+    rules: [
+      ...dependencySrcMapRules,
+      ...stylingRules,
+      ...svgUrlRules,
+      ...tsRules,
+    ],
+  },
+
+  resolve: {
+    ...getResolve(__dirname),
+  },
+
+  plugins: [
+    // new FixStyleOnlyEntriesPlugin(),
+    new MiniCssExtractPlugin({
+      filename: "[name].css",
+    }),
+
+    new RemoveEmptyScriptsPlugin(),
+  ],
+
+  mode: isProd ? "production": "development",
+
+  optimization: {
+    minimize: isProd,
+    ...isProd && getOptimization(),
+  },
+};
+
+const treeFinderThemeConfig = {
   entry: {
     "material": "style/theme/material.css",
   },
@@ -113,5 +155,6 @@ const themeConfig = {
 
 module.exports = [
   treeFinderConfig,
-  themeConfig
+  treeFinderStyleConfig,
+  treeFinderThemeConfig,
 ]
