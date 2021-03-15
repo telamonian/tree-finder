@@ -24,6 +24,10 @@
   --tf-font-size: 12px;
 }
 
+tree-finder-breadcrumbs {
+  padding-left: 12px;
+}
+
 tree-finder-grid {
   outline: none;
   padding-top: 12px;
@@ -228,4 +232,8 @@ tree-finder-grid:hover::-webkit-scrollbar-thumb,
  :host thead tr:first-child th {
    padding-right: 0px;
    padding-left: 0px;
+ }
+
+ tree-finder-panel tree-finder-grid {
+   padding-top: 0px;
  }
