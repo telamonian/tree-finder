@@ -5,7 +5,7 @@
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
 import { Content, DEFAULT_COL, IContentRow } from "./content";
-import { DateCmp } from "./util";
+import { Format } from "./util";
 
 const SORT_ORDERS = ["asc", "desc", null] as const;
 export type SortOrder = typeof SORT_ORDERS[number];
@@ -95,7 +95,7 @@ function contentsFiltererClosure<T extends IContentRow>(filterPatterns: FilterPa
           return val.includes(pattern);
         } else if (val instanceof Date) {
           // treat as date
-          return DateCmp.toStr(val, pattern);
+          return Format.dateToStr(val, pattern);
         } else if (typeof val === "boolean") {
           // treat as boolean
           const num = Number(pattern);

@@ -8,7 +8,7 @@ import * as rt from "regular-table";
 
 import { IContentRow } from "../content";
 import { ContentsModel } from "../model";
-import { DateCmp, RegularTable, Tree } from "../util";
+import { Format, RegularTable, Tree } from "../util";
 
 import { TreeFinderFilterElement } from "./filter";
 import { TreeFinderFiltersElement } from "./filters";
@@ -71,13 +71,14 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   }
 
   async dataListener(start_col: number, start_row: number, end_col: number, end_row: number) {
-    const data = [];
+    const data: T[keyof T][][] = [];
     for (let cix = start_col; cix < end_col - 1; cix++) {
       const column = this.model.columns[cix];
+      const formatter = this.options?.columnFormatters?.[column] ?? (x => x);
       data.push(
         this.model.contents.slice(start_row, end_row).map(content => {
-          const val = content.row[column];
-          return val instanceof Date ? DateCmp.DATE_FORMATTER.format(val) : val;
+          const val = formatter(content.row[column]);
+          return (val instanceof Date ? Format.DATE_FORMATTER.format(val) : val) as T[keyof T];
         })
       );
     }
@@ -309,12 +310,14 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
   set options(options: TreeFinderGridElement.IOptions<T>) {
     const {
+      columnFormatters = undefined,
       doWindowReize = false,
       pathRender = "tree",
       pathRenderOnFilter = "regular",
       showFilter = false,
     } = options;
     this._options = {
+      columnFormatters,
       doWindowReize,
       pathRender,
       pathRenderOnFilter,
@@ -352,6 +355,8 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
 export namespace TreeFinderGridElement {
   export interface IOptions<T extends IContentRow> {
+    columnFormatters?: {[key in keyof T]?: (datum: T[key]) => any};
+
     /**
      * if true, redraw the tree-finder-grid element on window resize events
      */
