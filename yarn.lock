@@ -999,24 +999,18 @@
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.4.tgz#15925414e0ad2cd765bfef58842f7e26a7accb24"
   integrity sha512-1HcDas8SEj4z1Wc696tH56G8OlRaH/sqZOynNNB+HF0WOeXPaxTtbYzJY2oEfiUxjSKjhCKr+MvR7dCHcEelug==
 
-"@types/react@^16.9.34":
-  version "16.14.5"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.14.5.tgz#2c39b5cadefaf4829818f9219e5e093325979f4d"
-  integrity sha512-YRRv9DNZhaVTVRh9Wmmit7Y0UFhEVqXqCSw3uazRWMxa2x85hWQZ5BN24i7GXZbaclaLXEcodEeIHsjBA8eAMw==
+"@types/react@^16.9.38":
+  version "16.9.56"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.56.tgz#ea25847b53c5bec064933095fc366b1462e2adf0"
+  integrity sha512-gIkl4J44G/qxbuC6r2Xh+D3CGZpJ+NdWTItAPmZbR5mUS+JQ8Zvzpl0ea5qT/ZT3ZNTUcDKUVqV3xBE8wv/DyQ==
   dependencies:
     "@types/prop-types" "*"
-    "@types/scheduler" "*"
     csstype "^3.0.2"
 
 "@types/resize-observer-browser@^0.1.5":
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/@types/resize-observer-browser/-/resize-observer-browser-0.1.5.tgz#36d897708172ac2380cd486da7a3daf1161c1e23"
   integrity sha512-8k/67Z95Goa6Lznuykxkfhq9YU3l1Qe6LNZmwde1u7802a3x8v44oq0j91DICclxatTr0rNnhXx7+VTIetSrSQ==
-
-"@types/scheduler@*":
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.1.tgz#18845205e86ff0038517aab7a18a62a6b9f71275"
-  integrity sha512-EaCxbanVeyxDRTQBkdLb3Bvl/HK7PBK6UJjsSixB0iHKoWxE5uu2Q/DgtpOhPIojN0Zl1whvOd7PoHs2P0s5eA==
 
 "@webassemblyjs/ast@1.11.0":
   version "1.11.0"
@@ -2398,9 +2392,9 @@ csso@^4.0.2:
     css-tree "^1.1.2"
 
 csstype@^3.0.2:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.0.6.tgz#865d0b5833d7d8d40f4e5b8a6d76aea3de4725ef"
-  integrity sha512-+ZAmfyWMT7TiIlzdqJgjMb7S4f1beorDbWbsocyK4RaiqA5RTX3K14bnBWmmA9QEM0gRdsjyyrEmcyga8Zsxmw==
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.0.7.tgz#2a5fb75e1015e84dd15692f71e89a1450290950b"
+  integrity sha512-KxnUB0ZMlnUWCsx2Z8MUsr6qV6ja1w9ArPErJaJaF8a5SOWoHLIszeCTKGRGRgtLgYrs1E8CHkNSP1VZTTPc9g==
 
 currently-unhandled@^0.4.1:
   version "0.4.1"
@@ -7558,10 +7552,18 @@ tr46@^1.0.1:
   dependencies:
     punycode "^2.1.0"
 
-tree-finder@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/tree-finder/-/tree-finder-0.0.9.tgz#dea9fe834bf081475461e42a34988895ad53f831"
-  integrity sha512-n3oLqmxEJwmjPjVsCWDIYK64n/oUqVt1StsfaEWTbE7QnpkRC911qeS/NPtTgirlEiFJfyjclLMjy5eGrqZujQ==
+tree-finder-mockcontents@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/tree-finder-mockcontents/-/tree-finder-mockcontents-0.0.8.tgz#8e7b3ac7e45ffedd2c2cc4542f5659a66cc0a48a"
+  integrity sha512-Ce6EZyK5w/kSRtwX7h4o2O5e6WSSlZ6hWJ86ACRuKavmF1+0miu6cl+ghR7y6p5x4F0CwvA+pRHwXrHlFDHw+Q==
+  dependencies:
+    faker "^5.4.0"
+    tree-finder "^0.0.8"
+
+tree-finder@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/tree-finder/-/tree-finder-0.0.8.tgz#26f5bbc3b1d87a0dac24724c77510d3f6580fd1b"
+  integrity sha512-rRjK9XgaBQyNwEa9QFyJpTCGkeBtBgA5QCh9d07Wcl+dURBIp+qvJ4GAUFLWpG7RXy6K/NNZlL5qBP+0yZWLQA==
   dependencies:
     regular-table "^0.2.1"
     rxjs "^6.6.3"
