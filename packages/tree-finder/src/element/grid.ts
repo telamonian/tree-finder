@@ -57,7 +57,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       // click debug listener
       // this.addEventListener("mousedown", event => RegularTable.clickLoggingListener(event, this));
 
-      if (this.options.doWindowReize) {
+      if (this.options.doWindowResize) {
         // resize whenever window size changes, if requested
         window.addEventListener('resize', async () => {
           await this.draw();
@@ -311,14 +311,14 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   set options(options: TreeFinderGridElement.IOptions<T>) {
     const {
       columnFormatters = undefined,
-      doWindowReize = false,
+      doWindowResize = false,
       pathRender = "tree",
       pathRenderOnFilter = "regular",
       showFilter = false,
     } = options;
     this._options = {
       columnFormatters,
-      doWindowReize,
+      doWindowResize,
       pathRender,
       pathRenderOnFilter,
       showFilter,
@@ -360,7 +360,7 @@ export namespace TreeFinderGridElement {
     /**
      * if true, redraw the tree-finder-grid element on window resize events
      */
-    doWindowReize?: boolean;
+    doWindowResize?: boolean;
 
     /**
      * select from different strategies for rendcering the paths
