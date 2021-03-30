@@ -62,7 +62,7 @@ import "tree-finder/style/theme/material.css";
 - Clone this repo
 - Build and run the "simple" example
   ```bash
-  cd examples/webpack
+  cd examples/simple
   yarn
   yarn start
   ```
