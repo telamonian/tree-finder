@@ -89,7 +89,11 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       num_rows: this.model.contents.length,
 
       // column/row_headers: string[] -> arrays of path parts that get displayed as the first value in each col/row. Length > 1 implies a tree structure
-      column_headers: this.model.columns.slice(start_col, end_col).map((x, i) => this.options.showFilter ? [this.filters!.getChild(i + 1), ...Tree.colHeaderSpans(x as string)] : Tree.colHeaderSpans(x as string)),
+      column_headers: this.model.columns.slice(start_col, end_col).map((x, i) => {
+        const filter = this.options.showFilter ? this.filters!.getChild(i + 1) : undefined;
+        // return [Tree.colHeaderSpans(x as string, filter)];
+        return [...(filter ? [filter] : []), Tree.colHeaderSpans(x as string)];
+      }),
       row_headers: this.model.contents.slice(start_row, end_row).map(x => {
         return Tree.rowHeaderSpan({
           isDir: x.isDir,
@@ -113,6 +117,8 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       const filter = th.querySelector("tree-finder-filter") as TreeFinderFilterElement<T>;
       if (filter) {
         filter.input.classList.toggle("tf-header-input", true);
+
+        // ensure that filter input focus is maintained accross draw cycles
         if (this.model.filterCol === filter.col) {
           filter.input.focus();
           delete this.model.filterCol;
@@ -149,7 +155,10 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
   cornerHeaderStyleListener() {
     const initSpans = this.querySelectorAll(`thead tr > th:first-child > span:first-child:not([class])`);
-    const newSpans = this.options.showFilter ? [this.filters!.getChild(0), ...Tree.colHeaderSpans("path")] : Tree.colHeaderSpans("path");
+    const filter = this.options.showFilter ? this.filters!.getChild(0) : undefined;
+    // const newSpans = [Tree.colHeaderSpans("path", filter)];
+    const newSpans = [...(filter ? [filter] : []), Tree.colHeaderSpans("path")];
+
     for (let i = 0; i < initSpans.length; i++) {
       initSpans[i].replaceWith(newSpans[i]);
     }
@@ -238,7 +247,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     }
 
     const element = event.target as HTMLTableCellElement;
-    if (element.classList.contains("rt-column-resize")) {
+    if (element.tagName === "INPUT" || element.classList.contains("rt-column-resize")) {
       // don't sort when the column resize handle nodes are clicked
       return;
     }

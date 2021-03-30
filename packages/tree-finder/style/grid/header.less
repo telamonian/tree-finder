@@ -39,8 +39,18 @@ thead tr:last-child th:hover {
   width: 100%;
 }
 
+.tf-header-grid {
+  border-right: 1px solid #ddd;
+  display: inline-grid;
+  grid-template-columns: auto 20px;
+  grid-template-areas:
+    "input input"
+    "name sort";
+  width: 100%;
+}
+
 .tf-header-input {
-  grid-area: input;
+  // grid-area: input;
   width: calc(100% - 5px);
 }
 

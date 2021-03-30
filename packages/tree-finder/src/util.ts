@@ -200,7 +200,6 @@ export namespace Trait {
 
 export namespace Tree {
   const treeTemplate = document.createElement("template");
-  const inputSpanTemplate = document.createElement("template");
   const nameSpanTemplate = document.createElement("template");
 
   export function breadcrumbsSpans(path: string[]): string {
@@ -211,15 +210,15 @@ export namespace Tree {
     );
   }
 
-  export function colHeaderSpans(name: string, filter: boolean = false) {
-    nameSpanTemplate.innerHTML = `<span class="tf-header"><span class="tf-header-name">${name}</span><span class="tf-header-sort"></span></span>`;
+  export function colHeaderSpans(name: string, filter?: HTMLElement) {
+    nameSpanTemplate.innerHTML = `<span class="${filter ? "tf-header-grid" : "tf-header"}"><span class="tf-header-name">${name}</span><span class="tf-header-sort"></span></span>`;
+    const headerSpan = nameSpanTemplate.content.firstElementChild!;
 
     if (filter) {
-      inputSpanTemplate.innerHTML = `<input class="tf-header-input"></input>`;
-      return [inputSpanTemplate.content.firstChild!, nameSpanTemplate.content.firstChild!];
-    } else {
-      return [nameSpanTemplate.content.firstChild!];
+      headerSpan.prepend(filter);
     }
+
+    return headerSpan;
   }
 
   function rowHeaderLevelsHtml({isDir, isOpen, path = []}: {isDir: boolean, isOpen: boolean, path?: string[]}) {
