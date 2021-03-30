@@ -43,7 +43,7 @@
 
 <body>
 
-  <tree-finder></tree-finder>
+  <tree-finder-panel></tree-finder-panel>
 
   <script>
     const N_CHILDREN = 100;
@@ -83,7 +83,7 @@
         path: [],
       });
 
-      const treeFinder = document.getElementsByTagName("tree-finder")[0];
+      const treeFinder = document.getElementsByTagName("tree-finder-panel")[0];
       await treeFinder.init({
         root,
         gridOptions: {

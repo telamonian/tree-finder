@@ -23,7 +23,9 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   async init(model: ContentsModel<T>, options: TreeFinderGridElement.IOptions<T> = {}) {
     this.model = model;
     this.options = options;
-    this.setDataListener((x0, y0, x1, y1) => this.dataListener(x0, y0, x1, y1) as any);
+    // (this as any).setDataListener((x0: any, y0: any, x1: any, y1: any) => {return this.dataListener(x0, y0, x1, y1)}, {virtual_mode: "horizontal"});
+    (this as any).setDataListener(this.dataListener.bind(this), {virtual_mode: "vertical"});
+    // this.setDataListener((x0, y0, x1, y1) => this.dataListener(x0, y0, x1, y1) as any);
 
     this.model.drawSub.subscribe(async x => {
       if (x) {
@@ -72,8 +74,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
   async dataListener(start_col: number, start_row: number, end_col: number, end_row: number) {
     const data: T[keyof T][][] = [];
-    for (let cix = start_col; cix < end_col - 1; cix++) {
-      const column = this.model.columns[cix];
+    for (const column of this.model.columns.slice(start_col, end_col)) {
       const formatter = this.options?.columnFormatters?.[column] ?? (x => x);
       data.push(
         this.model.contents.slice(start_row, end_row).map(content => {
