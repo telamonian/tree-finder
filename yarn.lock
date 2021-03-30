@@ -6494,6 +6494,11 @@ regular-table@^0.2.1:
   resolved "https://registry.yarnpkg.com/regular-table/-/regular-table-0.2.1.tgz#af3d1efeeebe7d8071eda4e0dda689b4683ae156"
   integrity sha512-24cKRtO/Gkj1p16mvqvkqWCTJSngAtFhYea7bax9XzNjTOy2DAF/507bQE+5zjq/qydfFXOUpTjnAjyIC1E5ug==
 
+regular-table@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/regular-table/-/regular-table-0.3.0.tgz#86e770b436fe360027f12dcb8d70e129d861f046"
+  integrity sha512-qg1n2fesXmqxmVTeExWvlAlju4r/VrwBDpC53VpPI11cd9XGw8bK28PA/vjlEP+lV0rG68M6V18Ebv/GgEpSpQ==
+
 relateurl@^0.2.7:
   version "0.2.7"
   resolved "https://registry.yarnpkg.com/relateurl/-/relateurl-0.2.7.tgz#54dbf377e51440aca90a4cd274600d3ff2d888a9"
