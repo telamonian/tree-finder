@@ -188,12 +188,11 @@ export class ContentsModel<T extends IContentRow> {
     return {...this._options};
   }
 
-  set options(options: ContentsModel.IOptions<T>) {
-    const {
-      columnNames,
-      doRefetch = false,
-      needsWidths = false,
-    } = options;
+  set options({
+    columnNames,
+    doRefetch = false,
+    needsWidths = false,
+  }: ContentsModel.IOptions<T>) {
     this._options = {
       columnNames,
       doRefetch,

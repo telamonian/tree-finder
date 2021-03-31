@@ -108,10 +108,9 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
     return {...this._options};
   }
 
-  set options(options: TreeFinderPanelElement.IOptions<T>) {
-    const {
-      showFilter = false,
-    } = options;
+  set options({
+    showFilter = false,
+  } : TreeFinderPanelElement.IOptions<T>) {
     this._options = {
       showFilter
     }

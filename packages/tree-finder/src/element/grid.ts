@@ -23,9 +23,8 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   async init(model: ContentsModel<T>, options: TreeFinderGridElement.IOptions<T> = {}) {
     this.model = model;
     this.options = options;
-    // (this as any).setDataListener((x0: any, y0: any, x1: any, y1: any) => {return this.dataListener(x0, y0, x1, y1)}, {virtual_mode: "horizontal"});
-    (this as any).setDataListener(this.dataListener.bind(this), {virtual_mode: "vertical"});
-    // this.setDataListener((x0, y0, x1, y1) => this.dataListener(x0, y0, x1, y1) as any);
+    // TODO: fix the godawful typing of .setDataListener on the regular-table side
+    (this as any).setDataListener(this.dataListener.bind(this), {virtual_mode: this._options.virtual_mode});
 
     this.model.drawSub.subscribe(async x => {
       if (x) {
@@ -309,20 +308,21 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     return {...this._options};
   }
 
-  set options(options: TreeFinderGridElement.IOptions<T>) {
-    const {
-      columnFormatters = undefined,
-      doWindowResize = false,
-      pathRender = "tree",
-      pathRenderOnFilter = "regular",
-      showFilter = false,
-    } = options;
+  set options({
+    columnFormatters = undefined,
+    doWindowResize = false,
+    pathRender = "tree",
+    pathRenderOnFilter = "regular",
+    showFilter = false,
+    virtual_mode = "vertical",
+  }: TreeFinderGridElement.IOptions<T>) {
     this._options = {
       columnFormatters,
       doWindowResize,
       pathRender,
       pathRenderOnFilter,
       showFilter,
+      virtual_mode,
     }
 
     this.showFilter = this._options.showFilter!;
@@ -377,6 +377,11 @@ export namespace TreeFinderGridElement {
      * if true, add filter inputs to top of each colum
      */
      showFilter?: boolean;
+
+     /**
+      * pass through to .setDataListener "virtual_mode" opt
+      */
+     virtual_mode?: "both" | "horizontal" | "none" | "vertical";
   }
 }
 
