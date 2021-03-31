@@ -19,7 +19,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "tree-finder": "^0.0.11",
-    "tree-finder-mockcontents": "^0.0.8"
+    "tree-finder-mockcontents": "^0.0.11"
   },
   "devDependencies": {
     "html-webpack-plugin": "^5.0.0",
