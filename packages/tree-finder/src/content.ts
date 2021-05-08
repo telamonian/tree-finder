@@ -30,6 +30,10 @@ export class Content<T extends IContentRow> {
     this._isExpand = false;
   }
 
+  equalPath(otherPath: Path.PathArray) {
+    return Path.equal(this.row.path, otherPath);
+  }
+
   async expand() {
     await this.getChildren();
     this._isExpand = true;

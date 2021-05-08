@@ -38,15 +38,15 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
     if (this._options.showFilter) {
       modelOptions.needsWidths = true;
     }
-    this.model = new ContentsModel(root, modelOptions);
+    this._model = new ContentsModel(root, modelOptions);
 
-    this.breadcrumbs.init(this.model);
+    this.breadcrumbs.init(this._model);
     if (this.options.showFilter) {
-      this.filters.init(this.model);
+      this.filters.init(this._model);
     }
-    this.grid.init(this.model, gridOptions);
+    this.grid.init(this._model, gridOptions);
 
-    this.model.columnWidthsSub.subscribe(widths => {
+    this._model.columnWidthsSub.subscribe(widths => {
       if (!widths.length) {
         return;
       }
@@ -104,6 +104,10 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
     [this.shadowSheet, this.breadcrumbsContainer, this.filterContainer, this.gridContainer] = this.shadowRoot!.children as any as [StyleSheet, HTMLElement, HTMLElement, HTMLElement];
   }
 
+  get model() {
+    return this._model;
+  }
+
   get options() {
     return {...this._options};
   }
@@ -126,7 +130,7 @@ export class TreeFinderPanelElement<T extends IContentRow> extends HTMLElement {
   protected grid: TreeFinderGridElement<T>;
 
   protected _options: TreeFinderPanelElement.IOptions<T>;
-  protected model: ContentsModel<T>;
+  protected _model: ContentsModel<T>;
 
   private _initialized: boolean = false;
 }

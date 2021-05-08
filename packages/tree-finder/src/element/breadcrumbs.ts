@@ -26,7 +26,7 @@ export class TreeFinderBreadcrumbsElement<T extends IContentRow> extends HTMLEle
   init(model: ContentsModel<T>) {
     this.model = model;
 
-    this.model.crumbs.crumbNamesSub.subscribe({
+    this.model.crumbModel.crumbNamesSub.subscribe({
       next: x => this._onCrumbUpdate(x),
     });
   }
@@ -63,7 +63,7 @@ export class TreeFinderBreadcrumbsElement<T extends IContentRow> extends HTMLEle
     const target = event.target as HTMLElement;
 
     if (target.dataset.crumbix) {
-      this.model.crumbs.revert(parseInt(target.dataset.crumbix));
+      this.model.crumbModel.revert(parseInt(target.dataset.crumbix));
     }
   }
 

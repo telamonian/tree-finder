@@ -15,6 +15,7 @@
   "files": [
     "dist/**/*",
     "lib/**/*.{d.ts,js,map}",
+    "src/**/*",
     "style/**/*.{css,eot,gif,html,jpg,json,less,png,scss,svg,ttf,woff2}"
   ],
   "main": "lib/index.js",

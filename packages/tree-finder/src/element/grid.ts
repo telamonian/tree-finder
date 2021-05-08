@@ -6,7 +6,7 @@
  */
 import * as rt from "regular-table";
 
-import { IContentRow } from "../content";
+import { Content, IContentRow } from "../content";
 import { ContentsModel } from "../model";
 import { Format, RegularTable, Tree } from "../util";
 
@@ -25,19 +25,6 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     this.options = options;
     // TODO: fix the godawful typing of .setDataListener on the regular-table side
     (this as any).setDataListener(this.dataListener.bind(this), {virtual_mode: this._options.virtual_mode});
-
-    this.model.drawSub.subscribe(async x => {
-      if (x) {
-        (this as any)._resetAutoSize();
-      }
-
-      await this.draw();
-
-      if (this.model.options.needsWidths) {
-        // correct handling of autowidth seems to frequently require the second draw
-        await this.draw();
-      }
-    });
 
     // run listener initializations only once
     if (!this._initializedListeners) {
@@ -65,6 +52,20 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
         });
       }
 
+      // effectively a listener for model.requestDraw invocations
+      this.model.drawSub.subscribe(async x => {
+        if (x) {
+          (this as any)._resetAutoSize();
+        }
+
+        await this.draw();
+
+        if (this.model.options.needsWidths) {
+          // correct handling of autowidth seems to frequently require the second draw
+          await this.draw();
+        }
+      });
+
       this._initializedListeners = true;
     }
 
@@ -72,17 +73,6 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   }
 
   async dataListener(start_col: number, start_row: number, end_col: number, end_row: number) {
-    const data: T[keyof T][][] = [];
-    for (const column of this.model.columns.slice(start_col, end_col)) {
-      const formatter = this.options?.columnFormatters?.[column] ?? (x => x);
-      data.push(
-        this.model.contents.slice(start_row, end_row).map(content => {
-          const val = formatter(content.row[column]);
-          return (val instanceof Date ? Format.DATE_FORMATTER.format(val) : val) as T[keyof T];
-        })
-      );
-    }
-
     return {
       // num_columns/rows: number -> count of cols/rows
       num_columns: this.model.columns.length,
@@ -90,17 +80,10 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
       // column/row_headers: string[] -> arrays of path parts that get displayed as the first value in each col/row. Length > 1 implies a tree structure
       column_headers: this.model.columns.slice(start_col, end_col).map((x, i) => this.options.showFilter ? [this.filters!.getChild(i + 1), ...Tree.colHeaderSpans(x as string)] : Tree.colHeaderSpans(x as string)),
-      row_headers: this.model.contents.slice(start_row, end_row).map(x => {
-        return Tree.rowHeaderSpan({
-          isDir: x.isDir,
-          isOpen: x.isExpand,
-          path: x.getPathAtDepth(this.model.pathDepth),
-          pathRender: this._pathRender,
-        });
-      }),
+      row_headers: this.model.contents.slice(start_row, end_row).map(x => this._getRowHeader(x)),
 
       // data: object[][] -> array of arrays, each subarray containing all of the visible values for one column
-      data,
+      data: this.model.isBlank ? this._getData(start_col, start_row, end_col, end_row) : this._getDataFormatted(start_col, start_row, end_col, end_row),
     };
   }
 
@@ -166,9 +149,10 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
         span.classList.add("tf-grid-filetype-icon", `tf-grid-${content.row.kind}-icon`);
 
-        this.rowSelectStyleListener();
       }
     }
+
+    this.rowSelectStyleListener();
   }
 
   rowSelectStyleListener() {
@@ -177,7 +161,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       const {y} = RegularTable.metadataFromElement(tr.children[0]!, this)!;
 
       if (tr && tr.tagName === "TR") {
-        tr.classList.toggle("tf-mod-select", this.model.selection.has(this.model.contents[y!]));
+        tr.classList.toggle("tf-mod-select", this.model.selectionModel.has(this.model.contents[y!]));
 
         if (this._pathRender === "regular") {
           for (let i = 0; i < tr.children.length - colCount; i++) {
@@ -204,7 +188,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   }
 
   async onRowClick(event: MouseEvent) {
-    if (event.button !== 0) {
+    if (event.button !== 0 && event.button !== 1) {
       return;
     }
 
@@ -220,10 +204,17 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
     const content = this.model.contents[metadata.y!];
 
+    // TODO: TEMP
+    if (event.button === 1) {
+      this.model.renamerPath = content.row.path;
+      this.model.requestDraw();
+      return;
+    }
+
     if (event.shiftKey) {
-      this.model.selection.selectRange(content, this.model.contents);
+      this.model.selectionModel.selectRange(content, this.model.contents);
     } else {
-      this.model.selection.select(content, event.ctrlKey || event.metaKey);
+      this.model.selectionModel.select(content, event.ctrlKey || event.metaKey);
     }
 
     this.rowSelectStyleListener();
@@ -295,13 +286,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     // event.returnValue = false;
 
     const newRootContent = this.model.contents[metadata.y!];
-
-    if (newRootContent.isDir) {
-      await this.model.open(newRootContent.row);
-
-      // .init() calls .draw()
-      this.init(this.model, this.options);
-    }
+    await this.model.open(newRootContent.row);
   }
 
   get options() {
@@ -337,6 +322,60 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     }
 
     this._options.showFilter = flag;
+  }
+
+  protected _getData(start_col: number, start_row: number, end_col: number, end_row: number) {
+    const data: T[keyof T][][] = [];
+    for (const column of this.model.columns.slice(start_col, end_col)) {
+      data.push(
+        this.model.contents.slice(start_row, end_row).map(content => content.row[column])
+      );
+    }
+
+    return data;
+  }
+
+  protected _getDataFormatted(start_col: number, start_row: number, end_col: number, end_row: number) {
+    const data: T[keyof T][][] = [];
+    for (const column of this.model.columns.slice(start_col, end_col)) {
+      const formatter = this.options?.columnFormatters?.[column] ?? (x => x);
+      data.push(
+        this.model.contents.slice(start_row, end_row).map(content => {
+          const val = formatter(content.row[column]);
+          return (val instanceof Date ? Format.DATE_FORMATTER.format(val) : val) as T[keyof T];
+        })
+      );
+    }
+
+    return data;
+  }
+
+  protected _getRowHeader(target: Content<T>) {
+    const editable = this.model.renamerTest(target);
+    const span = Tree.rowHeaderSpan({
+      isDir: target.isDir,
+      isExpand: target.isExpand,
+      path: target.getPathAtDepth(this.model.pathDepth),
+      editable,
+      pathRender: this._pathRender,
+    });
+
+    // if renaming this target content, publish renamer info on blur
+    if (editable) {
+      const pathSpan = (span[this._pathRender === "regular" ? 1 : 0] as HTMLSpanElement).lastElementChild as HTMLSpanElement;
+      const name = pathSpan?.textContent;
+      if (name) {
+        pathSpan.addEventListener("blur", () => {
+          target.row.path = [...target.row.path.slice(0, -1), name];
+          this.model.renamerSub.next({name, target});
+          this.model.renamerPath = null;
+        });
+        pathSpan.focus();
+        console.log('focused');
+      }
+    }
+
+    return span;
   }
 
   protected get _pathRender() {

@@ -156,6 +156,10 @@ export namespace RegularTable {
 export namespace Path {
   export type PathArray = string[];
 
+  export function equal(l: PathArray, r: PathArray) {
+    return l.length === r.length && l.every((lvalue, i) => lvalue === r[i]);
+  }
+
   export function fromarray(x: PathArray): string {
     const [first, ...rest] = x;
     const drive = first ? first + ":" : "";
@@ -192,6 +196,17 @@ export namespace Tag {
     .flat()
     .filter((a) => !!a)
     .join("");
+
+  /**
+   * for generating element attributes in html markup
+   */
+  type attrSpec = {key: string, values: (boolean | string)[]};
+  export const attrs = (specs: attrSpec[]) => {
+    return specs.map(s => {
+      const value = s.values.filter(x => x).join(" ");
+      return value ? ` ${s.key}="${value}"` : "";
+    }).join("");
+  }
 }
 
 export namespace Trait {
@@ -233,19 +248,23 @@ export namespace Tree {
     return tree_levels.join("");
   }
 
-  export function rowHeaderSpan({isDir, isOpen, path, pathRender = "tree"}: {isDir: boolean, isOpen: boolean, path: string[], pathRender?: "regular" | "relative" | "tree"}): (string | HTMLSpanElement)[] {
+  export function rowHeaderSpan({isDir, isExpand: isOpen, path, editable = false, pathRender = "tree"}: {isDir: boolean, isExpand: boolean, path: string[], editable?: boolean, pathRender?: "regular" | "relative" | "tree"}): ([HTMLSpanElement] | [string, HTMLSpanElement]) {
     path = path.map((x, ix) => Path.normSlash(x, ix < (path.length - 1) ? true : isDir));
 
-    const header_classes = !isDir ? "rt-group-name rt-group-leaf" : "rt-group-name";
+    const header_attrs = Tag.attrs([
+      {key: "class", values: ["rt-group-name", !isDir && "rt-group-leaf"]},
+      {key: "contenteditable", values: [editable && "true"]},
+    ]);
+    // const header_classes = !isDir ? "rt-group-name rt-group-leaf" : "rt-group-name";
     const header_text = pathRender === "relative" ? path.join("") : path.slice(-1).join("");
     const tree_levels = rowHeaderLevelsHtml({isDir, isOpen, path: pathRender === "tree" ? path : []})
 
-    treeTemplate.innerHTML = `<span class="rt-tree-container">${tree_levels}<span class="${header_classes}">${header_text}</span></span>`;
+    treeTemplate.innerHTML = `<span class="rt-tree-container">${tree_levels}<span${header_attrs}>${header_text}</span></span>`;
 
     if (pathRender === "regular") {
       return [path.slice(0, -1).join(""), treeTemplate.content.firstChild!] as [string, HTMLSpanElement];
     } else {
-      return [treeTemplate.content.firstChild!] as HTMLSpanElement[];
+      return [treeTemplate.content.firstChild!] as [HTMLSpanElement];
     }
   }
 }

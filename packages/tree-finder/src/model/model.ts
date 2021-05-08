@@ -4,15 +4,16 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Subject } from "rxjs";
 
-import { Content, IContentRow } from "./content";
+import { Content, IContentRow } from "../content";
 import {
   filterContentRoot,
   FilterPatterns,
   filterSortContentRoot,
   SortStates
-} from "./filtersort";
+} from "../filtersort";
+import { Path } from "../util";
 
 class CrumbModel<T extends IContentRow> {
   constructor() {
@@ -50,31 +51,47 @@ class CrumbModel<T extends IContentRow> {
 
 export class ContentsModel<T extends IContentRow> {
   constructor(root: T, options: ContentsModel.IOptions<T> = {}) {
-    this.crumbs = new CrumbModel<T>();
+    this.crumbModel = new CrumbModel<T>();
     this._filterPatterns = new FilterPatterns();
     this._parentMap = new WeakMap();
     this._sortStates = new SortStates();
 
     this.options = options;
 
-    this.crumbs.revertedCrumbSub.subscribe(async x => {
+    this.crumbModel.revertedCrumbSub.subscribe(async x => {
       if (x) {
         await this.open(x);
         this.requestDraw(true);
       }
     });
 
-    this.open(root);
+    // infrastructural subscriptions
+    this.openSub.subscribe(x => this.openDir(x));
+    this.renamerSub.subscribe(() => this._renamerPath = null)
+
+    this.openSub.next(root);
   }
 
   async open(root: T) {
+    if (!root.kind) {
+      return;
+    }
+
+    this.openSub.next(root);
+  }
+
+  async openDir(root: T) {
+    if (root.kind !== "dir") {
+      return;
+    }
+
     this._contents = [];
 
     const newCrumbs = [root];
     while (this._parentMap.has(newCrumbs[0])) {
       newCrumbs.unshift(this._parentMap.get(newCrumbs[0])!);
     }
-    this.crumbs.extend(newCrumbs);
+    this.crumbModel.extend(newCrumbs);
 
     this._parentMap = new WeakMap();
     this._root = new Content(root);
@@ -83,7 +100,7 @@ export class ContentsModel<T extends IContentRow> {
 
     await this._root.expand();
 
-    // sort the root's contents and display
+    // sort calls requestDraw
     await this.sort({autosize: true});
   }
 
@@ -160,7 +177,7 @@ export class ContentsModel<T extends IContentRow> {
   }
 
   get contents() {
-    if (!this._contents.length && this._columns.length) {
+    if (this.isBlank) {
       // return a content with a blank row as a fallback
       return [Content.blank(["path", ...this._columns])];
     }
@@ -172,16 +189,12 @@ export class ContentsModel<T extends IContentRow> {
     return this._filterPatterns;
   }
 
-  get pathDepth() {
-    return this._root.row.path.length;
+  get isBlank() {
+    return !this._contents.length && this._columns.length;
   }
 
-  get sortStates() {
-    return this._sortStates;
-  }
-
-  get root() {
-    return this._root;
+  get ixByColumn() {
+    return this._ixByColumn;
   }
 
   get options() {
@@ -200,16 +213,29 @@ export class ContentsModel<T extends IContentRow> {
     }
   }
 
-  get ixByColumn() {
-    return this._ixByColumn;
+  get pathDepth() {
+    return this._root.row.path.length;
   }
 
-  filterCol?: keyof T;
+  renamerTest(x: Content<T>): boolean {
+    return this._renamerPath !== null ? x.equalPath(this._renamerPath) : false;
+  }
 
-  readonly columnWidthsSub = new BehaviorSubject<string[]>([]);
-  readonly crumbs: CrumbModel<T>;
-  readonly drawSub = new BehaviorSubject<boolean>(false);
-  readonly selection = new SelectionModel();
+  set renamerPath(path: Path.PathArray | null) {
+    this._renamerPath = path;
+  }
+
+  get root() {
+    return this._root;
+  }
+
+  get selection() {
+    return this.selectionModel.get(this._contents);
+  }
+
+  get sortStates() {
+    return this._sortStates;
+  }
 
   // readonly colSizeObserver = new ResizeObserver(xs => {
   //   for (let x of xs) {
@@ -220,11 +246,22 @@ export class ContentsModel<T extends IContentRow> {
   //   console.log('Size changed');
   // });
 
+  filterCol?: keyof T;
+
+  readonly columnWidthsSub = new BehaviorSubject<string[]>([]);
+  readonly drawSub = new BehaviorSubject<boolean>(false);
+  readonly openSub = new Subject<T>();
+  readonly renamerSub = new Subject<ContentsModel.IRenamer<T>>();
+
+  readonly crumbModel: CrumbModel<T>;
+  readonly selectionModel = new SelectionModel();
+
   protected _columns: (keyof T)[];
   protected _contents: Content<T>[];
   protected _filterContents: Content<T>[];
   protected _filterPatterns: FilterPatterns<T>;
   protected _parentMap: ContentsModel.RefMap<T>;
+  protected _renamerPath: Path.PathArray | null = null;
   protected _root: Content<T>;
   protected _sortStates: SortStates<T>;
 
@@ -251,6 +288,11 @@ export namespace ContentsModel {
     needsWidths?: boolean;
   }
 
+  export interface IRenamer<T extends IContentRow> {
+    name: string;
+    target: Content<T>;
+  }
+
   export type RefMap<T extends IContentRow> = WeakMap<T, T>;
 }
 
@@ -266,14 +308,7 @@ export class SelectionModel<T extends IContentRow> {
   }
 
   get(contents: Content<T>[]) {
-    const selected: Content<T>[] = [];
-    for (const content of contents) {
-      if (this.has(content)) {
-        selected.push(content);
-      }
-    }
-
-    return selected;
+    return contents.filter(c => this.has(c));
   }
 
   has(content: Content<T>) {

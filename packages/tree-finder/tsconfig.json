@@ -6,5 +6,6 @@
     "outDir": "lib",
     "rootDir": "src"
   },
+  "exclude": ["src/**/renamer*"],
   "include": ["src/**/*"]
 }
