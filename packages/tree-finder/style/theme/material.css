@@ -10,6 +10,7 @@
 
 :root {
   --tf-background: #fff;
+  --tf-font-color: #666;
 
   --tf-breadcrumb-hover-color: #ccc;
 
@@ -136,7 +137,7 @@ tree-finder-grid table *,
 tree-finder-grid table,
 :host table {
   overflow: hidden;
-  color: #666;
+  color: var(--tf-font-color);
 }
 tree-finder-grid span.rt-row-header-icon,
 :host span.rt-row-header-icon {

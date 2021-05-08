@@ -249,13 +249,12 @@ export namespace Tree {
   }
 
   export function rowHeaderSpan({isDir, isExpand: isOpen, path, editable = false, pathRender = "tree"}: {isDir: boolean, isExpand: boolean, path: string[], editable?: boolean, pathRender?: "regular" | "relative" | "tree"}): ([HTMLSpanElement] | [string, HTMLSpanElement]) {
-    path = path.map((x, ix) => Path.normSlash(x, ix < (path.length - 1) ? true : isDir));
+    // normalize forward/backslash usage in path parts, and ensure that all dirs have a trailing forward slash
+    path = path.map((x, ix) => Path.normSlash(x, ix < (path.length - 1) || isDir));
 
     const header_attrs = Tag.attrs([
-      {key: "class", values: ["rt-group-name", !isDir && "rt-group-leaf"]},
-      {key: "contenteditable", values: [editable && "true"]},
+      {key: "class", values: ["rt-group-name", !isDir && "rt-group-leaf", editable && "tf-mod-editable"]},
     ]);
-    // const header_classes = !isDir ? "rt-group-name rt-group-leaf" : "rt-group-name";
     const header_text = pathRender === "relative" ? path.join("") : path.slice(-1).join("");
     const tree_levels = rowHeaderLevelsHtml({isDir, isOpen, path: pathRender === "tree" ? path : []})
 

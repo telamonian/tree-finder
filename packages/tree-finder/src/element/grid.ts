@@ -139,16 +139,47 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   }
 
   rowStyleListener() {
-    const spans = this.querySelectorAll("tbody th .rt-group-name");
+    const spans = this.querySelectorAll("tbody th span.rt-group-name") as any as HTMLSpanElement[];
     for (const span of spans) {
-      // style the browser's filetype icons
-      const {value, y} = RegularTable.metadataFromElement(span as HTMLTableCellElement, this)!;
+      const {y} = RegularTable.metadataFromElement(span as HTMLTableCellElement, this)!;
 
-      if (value) {
-        const content = this.model.contents[y!];
+      if (y != null) {
+        const content = this.model.contents[y];
 
+        // style the browser's filetype icons
         span.classList.add("tf-grid-filetype-icon", `tf-grid-${content.row.kind}-icon`);
 
+        // if this path span is a renamer element, initialize it
+        if (span.classList.contains("tf-mod-editable")) {
+          if (!span.getAttribute("contenteditable")) {
+            // activate renamer on enter, cancel it on escape
+            span.addEventListener("keydown", (event: KeyboardEvent) => {
+              if (event.key === "Enter") {
+                span.blur();
+              } else if (event.key === "Escape") {
+                span.textContent = content.name;
+                span.blur();
+              }
+            });
+            // activate then destroy renamer when it loses focus
+            span.addEventListener("blur", () => {
+              const name = span.textContent;
+              if (name) {
+                // if name is blank, skip. Otherwise, perform the actual renaming
+                content.row.path = [...content.row.path.slice(0, -1), name];
+                span.classList.toggle("tf-mod-editable", false);
+                span.removeAttribute("contenteditable");
+                // publish renamer info when the editable element loses focus
+                this.model.renamerSub.next({name, target: content});
+              }
+              // in any case, reset the renamer
+              this.model.renamerPath = null;
+            });
+            span.setAttribute("contenteditable", "true");
+          }
+          // ensure that the renamer has focus so long as it exists and is visible
+          span.focus();
+        }
       }
     }
 
@@ -351,31 +382,13 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   }
 
   protected _getRowHeader(target: Content<T>) {
-    const editable = this.model.renamerTest(target);
-    const span = Tree.rowHeaderSpan({
+    return Tree.rowHeaderSpan({
       isDir: target.isDir,
       isExpand: target.isExpand,
       path: target.getPathAtDepth(this.model.pathDepth),
-      editable,
+      editable: this.model.renamerTest(target),
       pathRender: this._pathRender,
     });
-
-    // if renaming this target content, publish renamer info on blur
-    if (editable) {
-      const pathSpan = (span[this._pathRender === "regular" ? 1 : 0] as HTMLSpanElement).lastElementChild as HTMLSpanElement;
-      const name = pathSpan?.textContent;
-      if (name) {
-        pathSpan.addEventListener("blur", () => {
-          target.row.path = [...target.row.path.slice(0, -1), name];
-          this.model.renamerSub.next({name, target});
-          this.model.renamerPath = null;
-        });
-        pathSpan.focus();
-        console.log('focused');
-      }
-    }
-
-    return span;
   }
 
   protected get _pathRender() {
