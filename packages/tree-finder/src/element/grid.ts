@@ -146,40 +146,11 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       if (y != null) {
         const content = this.model.contents[y];
 
-        // style the browser's filetype icons
+        // style the filetype icon for this row
         span.classList.add("tf-grid-filetype-icon", `tf-grid-${content.row.kind}-icon`);
 
-        // if this path span is a renamer element, initialize it
-        if (span.classList.contains("tf-mod-editable")) {
-          if (!span.getAttribute("contenteditable")) {
-            // activate renamer on enter, cancel it on escape
-            span.addEventListener("keydown", (event: KeyboardEvent) => {
-              if (event.key === "Enter") {
-                span.blur();
-              } else if (event.key === "Escape") {
-                span.textContent = content.name;
-                span.blur();
-              }
-            });
-            // activate then destroy renamer when it loses focus
-            span.addEventListener("blur", () => {
-              const name = span.textContent;
-              if (name) {
-                // if name is blank, skip. Otherwise, perform the actual renaming
-                content.row.path = [...content.row.path.slice(0, -1), name];
-                span.classList.toggle("tf-mod-editable", false);
-                span.removeAttribute("contenteditable");
-                // publish renamer info when the editable element loses focus
-                this.model.renamerSub.next({name, target: content});
-              }
-              // in any case, reset the renamer
-              this.model.renamerPath = null;
-            });
-            span.setAttribute("contenteditable", "true");
-          }
-          // ensure that the renamer has focus so long as it exists and is visible
-          span.focus();
-        }
+        // style the path renamer for this row, if neded
+        this._renamerStyleListener(span, content);
       }
     }
 
@@ -328,7 +299,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     columnFormatters = undefined,
     doWindowResize = false,
     pathRender = "tree",
-    pathRenderOnFilter = "regular",
+    pathRenderOnFilter = "relative",
     showFilter = false,
     virtual_mode = "vertical",
   }: TreeFinderGridElement.IOptions<T>) {
@@ -389,6 +360,40 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       editable: this.model.renamerTest(target),
       pathRender: this._pathRender,
     });
+  }
+
+  protected _renamerStyleListener(element: HTMLElement, target: Content<T>) {
+    // if this path span is a renamer element, initialize it
+    if (element.classList.contains("tf-mod-editable")) {
+      if (!element.getAttribute("contenteditable")) {
+        // activate renamer on enter, cancel it on escape
+        element.addEventListener("keydown", (event: KeyboardEvent) => {
+          if (event.key === "Enter") {
+            element.blur();
+          } else if (event.key === "Escape") {
+            element.textContent = target.name;
+            element.blur();
+          }
+        });
+        // activate then destroy renamer when it loses focus
+        element.addEventListener("blur", () => {
+          const name = element.textContent;
+          if (name) {
+            // if name is blank, skip. Otherwise, perform the actual renaming
+            target.row.path = [...target.row.path.slice(0, -1), name];
+            element.classList.toggle("tf-mod-editable", false);
+            element.removeAttribute("contenteditable");
+            // publish renamer info when the editable element loses focus
+            this.model.renamerSub.next({name, target: target});
+          }
+          // in any case, reset the renamer
+          this.model.renamerPath = null;
+        });
+        element.setAttribute("contenteditable", "true");
+      }
+      // ensure that the renamer has focus so long as it exists and is visible
+      element.focus();
+    }
   }
 
   protected get _pathRender() {
