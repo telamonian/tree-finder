@@ -7,14 +7,20 @@
 import { Subject } from "rxjs";
 
 import { IContentRow } from "../content";
+import { ContentsModel } from "./model";
 
-export class ClipboardModel<T extends IContentRow> {
-  copy(...memo: T[]) {
+export class ClipboardModel<T extends IContentRow> implements ClipboardModel.IClipboardModel<T> {
+
+  /**
+   * low-level ccp support functions
+   */
+
+  copy(memo: T[]) {
     this.memo = memo;
     this.copySub.next(memo);
   }
 
-  cut(...memo: T[]) {
+  cut(memo: T[]) {
     this.memo = memo;
     this.cutSub.next(memo);
   }
@@ -24,6 +30,26 @@ export class ClipboardModel<T extends IContentRow> {
       destination,
       memo: this.memo,
     });
+  }
+
+  /**
+   * sugar for ccp from selection. contentsModel is left as a free variable
+   * to facilitate copying from one contentsModel to another
+   */
+
+  copySelection(contentsModel: ContentsModel<T>) {
+    this.copy(contentsModel.selection.map(x => x.row));
+  }
+
+  cutSelection(contentsModel: ContentsModel<T>) {
+    this.cut(contentsModel.selection.map(x => x.row));
+  }
+
+  pasteSelection(contentsModel: ContentsModel<T>) {
+    const row = contentsModel.lastSelected?.row;
+    if (row) {
+      this.paste(row);
+    }
   }
 
   readonly copySub = new Subject<T[]>();
@@ -37,5 +63,16 @@ export class ClipboardModel<T extends IContentRow> {
 }
 
 export namespace ClipboardModel {
-  export const renamerSub = new Subject<ClipboardModel<any>>();
+  export interface IClipboardModel<T extends IContentRow> {
+    copy(memo: T[]): void;
+    cut(memo: T[]): void;
+    paste(destination: T): void;
+
+    readonly copySub: Subject<T[]>;
+    readonly cutSub: Subject<T[]>;
+    readonly pasteSub: Subject<{
+      destination: T;
+      memo: T[];
+    }>;
+  }
 }

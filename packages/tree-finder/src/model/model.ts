@@ -197,6 +197,10 @@ export class ContentsModel<T extends IContentRow> {
     return this._ixByColumn;
   }
 
+  get lastSelected() {
+    return this.selectionModel.getLast(this._contents);
+  }
+
   get options() {
     return {...this._options};
   }
@@ -254,7 +258,7 @@ export class ContentsModel<T extends IContentRow> {
   readonly renamerSub = new Subject<ContentsModel.IRenamer<T>>();
 
   readonly crumbModel: CrumbModel<T>;
-  readonly selectionModel = new SelectionModel();
+  readonly selectionModel = new SelectionModel<T>();
 
   protected _columns: (keyof T)[];
   protected _contents: Content<T>[];
@@ -304,47 +308,67 @@ export class SelectionModel<T extends IContentRow> {
   clear() {
     this.pivot = null;
     this.range = [];
+    this._lastPathstr = null;
     this.selection = new Set<string>();
   }
 
-  get(contents: Content<T>[]) {
+  get(contents: Content<T>[]): Content<T>[] {
     return contents.filter(c => this.has(c));
   }
 
-  has(content: Content<T>) {
-    return this.selection.has(content.row.path.join("/"));
+  getLast(contents: Content<T>[]): Content<T> | null {
+    if (!this._lastPathstr) {
+      return null;
+    }
+
+    for (let i = 0; i < contents.length; i++) {
+      if (contents[i].pathstr === this._lastPathstr) {
+        return contents[i];
+      }
+    }
+
+    return null;
   }
 
-  select(content: Content<T>, add: boolean = false) {
+  has(content: Content<T>) {
+    return this.selection.has(content.pathstr);
+  }
+
+  select(lastContent: Content<T>, add: boolean = false) {
     if (!add) {
       this.clear();
     } else {
       this.range = [];
     }
 
-    const pathstr = content.row.path.join("/")
+    this._lastPathstr = lastContent.pathstr;
 
-    if (this.selection.has(pathstr)) {
-      this.selection.delete(pathstr);
+    if (this.selection.has(this._lastPathstr)) {
+      this.selection.delete(this._lastPathstr);
     } else {
-      this.selection.add(pathstr);
+      this.selection.add(this._lastPathstr);
     }
 
-    this.pivot = this.selection.size > 0 ? pathstr : null;
+    this.pivot = this.selection.size > 0 ? this._lastPathstr : null;
   }
 
-  selectRange(end: Content<T>, contents: Content<T>[]) {
+  selectRange(lastContent: Content<T>, contents: Content<T>[]) {
     for (const pathstr of this.range) {
       // pivot around any existing range
       this.selection.delete(pathstr);
     }
 
-    this.range = SelectionModel.findRange(this.pivot, end.row.path.join("/"), contents.map(c => c.row.path.join("/")));
+    this.range = SelectionModel.findRange(this.pivot, lastContent.pathstr, contents.map(c => c.pathstr));
     for (const pathstr of this.range) {
       this.selection.add(pathstr);
     }
   }
 
+  get lastPathstr(): string | null {
+    return this._lastPathstr;
+  }
+
+  protected _lastPathstr: string | null;
   protected range: string[];
   protected pivot: string | null;
   protected selection: Set<string>;

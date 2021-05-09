@@ -117,6 +117,10 @@ export class Content<T extends IContentRow> {
     return (this.row.path && this.row.path.length) ? this.row.path[this.row.path.length - 1] : "";
   }
 
+  get pathstr() {
+    return this.row.path.join("/");
+  }
+
   /**
    * like cache but filtered, sorted, etc
    */
