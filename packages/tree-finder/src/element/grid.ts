@@ -37,6 +37,8 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
       thead.addEventListener("mouseup", event => this.onSortClick(event));
 
+      // handle selection by triggering onRowClick on both left and contextmenu (ie right) button click
+      tbody.addEventListener("contextmenu", event => this.onRowClick(event));
       tbody.addEventListener("dblclick", event => this.onRowDoubleClick(event));
       tbody.addEventListener("mouseup", event => this.onRowClick(event));
       tbody.addEventListener("mouseup", event => this.onTreeClick(event));
@@ -190,7 +192,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   }
 
   async onRowClick(event: MouseEvent) {
-    if (event.button !== 0 && event.button !== 1) {
+    if (event.button !== 0 && event.button !== 2) {
       return;
     }
 
@@ -205,13 +207,6 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     }
 
     const content = this.model.contents[metadata.y!];
-
-    // TODO: TEMP
-    if (event.button === 1) {
-      this.model.renamerPath = content.row.path;
-      this.model.requestDraw();
-      return;
-    }
 
     if (event.shiftKey) {
       this.model.selectionModel.selectRange(content, this.model.contents);
