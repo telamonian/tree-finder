@@ -197,10 +197,6 @@ export class ContentsModel<T extends IContentRow> {
     return this._ixByColumn;
   }
 
-  get lastSelected() {
-    return this.selectionModel.getLast(this._contents);
-  }
-
   get options() {
     return {...this._options};
   }
@@ -233,8 +229,12 @@ export class ContentsModel<T extends IContentRow> {
     return this._root;
   }
 
-  get selection() {
+  get selection(): Content<T>[] {
     return this.selectionModel.get(this._contents);
+  }
+
+  get selectedLast(): Content<T> | null {
+    return this.selectionModel.getLast(this._contents);
   }
 
   get sortStates() {

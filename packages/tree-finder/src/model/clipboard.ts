@@ -9,70 +9,73 @@ import { Subject } from "rxjs";
 import { IContentRow } from "../content";
 import { ContentsModel } from "./model";
 
-export class ClipboardModel<T extends IContentRow> implements ClipboardModel.IClipboardModel<T> {
-
+export class ClipboardModel implements ClipboardModel.IClipboardModel {
   /**
    * low-level ccp support functions
    */
-
-  copy(memo: T[]) {
+  copy<T extends IContentRow>(memo: T[]) {
+    this.doCut = false;
     this.memo = memo;
     this.copySub.next(memo);
   }
 
-  cut(memo: T[]) {
+  cut<T extends IContentRow>(memo: T[]) {
+    this.doCut = true;
     this.memo = memo;
     this.cutSub.next(memo);
   }
 
-  paste(destination: T) {
+  paste<T extends IContentRow>(destination: T) {
     this.pasteSub.next({
       destination,
+      doCut: this.doCut,
       memo: this.memo,
     });
+
+    this.doCut = false;
   }
 
   /**
    * sugar for ccp from selection. contentsModel is left as a free variable
    * to facilitate copying from one contentsModel to another
    */
-
-  copySelection(contentsModel: ContentsModel<T>) {
+  copySelection<T extends IContentRow>(contentsModel: ContentsModel<T>) {
     this.copy(contentsModel.selection.map(x => x.row));
   }
 
-  cutSelection(contentsModel: ContentsModel<T>) {
+  cutSelection<T extends IContentRow>(contentsModel: ContentsModel<T>) {
     this.cut(contentsModel.selection.map(x => x.row));
   }
 
-  pasteSelection(contentsModel: ContentsModel<T>) {
-    const row = contentsModel.lastSelected?.row;
+  pasteSelection<T extends IContentRow>(contentsModel: ContentsModel<T>) {
+    const row = contentsModel.selectedLast?.row ?? contentsModel.root.row;
     if (row) {
       this.paste(row);
     }
   }
 
-  readonly copySub = new Subject<T[]>();
-  readonly cutSub = new Subject<T[]>();
-  readonly pasteSub = new Subject<{
-    destination: T;
-    memo: T[];
-  }>();
+  readonly copySub = new Subject<IContentRow[]>();
+  readonly cutSub = new Subject<IContentRow[]>();
+  readonly pasteSub = new Subject<ClipboardModel.IPaste>();
 
-  protected memo: T[] = [];
+  protected doCut: boolean = false;
+  protected memo: IContentRow[] = [];
 }
 
 export namespace ClipboardModel {
-  export interface IClipboardModel<T extends IContentRow> {
-    copy(memo: T[]): void;
-    cut(memo: T[]): void;
-    paste(destination: T): void;
+  export interface IClipboardModel {
+    copy<T extends IContentRow>(memo: T[]): void;
+    cut<T extends IContentRow>(memo: T[]): void;
+    paste<T extends IContentRow>(destination: T): void;
 
-    readonly copySub: Subject<T[]>;
-    readonly cutSub: Subject<T[]>;
-    readonly pasteSub: Subject<{
-      destination: T;
-      memo: T[];
-    }>;
+    readonly copySub: Subject<IContentRow[]>;
+    readonly cutSub: Subject<IContentRow[]>;
+    readonly pasteSub: Subject<IPaste>;
+  }
+
+  export interface IPaste {
+    destination: IContentRow;
+    doCut: boolean;
+    memo: IContentRow[];
   }
 }
