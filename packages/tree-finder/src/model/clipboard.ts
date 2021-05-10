@@ -25,6 +25,10 @@ export class ClipboardModel implements ClipboardModel.IClipboardModel {
     this.cutSub.next(memo);
   }
 
+  delete<T extends IContentRow>(memo: T[]) {
+    this.deleteSub.next(memo);
+  }
+
   paste<T extends IContentRow>(destination: T) {
     this.pasteSub.next({
       destination,
@@ -47,6 +51,10 @@ export class ClipboardModel implements ClipboardModel.IClipboardModel {
     this.cut(contentsModel.selection.map(x => x.row));
   }
 
+  deleteSelection<T extends IContentRow>(contentsModel: ContentsModel<T>) {
+    this.delete(contentsModel.selection.map(x => x.row));
+  }
+
   pasteSelection<T extends IContentRow>(contentsModel: ContentsModel<T>) {
     const row = contentsModel.selectedLast?.row ?? contentsModel.root.row;
     if (row) {
@@ -56,6 +64,7 @@ export class ClipboardModel implements ClipboardModel.IClipboardModel {
 
   readonly copySub = new Subject<IContentRow[]>();
   readonly cutSub = new Subject<IContentRow[]>();
+  readonly deleteSub = new Subject<IContentRow[]>();
   readonly pasteSub = new Subject<ClipboardModel.IPaste>();
 
   protected doCut: boolean = false;
@@ -66,10 +75,12 @@ export namespace ClipboardModel {
   export interface IClipboardModel {
     copy<T extends IContentRow>(memo: T[]): void;
     cut<T extends IContentRow>(memo: T[]): void;
+    delete<T extends IContentRow>(memo: T[]): void;
     paste<T extends IContentRow>(destination: T): void;
 
     readonly copySub: Subject<IContentRow[]>;
     readonly cutSub: Subject<IContentRow[]>;
+    readonly deleteSub: Subject<IContentRow[]>;
     readonly pasteSub: Subject<IPaste>;
   }
 
