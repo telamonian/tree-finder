@@ -192,6 +192,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   }
 
   async onRowClick(event: MouseEvent) {
+    // allow both left and right click to fire this handler
     if (event.button !== 0 && event.button !== 2) {
       return;
     }
@@ -207,6 +208,11 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     }
 
     const content = this.model.contents[metadata.y!];
+
+    if (event.button === 2 && this.model.selectionModel.has(content)) {
+      // if right-clicking on an existing selection, don't change it
+      return;
+    }
 
     if (event.shiftKey) {
       this.model.selectionModel.selectRange(content, this.model.contents);
