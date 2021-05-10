@@ -85,7 +85,9 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       row_headers: this.model.contents.slice(start_row, end_row).map(x => this._getRowHeader(x)),
 
       // data: object[][] -> array of arrays, each subarray containing all of the visible values for one column
-      data: this.model.isBlank ? this._getData(start_col, start_row, end_col, end_row) : this._getDataFormatted(start_col, start_row, end_col, end_row),
+      // .isBlank works around issue with formatting placeholder row that shows up when data is blank
+      // TODO: refactor away .isBlank workaround
+      data: this.model.isBlank ? [Array(this.model.columns.length).fill("")] : this._getData(start_col, start_row, end_col, end_row),
     };
   }
 
@@ -329,17 +331,9 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
   protected _getData(start_col: number, start_row: number, end_col: number, end_row: number) {
     const data: T[keyof T][][] = [];
-    for (const column of this.model.columns.slice(start_col, end_col)) {
-      data.push(
-        this.model.contents.slice(start_row, end_row).map(content => content.row[column])
-      );
-    }
-
-    return data;
-  }
-
-  protected _getDataFormatted(start_col: number, start_row: number, end_col: number, end_row: number) {
-    const data: T[keyof T][][] = [];
+    // using slice creates an unneeded shallow copy, but is currently the "official"
+    // regular-table endorsed pattern for guarding against spuriously large end_col/end_row values
+    // TODO: refactor away slice by just doing the damn math
     for (const column of this.model.columns.slice(start_col, end_col)) {
       const formatter = this.options?.columnFormatters?.[column] ?? (x => x);
       data.push(
