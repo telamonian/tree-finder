@@ -6,7 +6,7 @@
  */
 const path = require("path");
 
-const { dependencySrcMapRules, getOptimization, getResolve, tsRules } = require("../../webpack.rules");
+const { dependencySrcMapRules, getOptimization, getContext, getResolve, tsRules } = require("../../webpack.rules");
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -15,7 +15,7 @@ const treeFinderMockcontentsConfig = {
     "tree-finder-mockcontents": "src/index.ts",
   },
   devtool: "source-map",
-  context: path.resolve(__dirname, "../.."),
+  ...getContext(__dirname),
 
   output: {
     path: path.resolve(__dirname, "dist"),

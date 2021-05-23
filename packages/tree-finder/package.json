@@ -14,16 +14,17 @@
   "author": "Max Klein <telamonian@users.noreply.github.com>",
   "files": [
     "dist/**/*",
-    "lib/**/*.{d.ts,js,map}",
     "src/**/*",
-    "style/**/*.{css,eot,gif,html,jpg,json,less,png,scss,svg,ttf,woff2}"
+    "style/**/*.{css,eot,gif,html,jpg,json,less,png,scss,svg,ttf,woff2}",
+    "types/**/*"
   ],
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "dist/tree-finder.js",
+  "style": "dist/tree-finder.css",
+  "types": "types/index.d.ts",
   "scripts": {
     "build": "tsc --build",
     "build:watch": "tsc --build --watch",
-    "clean": "rimraf dist lib *.tsbuildinfo",
+    "clean": "rimraf dist lib types *.tsbuildinfo",
     "clean:slate": "yarn run clean && rimraf node_modules",
     "postpack": "shx rm README.md LICENSE",
     "prepack": "shx cp ../../README.md . && shx cp ../../LICENSE .",

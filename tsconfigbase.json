@@ -1,9 +1,9 @@
 {
   "$schema": "http://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "allowJs": true,
     "composite": true,
     "declaration": true,
+    "declarationMap": true,
     "incremental": true,
     "module": "esnext",
     "moduleResolution": "node",

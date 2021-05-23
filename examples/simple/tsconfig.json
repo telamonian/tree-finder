@@ -3,6 +3,7 @@
   "extends": "../../tsconfigbase",
   "compilerOptions": {
     "baseUrl": ".",
+    "declarationDir": "./types",
     "outDir": "lib",
     "rootDir": "src"
   },

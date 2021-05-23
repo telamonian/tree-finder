@@ -1,6 +1,7 @@
 # javascript/typescript
 lib
 node_modules
+types
 
 *.tsbuildinfo
 lerna-debug.log
