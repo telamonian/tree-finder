@@ -24,7 +24,20 @@ which can be used to easily render filebrowers or other hierarchical trees. Only
 - [x] multi-selection
 - [x] multi-filter
 - [x] built in breadcrumbs
-- [ ] drag-n-drop between multiple instances
+- [x] full clipboard model, with support for copy/cut/paste between multiple `<tree-finder>` instances
+- [ ] command hooks to support 3rd party integrations
+  - [ ] basic actions
+    - [x] open
+    - [x] delete
+    - [ ] rename
+    - [x] copy
+    - [x] cut
+    - [x] paste
+  - [x] integration of command hooks with selection model
+- [ ] icon support
+  - [ ] icons-as-svg-elements
+  - [ ] icons-as-css-classes
+- [ ] drag-n-drop 
 
 ## Examples - try `<tree-finder>` out live
 
