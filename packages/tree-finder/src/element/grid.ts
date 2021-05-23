@@ -317,7 +317,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     // regular-table endorsed pattern for guarding against spuriously large end_col/end_row values
     // TODO: refactor away slice by just doing the damn math
     for (const column of this.model.columns.slice(start_col, end_col)) {
-      const formatter = this.options?.columnFormatters?.[column] ?? (x => x);
+      const formatter = this.options.columnFormatters?.[column] ?? (x => x);
       data.push(
         this.model.contents.slice(start_row, end_row).map(content => {
           const val = formatter(content.row[column]);
@@ -395,9 +395,9 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
   protected get _pathRender() {
     if (this.model.filterPatterns.any) {
-      return this.options?.pathRenderOnFilter || "tree";
+      return this.options.pathRenderOnFilter || "tree";
     } else {
-      return this.options?.pathRender || "tree";
+      return this.options.pathRender || "tree";
     }
   }
 
