@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc --build",
     "build:watch": "tsc --build --watch",
-    "clean": "rimraf dist lib *.tsbuildinfo",
+    "clean": "rimraf dist lib types *.tsbuildinfo",
     "clean:slate": "yarn run clean && rimraf node_modules",
     "start": "webpack serve",
     "start:chromium": "webpack serve --open 'chromium'",

@@ -123,6 +123,10 @@ const tsRules = [
   },
 ]
 
+const getContext = (dir) => { return {
+  // context: path.resolve(dir),
+};}
+
 const getOptimization = () => { return {
   minimizer: [
     // "...",
@@ -154,6 +158,7 @@ module.exports = {
   stylingRules,
   svgUrlRules,
   tsRules,
+  getContext,
   getOptimization,
   getResolve,
 };
