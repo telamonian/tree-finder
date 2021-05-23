@@ -28,7 +28,7 @@
     "clean:slate": "yarn run clean && rimraf node_modules",
     "postpack": "shx rm README.md LICENSE",
     "prepack": "shx cp ../../README.md . && shx cp ../../LICENSE .",
-    "prepublishOnly": "npm run clean && npm run build && npm run webpack:prod",
+    "prepublishOnly": "yarn run clean && yarn run webpack:prod",
     "svgo": "svgo --config svgo.yaml",
     "svgo:uri": "svgo --config svgo.yaml --datauri=base64 -o -",
     "webpack": "webpack --color",
