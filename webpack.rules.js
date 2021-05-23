@@ -4,7 +4,7 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
-const CssnanoPlugin = require("cssnano-webpack-plugin");
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
@@ -140,7 +140,7 @@ const getOptimization = () => { return {
       // turn off license gen
       extractComments: false,
     }),
-    new CssnanoPlugin(),
+    new CssMinimizerPlugin(),
   ],
 };}
 
