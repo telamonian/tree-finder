@@ -2398,9 +2398,9 @@ csso@^4.0.2:
     css-tree "^1.1.2"
 
 csstype@^3.0.2:
-  version "3.0.7"
-  resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.0.7.tgz#2a5fb75e1015e84dd15692f71e89a1450290950b"
-  integrity sha512-KxnUB0ZMlnUWCsx2Z8MUsr6qV6ja1w9ArPErJaJaF8a5SOWoHLIszeCTKGRGRgtLgYrs1E8CHkNSP1VZTTPc9g==
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.0.8.tgz#d2266a792729fb227cd216fb572f43728e1ad340"
+  integrity sha512-jXKhWqXPmlUeoQnF/EhTtTl4C9SnrxSH/jZUih3jmO6lBKr99rP3/+FmrMj4EFpOXzMtXHAZkd3x0E6h6Fgflw==
 
 currently-unhandled@^0.4.1:
   version "0.4.1"
@@ -6495,10 +6495,10 @@ regexp.prototype.flags@^1.2.0:
     call-bind "^1.0.2"
     define-properties "^1.1.3"
 
-regular-table@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/regular-table/-/regular-table-0.3.0.tgz#86e770b436fe360027f12dcb8d70e129d861f046"
-  integrity sha512-qg1n2fesXmqxmVTeExWvlAlju4r/VrwBDpC53VpPI11cd9XGw8bK28PA/vjlEP+lV0rG68M6V18Ebv/GgEpSpQ==
+regular-table@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/regular-table/-/regular-table-0.4.0.tgz#41d769e9dcd6a3a6c4d2f4832132562d88a63515"
+  integrity sha512-O44E81FcEnGZjWE/hilOZPODo3dAzbT42cYU8xosicTiAindrwbpkCF6h9seg8Fw1L8eqziugCoODPe5UnarWA==
 
 relateurl@^0.2.7:
   version "0.2.7"

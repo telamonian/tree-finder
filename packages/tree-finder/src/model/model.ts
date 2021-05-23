@@ -61,7 +61,7 @@ export class ContentsModel<T extends IContentRow> {
     this.crumbModel.revertedCrumbSub.subscribe(async x => {
       if (x) {
         await this.open(x);
-        this.requestDraw(true);
+        this.requestDraw({autosize: true});
       }
     });
 
@@ -127,7 +127,7 @@ export class ContentsModel<T extends IContentRow> {
     this._contents.splice(rix + 1, npop);
     content.close();
 
-    this.requestDraw(true);
+    this.requestDraw({autosize: true});
   }
 
   async expand(rix: number) {
@@ -141,7 +141,7 @@ export class ContentsModel<T extends IContentRow> {
     const [nodeContents, _] = await filterSortContentRoot({root: content, filterPatterns: this._filterPatterns, sortStates: this._sortStates, pathDepth: this.pathDepth});
     this._contents.splice(rix + 1, 0, ...nodeContents);
 
-    this.requestDraw(true);
+    this.requestDraw({autosize: true});
   }
 
   async filter(props: {autosize?: boolean} = {}) {
@@ -150,7 +150,7 @@ export class ContentsModel<T extends IContentRow> {
 
     this._contents = await filterContentRoot({root: this._root, filterPatterns: this._filterPatterns});
 
-    this.requestDraw(autosize);
+    this.requestDraw({autosize});
   }
 
   onFilterInput(fpat: {col: keyof T, pattern: string}) {
@@ -159,7 +159,14 @@ export class ContentsModel<T extends IContentRow> {
     this.filter();
   }
 
-  requestDraw(autosize = false) {
+  requestDraw(props: {autosize?: boolean, delay?: number} = {}) {
+    const {autosize = false} = props;
+    if (props.delay) {
+      // request draw in the future via a setTimeout
+      const {delay, ...propsWithoutDelay} = props;
+      setTimeout(() => this.requestDraw(propsWithoutDelay), delay);
+    }
+
     this.drawSub.next(autosize);
   }
 
@@ -169,7 +176,7 @@ export class ContentsModel<T extends IContentRow> {
 
     [this._contents, this._sortStates] = await filterSortContentRoot({root: this._root, filterPatterns: this._filterPatterns, sortStates: this._sortStates, col, multisort});
 
-    this.requestDraw(autosize);
+    this.requestDraw({autosize});
   }
 
   get columns() {

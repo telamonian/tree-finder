@@ -23,7 +23,8 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
   async init(model: ContentsModel<T>, options: TreeFinderGridElement.IOptions<T> = {}) {
     this.model = model;
     this.options = options;
-    // TODO: fix the godawful typing of .setDataListener on the regular-table side
+    // TODO: apply the setDataListener typing fix below, once regular-table has pulled in the relevant typing fixes upstream
+    // this.setDataListener(this.dataListener.bind(this), {virtual_mode: this._options.virtual_mode});
     (this as any).setDataListener(this.dataListener.bind(this), {virtual_mode: this._options.virtual_mode});
 
     // run listener initializations only once
@@ -158,24 +159,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       }
     }
 
-    this.rowSelectStyleListener();
-  }
-
-  rowSelectStyleListener() {
-    const colCount = this.model.columns.length + 1;
-    for (let tr of (this as any).table_model.body.rows as HTMLElement[]) {
-      const {y} = RegularTable.metadataFromElement(tr.children[0]!, this)!;
-
-      if (tr && tr.tagName === "TR") {
-        tr.classList.toggle("tf-mod-select", this.model.selectionModel.has(this.model.contents[y!]));
-
-        if (this._pathRender === "regular") {
-          for (let i = 0; i < tr.children.length - colCount; i++) {
-            tr.children[0].classList.toggle("tf-mod-select-not", true);
-          }
-        }
-      }
-    }
+    this._selectedStyleListener();
   }
 
   async onMouseover(event: MouseEvent) {
@@ -222,10 +206,8 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       this.model.selectionModel.select(content, event.ctrlKey || event.metaKey);
     }
 
-    this.rowSelectStyleListener();
-
-    // can't call draw directly or indirectly, breaks any subsequent doubleClick event
-    // setTimeout(() => this.model.requestDraw(), 200);
+    // can't call draw, breaks any subsequent doubleClick event. Instead call style listener directly
+    this._selectedStyleListener();
   }
 
   async onSortClick(event: MouseEvent) {
@@ -388,6 +370,26 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       }
       // ensure that the renamer has focus so long as it exists and is visible
       element.focus();
+    }
+  }
+
+  protected _selectedStyleListener() {
+    const colCount = this.model.columns.length + 1;
+    // there may be spurious rows in table, clamp selected check to contents length
+    // TODO: refactor away the any cast once upstream typing fixes are released in regular-table
+    // for (let tr of this.table_model.body.rows.slice(0, this.model.contents.length) as HTMLElement[]) {
+    for (let tr of (this as any).table_model.body.rows.slice(0, this.model.contents.length) as HTMLElement[]) {
+      const {y} = RegularTable.metadataFromElement(tr.children[0]!, this)!;
+
+      if (tr && tr.tagName === "TR") {
+        tr.classList.toggle("tf-mod-select", this.model.selectionModel.has(this.model.contents[y!]));
+
+        if (this._pathRender === "regular") {
+          for (let i = 0; i < tr.children.length - colCount; i++) {
+            tr.children[0].classList.toggle("tf-mod-select-not", true);
+          }
+        }
+      }
     }
   }
 
