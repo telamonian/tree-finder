@@ -58,8 +58,6 @@ export class ContentsModel<T extends IContentRow> {
 
     this.options = options;
 
-    this.refreshSub.subscribe(() => this.refresh());
-
     this.crumbModel.revertedCrumbSub.subscribe(async x => {
       if (x) {
         await this.open(x);
@@ -68,18 +66,15 @@ export class ContentsModel<T extends IContentRow> {
     });
 
     // infrastructural subscriptions
-    this.openSub.subscribe(x => this.openDir(x));
-    this.renamerSub.subscribe(() => this._renamerPath = null)
+    this.openSub.subscribe(rows => rows.map(row => this.openDir(row)));
+    this.refreshSub.subscribe(rows => {this._invalidate(rows); this.sort();});
+    this.renamerSub.subscribe(() => this._renamerPath = null);
 
-    this.openSub.next(root);
+    this.open(root);
   }
 
-  async open(root: T) {
-    if (!root.kind) {
-      return;
-    }
-
-    this.openSub.next(root);
+  async open(...root: T[]): Promise<void> {
+     this.openSub.next(root);
   }
 
   async openDir(root: T) {
@@ -96,11 +91,11 @@ export class ContentsModel<T extends IContentRow> {
     this.crumbModel.extend(newCrumbs);
 
     this._parentMap = new WeakMap();
-    this._root = new Content(root);
+    this._root = new Content({row: root});
 
     this.initColumns();
 
-    await this._root.expand();
+    await this._root.getChildren();
 
     // sort calls requestDraw
     await this.sort({autosize: true});
@@ -140,7 +135,13 @@ export class ContentsModel<T extends IContentRow> {
       this._parentMap.set(child.row, content.row);
     }
 
-    const [nodeContents, _] = await filterSortContentRoot({root: content, filterPatterns: this._filterPatterns, sortStates: this._sortStates, pathDepth: this.pathDepth});
+    let nodeContents
+    [nodeContents, this._sortStates] = await filterSortContentRoot({
+      filterPatterns: this._filterPatterns,
+      pathDepth: this.pathDepth,
+      root: content,
+      sortStates: this._sortStates,
+    });
     this._contents.splice(rix + 1, 0, ...nodeContents);
 
     this.requestDraw({autosize: true});
@@ -150,7 +151,10 @@ export class ContentsModel<T extends IContentRow> {
     const {autosize = true} = props;
     await this._root.expand();
 
-    this._contents = await filterContentRoot({root: this._root, filterPatterns: this._filterPatterns});
+    this._contents = await filterContentRoot({
+      filterPatterns: this._filterPatterns,
+      root: this._root,
+    });
 
     this.requestDraw({autosize});
   }
@@ -159,12 +163,6 @@ export class ContentsModel<T extends IContentRow> {
     this._filterPatterns.set(fpat);
 
     this.filter();
-  }
-
-  async refresh() {
-    this._invalidate();
-    // sort calls requestDraw
-    this.sort();
   }
 
   renamerTest(x: Content<T>): boolean {
@@ -182,17 +180,28 @@ export class ContentsModel<T extends IContentRow> {
     this.drawSub.next(autosize);
   }
 
-  async sort(props: {col?: keyof T, multisort?: boolean, autosize?: boolean} = {}) {
-    const {col, multisort, autosize = false} = props;
+  async sort(props: {autosize?: boolean, col?: keyof T, multisort?: boolean} = {}) {
+    const {autosize = false, col, multisort} = props;
     await this._root.expand();
 
-    [this._contents, this._sortStates] = await filterSortContentRoot({root: this._root, filterPatterns: this._filterPatterns, sortStates: this._sortStates, col, multisort});
+    [this._contents, this._sortStates] = await filterSortContentRoot({
+      col,
+      filterPatterns: this._filterPatterns,
+      multisort,
+      root: this._root,
+      sortStates: this._sortStates,
+    });
 
     this.requestDraw({autosize});
   }
 
-  protected _invalidate() {
-    this._root.invalidate();
+  protected _invalidate(rows?: T[]) {
+    if (!rows) {
+      this._root.invalidate();
+    } else {
+      const invalidatedPathSet = new Set(rows.map(r => r.path.join("/")));
+      this.contents.filter(c => invalidatedPathSet.has(c.pathstr)).forEach(c => c.invalidate());
+    }
   }
 
   get columns() {
@@ -273,8 +282,8 @@ export class ContentsModel<T extends IContentRow> {
 
   readonly columnWidthsSub = new BehaviorSubject<string[]>([]);
   readonly drawSub = new BehaviorSubject<boolean>(false);
-  readonly openSub = new Subject<T>();
-  readonly refreshSub = new Subject<boolean>();
+  readonly openSub = new Subject<T[]>();
+  readonly refreshSub = new Subject<T[]>();
   readonly renamerSub = new Subject<ContentsModel.IRenamer<T>>();
 
   readonly crumbModel: CrumbModel<T>;

@@ -21,9 +21,17 @@ interface IContentDirRow {
 }
 
 export class Content<T extends IContentRow> {
-  constructor(row: T) {
-    this.isDir = row.kind === "dir";
-    this.row = row;
+  constructor({row, filterer, sorter}: {row: T, filterer?: Content.Filterer<T>, sorter?: Content.Sorter<T>}) {
+    this.init({row, filterer, sorter});
+  }
+
+  init({row, filterer, sorter}: {row: T, filterer?: Content.Filterer<T>, sorter?: Content.Sorter<T>}) {
+    this._row = row;
+    this._isDir = this._row.kind === "dir";
+    this._pathstr = this._row.path.join("/");
+
+    this.filterer = filterer;
+    this.sorter = sorter;
   }
 
   collapse() {
@@ -39,35 +47,35 @@ export class Content<T extends IContentRow> {
     this._isExpand = true;
   }
 
-  async getChildren(force = false) {
+  async getChildren() {
     // isContentDirRow is a typeguard that asserts that T extends IContentDirRow
     if (!Content.isContentDirRow(this.row)) {
       return;
     }
 
-    if (!force && !this._dirty) {
+    if (!this._dirty) {
       return this._cache;
     }
 
-    if (force || this._dirtyChildren) {
-      this._cache = (await this.row.getChildren()).map((c: T) => new Content<T>(c)) ?? [];
+    if (this._cache && this._dirtySort) {
+      this._cache.sort(this._sorter);
+    }
+
+    if (this._dirtyChildren) {
+      this._cache = (await this.row.getChildren()).map((row: T) => new Content<T>({row, sorter: this._sorter}));
+      if (this._sorter) {
+        this._cache.sort(this._sorter);
+      }
 
       this._dirtyChildren = false;
-      this._dirtyFilter = true;
-      this._dirtySort = true;
-    }
-
-    if (this._dirtyFilter && this._filterer) {
-      this._view = this._cache?.filter(this._filterer);
-      this._dirtyFilter = false;
-    }
-    if (this._dirtySort && this._sorter) {
-      this._view = this.view?.sort(this._sorter);
       this._dirtySort = false;
     }
 
-    return this.view;
-    // return this._children?.values();
+    if (this._cache && this._dirtySort) {
+      this._cache.sort(this._sorter);
+    }
+
+    return this._cache;
   }
 
   getPathAtDepth(depth = 0, fill?: string) {
@@ -80,11 +88,11 @@ export class Content<T extends IContentRow> {
     }
   }
 
-  async getTree(_flat: Content<T>[] = []) {
+  protected async _flatten(_flat: Content<T>[] = []): Promise<Content<T>[]> {
     if (this.isExpand) {
       for (const child of await this.getChildren() ?? []) {
         if (child.isExpand) {
-          child.getTree(_flat);
+          child._flatten(_flat);
         }
 
         _flat.push(child);
@@ -94,8 +102,12 @@ export class Content<T extends IContentRow> {
     return _flat;
   }
 
+  async flatten(): Promise<Content<T>[]> {
+    return this._filterer ? (await this._flatten()).filter(this._filterer) : this._flatten();
+  }
+
   invalidate() {
-    [this._dirtyChildren, this._dirtyFilter, this._dirtySort] = [true, true, true];
+    [this._dirtyChildren, this._dirtySort] = [true, true];
   }
 
   /**
@@ -103,6 +115,10 @@ export class Content<T extends IContentRow> {
    */
   get cache() {
     return this._cache;
+  }
+
+  get isDir() {
+    return this._isDir;
   }
 
   get isExpand() {
@@ -115,45 +131,46 @@ export class Content<T extends IContentRow> {
   }
 
   get name() {
-    return (this.row.path && this.row.path.length) ? this.row.path[this.row.path.length - 1] : "";
+    return this.row.path.slice(-1)[0];
   }
 
   get pathstr() {
-    return this.row.path.join("/");
+    return this._pathstr;
   }
 
-  /**
-   * like cache but filtered, sorted, etc
-   */
-  get view() {
-    return this._view ?? this._cache;
-  }
-
-  protected get _dirty() {
-    return this._dirtyChildren || this._dirtyFilter || this._dirtySort;
+  get row() {
+    return this._row;
   }
 
   set filterer(filterer: Content.Filterer<T> | undefined) {
     this._filterer = filterer;
-    this._dirtyFilter = true;
+    // this._dirtyFilter = !!filterer;
   }
 
   set sorter(sorter: Content.Sorter<T> | undefined) {
       this._sorter = sorter;
-      this._dirtySort = true;
+      this._dirtySort = !!sorter;
+
+      for (const child of this._cache ?? []) {
+        child.sorter = sorter;
+      }
   }
 
-  readonly isDir: boolean;
-  readonly row: T;
+  protected get _dirty() {
+    return this._dirtyChildren || this._dirtySort; //|| this._dirtyFilter;
+  }
 
+  protected _row: T;
+
+  protected _isDir: boolean;
   protected _isExpand: boolean = false;
+  protected _name: string;
+  protected _pathstr: string;
 
   protected _cache?: Content<T>[];
-  protected _view?: Content<T>[];
-  protected _viewTree?: Content<T>[];
 
   protected _dirtyChildren: boolean = true;
-  protected _dirtyFilter: boolean = true;
+  // protected _dirtyFilter: boolean = true;
   protected _dirtySort: boolean = true;
 
   protected _filterer?: Content.Filterer<T>;
@@ -165,14 +182,14 @@ export namespace Content {
   export type Sorter<T extends IContentRow> = (l: Content<T>, r: Content<T>) => number;
 
   export function blank<T extends IContentRow>(cols: (keyof T)[]) {
-    return new Content(cols.reduce((x, col) => {
+    return new Content({row: cols.reduce((x, col) => {
       if(col === "path") {
         x["path"] = [];
       } else {
         x[col] = "" as any;
       }
       return x;
-    }, {} as T));
+    }, {} as T)});
   }
 
   export function isContentDirRow<T extends IContentRow, U extends IContentDirRow>(x: T | U): x is U {

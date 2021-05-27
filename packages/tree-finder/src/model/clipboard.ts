@@ -62,6 +62,17 @@ export class ClipboardModel implements ClipboardModel.IClipboardModel {
     }
   }
 
+  /**
+   * other
+   */
+  open<T extends IContentRow>(contentsModel: ContentsModel<T>, memo: T[]) {
+    contentsModel.openSub.next(memo);
+  }
+
+  refresh<T extends IContentRow>(contentsModel: ContentsModel<T>, memo: T[]) {
+    contentsModel.refreshSub.next(memo);
+  }
+
   readonly copySub = new Subject<IContentRow[]>();
   readonly cutSub = new Subject<IContentRow[]>();
   readonly deleteSub = new Subject<IContentRow[]>();

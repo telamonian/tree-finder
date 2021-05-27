@@ -14,7 +14,6 @@ const DEFAULT_SORT_ORDER = SORT_ORDERS[0];
 
 interface IFilterPattern<T extends IContentRow> {
   col: keyof T;
-
   pattern: string;
 }
 
@@ -163,9 +162,12 @@ function updateSort<T extends IContentRow>(sortStates: SortStates<T>, col: keyof
   return new SortStates(newStates);
 }
 
-async function _flattenContents<T extends IContentRow>(props: {content: Content<T>, filterer?: (c: Content<T>) => boolean, sorter?: (l: Content<T>, r: Content<T>) => number, contentsFlat?: Content<T>[]}) {
-  const {content, filterer, sorter, contentsFlat = []} = props;
-
+async function flattenContents<T extends IContentRow>({content, contentsFlat = [], filterer, sorter}: {
+  content: Content<T>;
+  contentsFlat?: Content<T>[];
+  filterer?: (c: Content<T>) => boolean;
+  sorter?: (l: Content<T>, r: Content<T>) => number;
+}) {
   if (content.isDir) {
     content.getChildren();
   }
@@ -178,7 +180,7 @@ async function _flattenContents<T extends IContentRow>(props: {content: Content<
     for (const child of content.cache) {
       contentsFlat.push(child);
       if (child.isExpand) {
-        await _flattenContents({content: child, filterer, sorter, contentsFlat});
+        await flattenContents({content: child, filterer, sorter, contentsFlat});
       }
     }
   }
@@ -191,11 +193,8 @@ async function _flattenContents<T extends IContentRow>(props: {content: Content<
 }
 
 export async function filterContentRoot<T extends IContentRow>({root, filterPatterns, pathDepth}: {root: Content<T>, filterPatterns: FilterPatterns<T>, pathDepth?: number}): Promise<Content<T>[]> {
-  // get sorter then sort/flatten any expanded children of root
-  return await _flattenContents({
-    content: root,
-    filterer: contentsFiltererClosure(filterPatterns, pathDepth ?? root.row.path.length),
-  });
+  root.filterer = contentsFiltererClosure(filterPatterns, pathDepth ?? root.row.path.length);
+  return root.flatten();
 }
 
 export async function filterSortContentRoot<T extends IContentRow>({root, filterPatterns, sortStates, col, multisort, pathDepth}: {root: Content<T>, filterPatterns: FilterPatterns<T>, sortStates: SortStates<T>, col?: keyof T, multisort?: boolean, pathDepth?: number}): Promise<[Content<T>[], SortStates<T>]> {
@@ -209,12 +208,10 @@ export async function filterSortContentRoot<T extends IContentRow>({root, filter
     }
   }
 
-  // get sorter then sort/flatten any expanded children of root
-  return [await _flattenContents({
-    content: root,
-    filterer: contentsFiltererClosure(filterPatterns, pathDepth ?? root.row.path.length),
-    sorter: contentsSorterClosure(sortStates),
-  }), sortStates];
+  root.filterer = contentsFiltererClosure(filterPatterns, pathDepth ?? root.row.path.length);
+  root.sorter = contentsSorterClosure(sortStates);
+
+  return [await root.flatten(), sortStates];
 }
 
 export async function sortContentRoot<T extends IContentRow>({root, sortStates, col, multisort}: {root: Content<T>, sortStates: SortStates<T>, col?: keyof T, multisort?: boolean}): Promise<[Content<T>[], SortStates<T>]> {
@@ -228,8 +225,10 @@ export async function sortContentRoot<T extends IContentRow>({root, sortStates, 
     }
   }
 
+  root.sorter = contentsSorterClosure(sortStates);
+  this.tack = [await root.flatten(), sortStates];
   // get sorter then sort/flatten any expanded children of root
-  return [await _flattenContents({
+  return [await flattenContents({
     content: root,
     sorter: contentsSorterClosure(sortStates),
   }), sortStates];
