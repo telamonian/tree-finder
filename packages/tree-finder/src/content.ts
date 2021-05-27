@@ -26,7 +26,7 @@ export class Content<T extends IContentRow> {
     this.row = row;
   }
 
-  close() {
+  collapse() {
     this._isExpand = false;
   }
 
@@ -39,16 +39,17 @@ export class Content<T extends IContentRow> {
     this._isExpand = true;
   }
 
-  async getChildren() {
+  async getChildren(force = false) {
+    // isContentDirRow is a typeguard that asserts that T extends IContentDirRow
     if (!Content.isContentDirRow(this.row)) {
       return;
     }
 
-    if (!this._dirty) {
+    if (!force && !this._dirty) {
       return this._cache;
     }
 
-    if (this._dirtyChildren) {
+    if (force || this._dirtyChildren) {
       this._cache = (await this.row.getChildren()).map((c: T) => new Content<T>(c)) ?? [];
 
       this._dirtyChildren = false;

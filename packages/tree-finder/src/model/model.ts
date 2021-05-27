@@ -58,6 +58,8 @@ export class ContentsModel<T extends IContentRow> {
 
     this.options = options;
 
+    this.refreshSub.subscribe(() => this.refresh());
+
     this.crumbModel.revertedCrumbSub.subscribe(async x => {
       if (x) {
         await this.open(x);
@@ -125,7 +127,7 @@ export class ContentsModel<T extends IContentRow> {
     }
 
     this._contents.splice(rix + 1, npop);
-    content.close();
+    content.collapse();
 
     this.requestDraw({autosize: true});
   }
@@ -159,6 +161,16 @@ export class ContentsModel<T extends IContentRow> {
     this.filter();
   }
 
+  async refresh() {
+    this._invalidate();
+    // sort calls requestDraw
+    this.sort();
+  }
+
+  renamerTest(x: Content<T>): boolean {
+    return this._renamerPath !== null ? x.equalPath(this._renamerPath) : false;
+  }
+
   requestDraw(props: {autosize?: boolean, delay?: number} = {}) {
     const {autosize = false} = props;
     if (props.delay) {
@@ -177,6 +189,10 @@ export class ContentsModel<T extends IContentRow> {
     [this._contents, this._sortStates] = await filterSortContentRoot({root: this._root, filterPatterns: this._filterPatterns, sortStates: this._sortStates, col, multisort});
 
     this.requestDraw({autosize});
+  }
+
+  protected _invalidate() {
+    this._root.invalidate();
   }
 
   get columns() {
@@ -224,10 +240,6 @@ export class ContentsModel<T extends IContentRow> {
     return this._root.row.path.length;
   }
 
-  renamerTest(x: Content<T>): boolean {
-    return this._renamerPath !== null ? x.equalPath(this._renamerPath) : false;
-  }
-
   set renamerPath(path: Path.PathArray | null) {
     this._renamerPath = path;
   }
@@ -262,6 +274,7 @@ export class ContentsModel<T extends IContentRow> {
   readonly columnWidthsSub = new BehaviorSubject<string[]>([]);
   readonly drawSub = new BehaviorSubject<boolean>(false);
   readonly openSub = new Subject<T>();
+  readonly refreshSub = new Subject<boolean>();
   readonly renamerSub = new Subject<ContentsModel.IRenamer<T>>();
 
   readonly crumbModel: CrumbModel<T>;
