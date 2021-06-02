@@ -168,19 +168,19 @@ async function flattenContents<T extends IContentRow>({content, contentsFlat = [
   filterer?: (c: Content<T>) => boolean;
   sorter?: (l: Content<T>, r: Content<T>) => number;
 }) {
-  if (content.isDir) {
-    content.getChildren();
-  }
+  if (content.hasChildren) {
+    const cache = await content.getChildren();
 
-  if (content.cache) {
-    if (sorter) {
-      content.cache.sort(sorter);
-    }
+    if (cache) {
+      if (sorter) {
+        cache.sort(sorter);
+      }
 
-    for (const child of content.cache) {
-      contentsFlat.push(child);
-      if (child.isExpand) {
-        await flattenContents({content: child, filterer, sorter, contentsFlat});
+      for (const child of cache) {
+        contentsFlat.push(child);
+        if (child.isExpand) {
+          await flattenContents({content: child, filterer, sorter, contentsFlat});
+        }
       }
     }
   }
@@ -194,6 +194,7 @@ async function flattenContents<T extends IContentRow>({content, contentsFlat = [
 
 export async function filterContentRoot<T extends IContentRow>({root, filterPatterns, pathDepth}: {root: Content<T>, filterPatterns: FilterPatterns<T>, pathDepth?: number}): Promise<Content<T>[]> {
   root.filterer = contentsFiltererClosure(filterPatterns, pathDepth ?? root.row.path.length);
+
   return root.flatten();
 }
 
@@ -226,5 +227,6 @@ export async function sortContentRoot<T extends IContentRow>({root, sortStates, 
   }
 
   root.sorter = contentsSorterClosure(sortStates);
+
   return [await root.flatten(), sortStates];
 }

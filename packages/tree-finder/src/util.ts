@@ -237,10 +237,10 @@ export namespace Tree {
     }
   }
 
-  function rowHeaderLevelsHtml({isDir, isOpen, path = []}: {isDir: boolean, isOpen: boolean, path?: string[]}) {
+  function rowHeaderLevelsHtml({hasChildren, isExpand, path = []}: {hasChildren: boolean, isExpand: boolean, path?: string[]}) {
     const tree_levels = path.slice(1).map(() => '<span class="rt-tree-group"></span>');
-    if (isDir) {
-      const group_icon = isOpen ? "remove" : "add";
+    if (hasChildren) {
+      const group_icon = isExpand ? "remove" : "add";
       const tree_button = `<span class="rt-row-header-icon">${group_icon}</span>`;
       tree_levels.push(tree_button);
     }
@@ -248,15 +248,15 @@ export namespace Tree {
     return tree_levels.join("");
   }
 
-  export function rowHeaderSpan({isDir, isExpand: isOpen, path, editable = false, pathRender = "tree"}: {isDir: boolean, isExpand: boolean, path: string[], editable?: boolean, pathRender?: "regular" | "relative" | "tree"}): ([HTMLSpanElement] | [string, HTMLSpanElement]) {
+  export function rowHeaderSpan({hasChildren, isExpand, path, editable = false, pathRender = "tree"}: {hasChildren: boolean, isExpand: boolean, path: string[], editable?: boolean, pathRender?: "regular" | "relative" | "tree"}): ([HTMLSpanElement] | [string, HTMLSpanElement]) {
     // normalize forward/backslash usage in path parts, and ensure that all dirs have a trailing forward slash
-    path = path.map((x, ix) => Path.normSlash(x, ix < (path.length - 1) || isDir));
+    path = path.map((x, ix) => Path.normSlash(x, ix < (path.length - 1) || hasChildren));
 
     const header_attrs = Tag.attrs([
-      {key: "class", values: ["rt-group-name", !isDir && "rt-group-leaf", editable && "tf-mod-editable"]},
+      {key: "class", values: ["rt-group-name", !hasChildren && "rt-group-leaf", editable && "tf-mod-editable"]},
     ]);
     const header_text = pathRender === "relative" ? path.join("") : path.slice(-1).join("");
-    const tree_levels = rowHeaderLevelsHtml({isDir, isOpen, path: pathRender === "tree" ? path : []})
+    const tree_levels = rowHeaderLevelsHtml({hasChildren, isExpand, path: pathRender === "tree" ? path : []})
 
     treeTemplate.innerHTML = `<span class="rt-tree-container">${tree_levels}<span${header_attrs}>${header_text}</span></span>`;
 

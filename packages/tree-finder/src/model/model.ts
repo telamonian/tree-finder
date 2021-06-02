@@ -67,7 +67,7 @@ export class ContentsModel<T extends IContentRow> {
 
     // infrastructural subscriptions
     this.openSub.subscribe(rows => rows.map(row => this.openDir(row)));
-    this.refreshSub.subscribe(rows => {this._invalidate(rows); this.sort();});
+    this.refreshSub.subscribe(rows => {this._invalidate(rows); this.flatten();});
     this.renamerSub.subscribe(() => this._renamerPath = null);
 
     this.open(root);
@@ -147,14 +147,19 @@ export class ContentsModel<T extends IContentRow> {
     this.requestDraw({autosize: true});
   }
 
-  async filter(props: {autosize?: boolean} = {}) {
-    const {autosize = true} = props;
+  async filter({autosize = true}: {autosize?: boolean} = {}) {
     await this._root.expand();
 
     this._contents = await filterContentRoot({
       filterPatterns: this._filterPatterns,
       root: this._root,
     });
+
+    this.requestDraw({autosize});
+  }
+
+  async flatten({autosize = true}: {autosize?: boolean} = {}) {
+    this._contents = await this._root.flatten();
 
     this.requestDraw({autosize});
   }
@@ -197,7 +202,7 @@ export class ContentsModel<T extends IContentRow> {
 
   protected _invalidate(rows?: T[]) {
     if (!rows) {
-      this._root.invalidate();
+      this._root.invalidate(true);
       // invalidate all visible dirs in contents
     } else {
       // invalidate parents of normal files

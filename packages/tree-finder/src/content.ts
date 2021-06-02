@@ -21,8 +21,6 @@ export class Content<T extends IContentRow> {
 
   init({row, filterer, sorter}: {row: T, filterer?: Content.Filterer<T>, sorter?: Content.Sorter<T>}) {
     this.row = row;
-    this._isDir = !!this._row.getChildren;
-    this._pathstr = this._row.path.join("/");
 
     this.filterer = filterer;
     this.sorter = sorter;
@@ -80,14 +78,14 @@ export class Content<T extends IContentRow> {
   }
 
   protected async _flatten(_flat: Content<T>[] = []): Promise<Content<T>[]> {
-    // if (this.isExpand) {
-      for (const child of await this.getChildren() ?? []) {
+    if (this.hasChildren) {
+      for (const child of (await this.getChildren())!) {
         _flat.push(child);
         if (child.isExpand) {
           await child._flatten(_flat);
         }
       }
-    // }
+    }
 
     return _flat;
   }
@@ -96,21 +94,22 @@ export class Content<T extends IContentRow> {
     return this._filterer ? (await this._flatten()).filter(this._filterer) : await this._flatten();
   }
 
-  invalidate() {
-    if (this._row.getChildren) {
+  /**
+   * If _recursive, mark any subcache as invalid as well
+   */
+  invalidate(_recursive = false) {
+    if (this.hasChildren) {
       [this._dirtyChildren, this._dirtySort] = [true, false];
+      if (_recursive && this._cache) {
+        for (const child of this._cache) {
+          child.invalidate(_recursive);
+        }
+      }
     }
   }
 
-  /**
-   * returns the raw children array fetched by getChildren
-   */
-  get cache() {
-    return this._cache;
-  }
-
-  get isDir() {
-    return this._isDir;
+  get hasChildren() {
+    return this._hasChildren;
   }
 
   get isExpand() {
@@ -136,6 +135,9 @@ export class Content<T extends IContentRow> {
 
   set row(row: T) {
     this._row = row;
+    this._hasChildren = !!(this._row.getChildren);
+    this._pathstr = this._row.path.join("/");
+
     this.invalidate();
 }
 
@@ -161,7 +163,7 @@ export class Content<T extends IContentRow> {
 
   protected _row: T;
 
-  protected _isDir: boolean;
+  protected _hasChildren: boolean = false;
   protected _isExpand: boolean = false;
   protected _name: string;
   protected _pathstr: string;
