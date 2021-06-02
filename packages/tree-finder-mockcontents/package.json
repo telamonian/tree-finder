@@ -1,6 +1,6 @@
 {
   "name": "tree-finder-mockcontents",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "browser/tree widget implemented as a custom DOM element. Built on top of regular-table",
   "homepage": "https://github.com/telamonian/tree-finder-mockcontents",
   "bugs": {
@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "faker": "^5.4.0",
-    "tree-finder": "^0.0.12"
+    "tree-finder": "^0.0.13"
   },
   "devDependencies": {
     "@types/faker": "^5.1.7",
