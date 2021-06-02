@@ -331,7 +331,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
 
   protected _getRowHeader(target: Content<T>) {
     return Tree.rowHeaderSpan({
-      isDir: target.isDir,
+      hasChildren: target.hasChildren,
       isExpand: target.isExpand,
       path: target.getPathAtDepth(this.model.pathDepth),
       editable: this.model.renamerTest(target),

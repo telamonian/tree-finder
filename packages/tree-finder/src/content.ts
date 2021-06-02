@@ -14,19 +14,21 @@ export interface IContentRow {
   getChildren?: () => Promise<IContentRow[]>;
 }
 
-interface IContentDirRow {
-  path: Path.PathArray;
-  kind: "dir";
-  getChildren: () => Promise<IContentRow[]>;
-}
-
 export class Content<T extends IContentRow> {
-  constructor(row: T) {
-    this.isDir = row.kind === "dir";
-    this.row = row;
+  constructor({row, filterer, sorter}: {row: T, filterer?: Content.Filterer<T>, sorter?: Content.Sorter<T>}) {
+    this.init({row, filterer, sorter});
   }
 
-  close() {
+  init({row, filterer, sorter}: {row: T, filterer?: Content.Filterer<T>, sorter?: Content.Sorter<T>}) {
+    this.row = row;
+
+    this.filterer = filterer;
+    this.sorter = sorter;
+
+    return this;
+  }
+
+  collapse() {
     this._isExpand = false;
   }
 
@@ -35,38 +37,34 @@ export class Content<T extends IContentRow> {
   }
 
   async expand() {
-    await this.getChildren();
     this._isExpand = true;
+    await this.getChildren();
   }
 
   async getChildren() {
-    if (!Content.isContentDirRow(this.row)) {
+    // isContentDirRow is a typeguard that asserts that T extends IContentDirRow
+    if (!this._row.getChildren) {
       return;
     }
 
-    if (!this._dirty) {
-      return this._cache;
-    }
-
     if (this._dirtyChildren) {
-      this._cache = (await this.row.getChildren()).map((c: T) => new Content<T>(c)) ?? [];
+      if (this._cacheMap) {
+        // attempt to reseat existing Content row
+        this._cache = (await this._row.getChildren()).map((row: T) => this._cacheMap!.get(row.path.join("/"))?.init({row, sorter: this._sorter}) ?? new Content<T>({row, sorter: this._sorter}));
+      } else {
+        this._cache = (await this._row.getChildren()).map((row: T) => new Content<T>({row, sorter: this._sorter}));
+      }
+      this._cacheMap = new Map(this._cache.map(x => [x.pathstr, x]));
 
       this._dirtyChildren = false;
-      this._dirtyFilter = true;
-      this._dirtySort = true;
+      this._dirtySort = !!this._sorter;
     }
 
-    if (this._dirtyFilter && this._filterer) {
-      this._view = this._cache?.filter(this._filterer);
-      this._dirtyFilter = false;
-    }
-    if (this._dirtySort && this._sorter) {
-      this._view = this.view?.sort(this._sorter);
-      this._dirtySort = false;
+    if (this._dirtySort) {
+      this._cache!.sort(this._sorter);
     }
 
-    return this.view;
-    // return this._children?.values();
+    return this._cache;
   }
 
   getPathAtDepth(depth = 0, fill?: string) {
@@ -79,29 +77,39 @@ export class Content<T extends IContentRow> {
     }
   }
 
-  async getTree(_flat: Content<T>[] = []) {
-    if (this.isExpand) {
-      for (const child of await this.getChildren() ?? []) {
-        if (child.isExpand) {
-          child.getTree(_flat);
-        }
-
+  protected async _flatten(_flat: Content<T>[] = []): Promise<Content<T>[]> {
+    if (this.hasChildren) {
+      for (const child of (await this.getChildren())!) {
         _flat.push(child);
+        if (child.isExpand) {
+          await child._flatten(_flat);
+        }
       }
     }
 
     return _flat;
   }
 
-  invalidate() {
-    [this._dirtyChildren, this._dirtyFilter, this._dirtySort] = [true, true, true];
+  async flatten(): Promise<Content<T>[]> {
+    return this._filterer ? (await this._flatten()).filter(this._filterer) : await this._flatten();
   }
 
   /**
-   * returns the raw children array fetched by getChildren
+   * If _recursive, mark any subcache as invalid as well
    */
-  get cache() {
-    return this._cache;
+  invalidate(_recursive = false) {
+    if (this.hasChildren) {
+      [this._dirtyChildren, this._dirtySort] = [true, false];
+      if (_recursive && this._cache) {
+        for (const child of this._cache) {
+          child.invalidate(_recursive);
+        }
+      }
+    }
+  }
+
+  get hasChildren() {
+    return this._hasChildren;
   }
 
   get isExpand() {
@@ -114,46 +122,58 @@ export class Content<T extends IContentRow> {
   }
 
   get name() {
-    return (this.row.path && this.row.path.length) ? this.row.path[this.row.path.length - 1] : "";
+    return this.row.path.slice(-1)[0];
   }
 
   get pathstr() {
-    return this.row.path.join("/");
+    return this._pathstr;
   }
 
-  /**
-   * like cache but filtered, sorted, etc
-   */
-  get view() {
-    return this._view ?? this._cache;
+  get row() {
+    return this._row;
   }
 
-  protected get _dirty() {
-    return this._dirtyChildren || this._dirtyFilter || this._dirtySort;
-  }
+  set row(row: T) {
+    this._row = row;
+    this._hasChildren = !!(this._row.getChildren);
+    this._pathstr = this._row.path.join("/");
+
+    this.invalidate();
+}
 
   set filterer(filterer: Content.Filterer<T> | undefined) {
     this._filterer = filterer;
-    this._dirtyFilter = true;
+    // this._dirtyFilter = !!filterer;
   }
 
   set sorter(sorter: Content.Sorter<T> | undefined) {
-      this._sorter = sorter;
-      this._dirtySort = true;
+    this._sorter = sorter;
+    this._dirtySort = !!(sorter && this._cache);
+
+    if (this._cache) {
+      for (const child of this._cache) {
+        child.sorter = sorter;
+      }
+    }
   }
 
-  readonly isDir: boolean;
-  readonly row: T;
+  protected get _dirty() {
+    return this._dirtyChildren || this._dirtySort; //|| this._dirtyFilter;
+  }
 
+  protected _row: T;
+
+  protected _hasChildren: boolean = false;
   protected _isExpand: boolean = false;
+  protected _name: string;
+  protected _pathstr: string;
 
   protected _cache?: Content<T>[];
-  protected _view?: Content<T>[];
-  protected _viewTree?: Content<T>[];
+  protected _cacheMap?: Map<string, Content<T>>;
 
-  protected _dirtyChildren: boolean = true;
-  protected _dirtyFilter: boolean = true;
-  protected _dirtySort: boolean = true;
+  protected _dirtyChildren: boolean = false;
+  // protected _dirtyFilter: boolean = false;
+  protected _dirtySort: boolean = false;
 
   protected _filterer?: Content.Filterer<T>;
   protected _sorter?: Content.Sorter<T>;
@@ -164,17 +184,13 @@ export namespace Content {
   export type Sorter<T extends IContentRow> = (l: Content<T>, r: Content<T>) => number;
 
   export function blank<T extends IContentRow>(cols: (keyof T)[]) {
-    return new Content(cols.reduce((x, col) => {
+    return new Content({row: cols.reduce((x, col) => {
       if(col === "path") {
         x["path"] = [];
       } else {
         x[col] = "" as any;
       }
       return x;
-    }, {} as T));
-  }
-
-  export function isContentDirRow<T extends IContentRow, U extends IContentDirRow>(x: T | U): x is U {
-    return x.kind === "dir";
+    }, {} as T)});
   }
 }

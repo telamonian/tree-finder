@@ -18,7 +18,6 @@ const treeFinderConfig = {
   },
   devtool: "source-map",
   ...getContext(__dirname),
-  // context: ".",
 
   output: {
     path: path.resolve(__dirname, "dist"),
