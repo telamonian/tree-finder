@@ -198,8 +198,10 @@ export class ContentsModel<T extends IContentRow> {
   protected _invalidate(rows?: T[]) {
     if (!rows) {
       this._root.invalidate();
+      // invalidate all visible dirs in contents
     } else {
-      const invalidatedPathSet = new Set(rows.map(r => r.path.join("/")));
+      // invalidate parents of normal files
+      const invalidatedPathSet = new Set(rows.map(r => r.getChildren ? r.path.join("/") : r.path.slice(0, -1).join("/")));
       this.contents.filter(c => invalidatedPathSet.has(c.pathstr)).forEach(c => c.invalidate());
     }
   }

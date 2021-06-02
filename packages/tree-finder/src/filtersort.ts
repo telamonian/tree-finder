@@ -226,10 +226,5 @@ export async function sortContentRoot<T extends IContentRow>({root, sortStates, 
   }
 
   root.sorter = contentsSorterClosure(sortStates);
-  this.tack = [await root.flatten(), sortStates];
-  // get sorter then sort/flatten any expanded children of root
-  return [await flattenContents({
-    content: root,
-    sorter: contentsSorterClosure(sortStates),
-  }), sortStates];
+  return [await root.flatten(), sortStates];
 }
