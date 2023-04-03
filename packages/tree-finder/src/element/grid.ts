@@ -88,7 +88,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       // data: object[][] -> array of arrays, each subarray containing all of the visible values for one column
       // .isBlank works around issue with formatting placeholder row that shows up when data is blank
       // TODO: refactor away .isBlank workaround
-      data: this.model.isBlank ? [Array(this.model.columns.length).fill("")] : this._getData(start_col, start_row, end_col, end_row),
+      data: this.model.isBlank ? Array(this.model.columns.length).fill([""]) : this._getData(start_col, start_row, end_col, end_row),
     };
   }
 
