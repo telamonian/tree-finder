@@ -102,6 +102,7 @@ const stylingRules = [
 const svgUrlRules = [
   {
     test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+    type: 'asset/inline',
     use: {
       loader: "svg-url-loader",
       options: {encoding: "none", limit: 10000},

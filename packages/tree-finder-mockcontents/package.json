@@ -37,16 +37,8 @@
     "webpack:watch": "webpack --color --watch"
   },
   "dependencies": {
-    "faker": "^5.4.0",
+    "faker": "^6.6.6",
     "tree-finder": "^0.0.13"
-  },
-  "devDependencies": {
-    "@types/faker": "^5.1.7",
-    "rimraf": "^3.0.2",
-    "shx": "^0.3.3",
-    "typescript": "^4.2.4",
-    "webpack": "^5.21.2",
-    "webpack-cli": "^4.5.0"
   },
   "publishConfig": {
     "access": "public"

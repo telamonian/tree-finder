@@ -40,3 +40,6 @@ MANIFEST
 .history
 .vscode/*
 !.vscode/*.template
+
+# testing
+playwright-report
