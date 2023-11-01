@@ -6,7 +6,7 @@
  */
 // import * as faker from "faker";
 
-import { IContentRow, Path } from "tree-finder";
+import { IContentRow, Path } from "@tree-finder/base";
 
 import { ALLIED_PHONETIC, Random } from "./util";
 
