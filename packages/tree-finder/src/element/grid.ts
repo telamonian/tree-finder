@@ -25,11 +25,11 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     this.options = options;
     // TODO: apply the setDataListener typing fix below, once regular-table has pulled in the relevant typing fixes upstream
     // this.setDataListener(this.dataListener.bind(this), {virtual_mode: this._options.virtual_mode});
-    (this as any).setDataListener(this.dataListener.bind(this), {virtual_mode: this._options.virtual_mode});
+    this.setDataListener(this.dataListener.bind(this), {virtual_mode: this._options.virtual_mode!});
 
     // run listener initializations only once
     if (!this._initializedListeners) {
-      const [thead, tbody] = [(this as any).table_model.header.table, (this as any).table_model.body.table] as HTMLTableSectionElement[];
+      const [thead, tbody] = [this.table_model.header.table, this.table_model.body.table] as HTMLTableSectionElement[];
 
       this.addStyleListener(() => this.columnHeaderStyleListener())
       this.addStyleListener(() => this.rowStyleListener());
@@ -58,7 +58,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       // effectively a listener for model.requestDraw invocations
       this.model.drawSub.subscribe(async x => {
         if (x) {
-          (this as any)._resetAutoSize();
+          this._resetAutoSize();
         }
 
         await this.draw();
@@ -168,7 +168,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
       const metadata = RegularTable.metadataFromElement(element, this);
       const rowHeader = metadata?.row_header?.[0] as any as string;
 
-      for (let tr of (this as any).table_model.body.rows as HTMLElement[]) {
+      for (let tr of this.table_model.body.rows as HTMLElement[]) {
         if (tr.childElementCount > (this.model.columns.length + 1)) {
           const th = tr.children[0];
           th.classList.toggle("tf-mod-hover", th.textContent === rowHeader);
@@ -222,7 +222,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     }
 
     const meta = RegularTable.metadataFromElement(element, this);
-    if (!meta || !RegularTable.columnHeaderClicked(meta) || meta.column_header_y! < (this as any).table_model.header.rows.length - 1) {
+    if (!meta || !RegularTable.columnHeaderClicked(meta) || meta.column_header_y! < this.table_model.header.rows.length - 1) {
       return;
     }
 
@@ -378,7 +378,7 @@ export class TreeFinderGridElement<T extends IContentRow> extends RegularTableEl
     // there may be spurious rows in table, clamp selected check to contents length
     // TODO: refactor away the any cast once upstream typing fixes are released in regular-table
     // for (let tr of this.table_model.body.rows.slice(0, this.model.contents.length) as HTMLElement[]) {
-    for (let tr of (this as any).table_model.body.rows.slice(0, this.model.contents.length) as HTMLElement[]) {
+    for (let tr of this.table_model.body.rows.slice(0, this.model.contents.length) as HTMLElement[]) {
       const {y} = RegularTable.metadataFromElement(tr.children[0]!, this)!;
 
       if (tr && tr.tagName === "TR") {

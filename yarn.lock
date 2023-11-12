@@ -6482,10 +6482,10 @@ regexp.prototype.flags@^1.2.0:
     call-bind "^1.0.2"
     define-properties "^1.1.3"
 
-regular-table@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/regular-table/-/regular-table-0.4.0.tgz#41d769e9dcd6a3a6c4d2f4832132562d88a63515"
-  integrity sha512-O44E81FcEnGZjWE/hilOZPODo3dAzbT42cYU8xosicTiAindrwbpkCF6h9seg8Fw1L8eqziugCoODPe5UnarWA==
+regular-table@^0.4.3:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/regular-table/-/regular-table-0.4.3.tgz#c31c8c1f497315f59109fc25d817b09fcd46fbc1"
+  integrity sha512-4AWG4hT1byycWMkAXVCta330EZrlZC58yG9k4kj0vBEQoxVN+b0FiwT1YLMJyTOHWr+eJ27TnQGMx3WmHWkxHA==
 
 relateurl@^0.2.7:
   version "0.2.7"
