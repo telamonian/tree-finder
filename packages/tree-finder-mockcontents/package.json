@@ -1,14 +1,14 @@
 {
-  "name": "tree-finder-mockcontents",
+  "name": "@tree-finder/mockcontents",
   "version": "0.0.13",
   "description": "browser/tree widget implemented as a custom DOM element. Built on top of regular-table",
-  "homepage": "https://github.com/telamonian/tree-finder-mockcontents",
+  "homepage": "https://github.com/telamonian/tree-finder",
   "bugs": {
-    "url": "https://github.com/telamonian/tree-finder-mockcontents/issues"
+    "url": "https://github.com/telamonian/tree-finder/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/telamonian/tree-finder-mockcontents.git"
+    "url": "https://github.com/telamonian/tree-finder.git"
   },
   "license": "BSD-3-Clause",
   "author": "Max Klein <telamonian@users.noreply.github.com>",
@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "faker": "^5.4.0",
-    "tree-finder": "^0.0.13"
+    "@tree-finder/base": "^0.0.13"
   },
   "devDependencies": {
     "@types/faker": "^5.1.7",

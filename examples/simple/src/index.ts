@@ -4,8 +4,8 @@
  * This file is part of the tree-finder library, distributed under the terms of
  * the BSD 3 Clause license. The full license can be found in the LICENSE file.
  */
-import "tree-finder";
-import { mockContent } from "tree-finder-mockcontents";
+import "@tree-finder/base";
+import { mockContent } from "@tree-finder/mockcontents";
 
 import "../style";
 

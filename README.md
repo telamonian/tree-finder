@@ -37,7 +37,7 @@ which can be used to easily render filebrowers or other hierarchical trees. Only
 - [ ] icon support
   - [ ] icons-as-svg-elements
   - [ ] icons-as-css-classes
-- [ ] drag-n-drop 
+- [ ] drag-n-drop
 
 ## Examples - try `<tree-finder>` out live
 
@@ -51,22 +51,22 @@ which can be used to easily render filebrowers or other hierarchical trees. Only
 Include via a CDN like [JSDelivr](https://cdn.jsdelivr.net/npm/tree-finder):
 
 ```html
-  <script src="https://cdn.jsdelivr.net/npm/tree-finder/dist/tree-finder.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tree-finder/dist/tree-finder.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tree-finder/dist/theme/material.css">
+  <script src="https://cdn.jsdelivr.net/npm/@tree-finder/base/dist/tree-finder.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tree-finder/base/dist/tree-finder.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tree-finder/base/dist/theme/material.css">
 ```
 
 Or, add to your project via `yarn`:
 
 ```bash
-yarn add tree-finder
+yarn add @tree-finder/base
 ```
 
 ... then import into your asset bundle.
 
 ```javascript
-import "tree-finder";
-import "tree-finder/style/theme/material.css";
+import "@tree-finder/base";
+import "@tree-finder/base/style/theme/material.css";
 ```
 
 ## Development
